@@ -24,6 +24,12 @@ service cloud.firestore {
       allow create, update: if isMe(uid) && request.resource.data.email == request.auth.token.email
         && request.resource.data.keys().hasOnly(['email','name','createdAt','lastAt']);
     }
+    // Usernames: first come, first served; only the holder can release one.
+    match /usernames/{name} {
+      allow get: if signedIn();
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid && name.size() <= 20 && name == name.lower();
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
     // Exercise library: read-only for the app; edit in the console.
     match /library/{id}    { allow read: if signedIn(); }
     // Direct messages: one doc per sender→recipient, readable only by those two.

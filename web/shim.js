@@ -2,7 +2,7 @@
 // The app keeps calling claude.use(...); this file answers with Firebase Auth + Firestore.
 import { initializeApp } from "firebase/app";
 import { getAuth, connectAuthEmulator, onAuthStateChanged, GoogleAuthProvider, OAuthProvider, signInWithPopup, signInWithRedirect, signInWithCredential, getRedirectResult, signOut, setPersistence, browserLocalPersistence } from "firebase/auth";
-import { initializeFirestore, connectFirestoreEmulator, persistentLocalCache, memoryLocalCache, collection, doc, getDoc, getDocs, setDoc, deleteDoc, onSnapshot, query, where, limit } from "firebase/firestore";
+import { initializeFirestore, connectFirestoreEmulator, persistentLocalCache, memoryLocalCache, collection, doc, getDoc, getDocs, setDoc, deleteDoc, onSnapshot, query, where, limit, runTransaction } from "firebase/firestore";
 import { firebaseConfig } from "./firebase-config.js";
 
 const app = initializeApp(firebaseConfig);
@@ -99,6 +99,18 @@ await setPersistence(auth, browserLocalPersistence).catch(() => {});
 getRedirectResult(auth).then(r => { if(r && r.user && !window.__boatsHadUser) location.reload(); }).catch(() => {});
 const authReady = new Promise(res => { const off = onAuthStateChanged(auth, u => { off(); window.__boatsHadUser = !!u; res(u); }); });
 user.id = async () => (await authReady)?.uid || null;
+// Usernames: one owner per name, claimed in usernames/{lowercase name}. Returns "ok", "taken" or "error".
+window.boatsClaimName = async (name, old) => {
+  const u = auth.currentUser; if(!u) return "error";
+  const lc = String(name || "").trim().toLowerCase(); if(!lc) return "error";
+  const ref = doc(fs, "usernames", lc);
+  try {
+    await runTransaction(fs, async tx => { const s = await tx.get(ref); if(s.exists()){ if(s.data().uid !== u.uid) throw new Error("taken"); } else tx.set(ref, { uid: u.uid, at: Date.now() }); });
+  } catch(e) { return e && e.message === "taken" ? "taken" : "error"; }
+  const o = String(old || "").trim().toLowerCase();
+  if(o && o !== lc) { try { const r = doc(fs, "usernames", o); const s = await getDoc(r); if(s.exists() && s.data().uid === u.uid) await deleteDoc(r); } catch(e) {} }
+  return "ok";
+};
 // Record who has an account (email + dates) for the owner's Data center, then check owner access.
 // Who counts as the owner lives only in firestore.rules, so no email appears in this public code.
 authReady.then(async u => {

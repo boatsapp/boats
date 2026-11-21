@@ -145,7 +145,13 @@ svg.i.xs{width:14px;height:14px}
 .cmbox{display:flex;align-items:center;gap:8px;margin-top:2px}
 .cmbox .input{height:40px;font-size:14px}
 .cmpost{font-weight:700;color:var(--accent)}
-.bio2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.li.dimday{opacity:.45}
+textarea.input{font-family:inherit;font-size:16px;line-height:1.4}
+.plink{display:inline-flex;align-items:center;gap:5px;color:var(--accent);font-weight:600;font-size:14px;text-decoration:none;overflow-wrap:anywhere}
+.bub.me .link.mention{color:#fff;text-decoration:underline}
+.field.bad .seg{box-shadow:0 0 0 2px var(--bad);border-radius:12px}
+.btn.npick{height:120px;border-style:dashed;flex-direction:column;gap:8px}
+.bio2{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .link.mention{color:var(--accent);font-weight:600;padding:0;display:inline}
 #ask .scrim{z-index:60}
 .askbox{background:var(--bg);width:100%;max-width:320px;border-radius:22px;padding:20px 18px 16px;display:flex;flex-direction:column;gap:6px;text-align:center;box-shadow:0 30px 70px rgba(0,0,0,.3);animation:pop .2s cubic-bezier(.2,1.15,.4,1)}
@@ -634,7 +640,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v92';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v93';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -736,8 +742,13 @@ function cardioKind(id){ const n=(exOf(id).n||'').toLowerCase(); if(FIXED_MET[id
   if(['incline-walk','run'].includes(id)||/tread|walk|run|jog/.test(n)) return 'tread';
   if(['elliptical','bike','rower'].includes(id)||/ellip|olyp|bike|cycl|row|spin/.test(n)) return 'res';
   if(id==='stairmaster'||/stair|step/.test(n)) return 'level'; return 'level'; }
+function heightCm(){ return Pf.unit==='lb'?((num(Pf.ft)||5)*12+(num(Pf.inch)||0))*2.54:(num(Pf.cm)||175); }
+// Mifflin-St Jeor resting burn per kg vs the 1 kcal/kg/h a MET assumes: makes calorie estimates fit your sex, height and weight.
+function bmr(){ const kg=bodyKg(); return 10*kg+6.25*heightCm()-5*30+(Pf.sex==='female'?-161:5); }
+function metCorr(){ if(!Pf.sex) return 1; return Math.max(0.7,Math.min(1.15,bmr()/(bodyKg()*24))); }
 function bodyKg(){ const bw=num(Pf.bodyweight)||(Pf.unit==='lb'?170:77); return Pf.unit==='lb'?bw*0.4536:bw; }
-function cardioKcal(it,minutes){
+function cardioKcal(it,minutes){ return Math.round(cardioKcal0(it,minutes)*metCorr()); }
+function cardioKcal0(it,minutes){
   const kg=bodyKg(), c=it.cset||{}, k=cardioKind(it.exId), n=(exOf(it.exId).n||'').toLowerCase(); let perMin;
   if(k==='fixed'){ const met=(FIXED_MET[it.exId]||5)*({easy:.75,mod:1,hard:1.25}[c.int||'mod']); return Math.round(met*3.5*kg/200*minutes); }
   if(k==='tread'){ const sp=num(c.speed)||3, mpm=Pf.unit==='lb'?sp*26.82:sp*16.67, g=(num(c.incline)||0)/100, run=Pf.unit==='lb'?sp>=4.5:sp>=7.2;
@@ -765,6 +776,7 @@ const P = {
   today:'<rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
   plan:'<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
   feed:'<path d="M3 12h4l3-7 4 14 3-7h4"/>',
+  chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
   progress:'<path d="M4 19.5h16"/><path d="M5 15l4.5-4.5 3.5 3L19 7"/><path d="M15 7h4v4"/>',
   scale:'<rect x="3.5" y="4" width="17" height="16" rx="4"/><path d="M8.5 9.5a4.5 4.5 0 0 1 7 0L12 12"/>',
   heart:'<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>',
@@ -853,7 +865,7 @@ const dateKey = (d=new Date()) => { const x=new Date(d); return x.getFullYear()+
 
 function defaultProfile(){
   return { v:2, onboarded:false, username:'', town:'', photo:'', unit:guessUnit(), ft:5, inch:10, cm:178, bodyweight:'', goal:'bulk',
-    repMin:7, repMax:10, rest:90, sound:true, theme:'system',
+    repMin:7, repMax:10, rest:90, sound:true, theme:'dark',
     show:{photo:false,town:false,goal:true,height:false,weight:false,status:true}, vibrate:true, flash:true,
     split:{mon:'push',tue:'pull',wed:'legs',thu:'rest',fri:'push',sat:'pull',sun:'legs'},
     plans:{mon:[],tue:[],wed:[],thu:[],fri:[],sat:[],sun:[]}, active:null, adjusted:{}, nextW:{}, friends:[], custom:[], bwLog:[],
@@ -966,7 +978,7 @@ const Social = {
   },
   card(){
     const sh=Pf.show, last=Store.workouts[0];
-    return { username:(Pf.username||'Lifter').slice(0,40), bio:(Pf.bio||'').slice(0,150), photo: Pf.photo||'', town: sh.town&&placeValid(Pf.town)?Pf.town.trim():'', goal: sh.goal?Pf.goal:'', wcount: sh.status?Store.workouts.length:null, following:(Pf.friends||[]).slice(0,500), splitPub:Pf.shareSplit?splitPayload():null, followedAt:Object.fromEntries(Object.entries(Pf.followedAt||{}).filter(([k])=>(Pf.friends||[]).includes(k))),
+    return { username:(Pf.username||'Lifter').slice(0,40), bio:(Pf.bio||'').slice(0,150), link:linkOf(Pf.link), photo: Pf.photo||'', town: sh.town&&placeValid(Pf.town)?Pf.town.trim():'', goal: sh.goal?Pf.goal:'', wcount: sh.status?Store.workouts.length:null, following:(Pf.friends||[]).slice(0,500), splitPub:Pf.shareSplit?splitPayload():null, followedAt:Object.fromEntries(Object.entries(Pf.followedAt||{}).filter(([k])=>(Pf.friends||[]).includes(k))),
       height: sh.height?heightStr():'', weight: sh.weight&&Pf.bodyweight?`${Pf.bodyweight} ${Pf.unit}`:'',
       status: sh.status?{ activeSince:Pf.active?Pf.active.startedAt:0, lastAt:last?last.startedAt:0, lastTitle:last?last.title:'', streak:streak() }:null };
   },
@@ -1055,7 +1067,7 @@ const app = document.getElementById('app'), sheetEl = document.getElementById('s
 let ASKFN=null;
 function askConfirm(title,sub,yes,fn){ ASKFN=fn; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="alertdialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${sub?`<span class="muted small">${esc(sub)}</span>`:''}<div class="askbtns"><button class="btn" data-a="ask-no">Cancel</button><button class="btn danger" data-a="ask-yes">${esc(yes)}</button></div></div></div>`; }
 let rootTheme = document.documentElement.getAttribute('data-theme');
-function applyTheme(){ const r=document.documentElement; if(Pf.theme==='system'){ if(rootTheme) r.setAttribute('data-theme',rootTheme); else r.removeAttribute('data-theme'); } else r.setAttribute('data-theme',Pf.theme); }
+function applyTheme(){ const r=document.documentElement; if(Pf.theme!=='light') Pf.theme='dark'; if(Pf.theme==='system'){ if(rootTheme) r.setAttribute('data-theme',rootTheme); else r.removeAttribute('data-theme'); } else r.setAttribute('data-theme',Pf.theme); }
 
 const TOAST_SHOW=/Max |can't|cannot|could not|couldn|first|limit|Pick |needs|failed|broke|No |not in|isn't|Add a|Give |Paste|Long-press|minimum|Something/i;
 function popCue(){ if(!Pf||!Pf.sound) return; const c=ac(); if(!c) return; const t=c.currentTime, o=c.createOscillator(), g=c.createGain(); o.type='sine'; o.frequency.setValueAtTime(620,t); o.frequency.exponentialRampToValueAtTime(980,t+.07); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.13,t+.01); g.gain.exponentialRampToValueAtTime(0.0001,t+.14); o.connect(g).connect(c.destination); o.start(t); o.stop(t+.16); }
@@ -1125,6 +1137,7 @@ function restRange(){
 function bodyFields(){
   const u=Pf.unit;
   return `
+  <div class="field" id="f-sex"><span class="flabel">Sex</span>${seg('sex',Pf.sex||'',{male:'Male',female:'Female'})}<span class="muted small">Only used to estimate calories more accurately. Never shown on your profile.</span></div>
   <div class="field"><span class="flabel">Units</span>${seg('unit',u,{lb:'lb · ft',kg:'kg · cm'})}</div>
   <div class="field"><span class="flabel">Height</span>
     ${u==='lb' ? `<div class="rowx"><div class="inwrap"><input class="input num" id="f-ft" inputmode="numeric" value="${esc(Pf.ft)}" data-f="ft"><span class="suf">ft</span></div><div class="inwrap"><input class="input num" id="f-in" inputmode="numeric" value="${esc(Pf.inch)}" data-f="inch"><span class="suf">in</span></div></div>`
@@ -1209,7 +1222,7 @@ function tabbar(){
 function weekStrip(){
   const ws=weekStart(), today=dayKey(new Date());
   const doneDays=new Set(Store.workouts.filter(w=>w.startedAt>=ws.getTime()).map(w=>dayKey(new Date(w.startedAt))));
-  return `<div class="week">${DAYS.map(([k,l])=>{const t=Pf.split[k];return `<div class="wd ${k===today?'today':''} ${t==='rest'?'rest':''}"><b>${l[0]}</b><span>${t==='full'?'Full':TYPES[t]}</span><i class="dot ${doneDays.has(k)?'done':''}"></i></div>`}).join('')}</div>`;
+  return `<div class="week">${DAYS.map(([k,l])=>{const t=Pf.split[k];return `<div class="wd ${k===today?'today':''} ${t==='rest'||!(Pf.plans[k]||[]).length?'rest':''}"><b>${l[0]}</b><span>${t==='full'?'Full':TYPES[t]}</span><i class="dot ${doneDays.has(k)?'done':''}"></i></div>`}).join('')}</div>`;
 }
 function planLine(p){
   const e=exOf(p.exId); if(!e) return '';
@@ -1242,8 +1255,10 @@ function targetTags(){ return []; }
 function targetTags_old(){ const t=Pf.targets, a=[]; if(t.steps) a.push(t.steps+' steps'); if(t.cal) a.push(t.cal+' cal'); if(t.protein) a.push(t.protein+' protein'); if(t.sleep) a.push(t.sleep+' sleep'); return a; }
 function weighCard(){ const last=Pf.bwLog[Pf.bwLog.length-1], today=last&&sameDay(last.t,Date.now());
   return `<section class="card rowx weigh" style="gap:10px;padding:12px 14px"><span class="ico">${ic('scale','sm')}</span>
-    ${today&&!S.bwEdit?`<div style="flex:1;min-width:0"><b>${fmtN(last.w)} ${Pf.unit}</b> <span class="muted small">weighed in today</span></div><button class="link small" data-a="bw-edit">Update</button>`
+    ${today&&!S.bwEdit?`<span style="color:var(--good);display:inline-flex">${ic('check','sm')}</span><div style="flex:1;min-width:0"><b>${fmtN(last.w)} ${Pf.unit}</b> <span class="muted small">logged today</span></div><button class="link small" data-a="bw-edit">Update</button>`
     :`<div style="flex:1;min-width:0"><div class="inwrap"><input class="input num" id="bw-today" inputmode="decimal" placeholder="Weigh-in${last?' (last '+fmtN(last.w)+')':''}" style="height:44px"><span class="suf">${Pf.unit}</span></div></div><button class="btn sm primary" style="width:auto;flex:none;height:44px" data-a="bw-today">Log</button>`}</section>`; }
+function nameAsk(){ return S.nameTaken?`<section class="card stack" style="gap:8px;border-color:var(--bad)"><b>@${esc(Pf.username)} belongs to someone else</b><span class="muted small">Two accounts ended up with the same username. Pick a new one so friends can find you.</span><button class="btn primary" data-a="settings">Change username</button></section>`:''; }
+function sexAsk(){ return Pf.onboarded&&!Pf.sex?`<section class="card stack" style="gap:10px"><b>One quick thing</b><span class="muted small">Boats now uses your sex to estimate calories more accurately. It’s never shown on your profile.</span>${seg('sex','',{male:'Male',female:'Female'})}</section>`:''; }
 function vChecklist(){
   const tk=dayKey(new Date()), items=Pf.checklist.filter(c=>!c.days||c.days.includes(tk)); const tags=targetTags();
   if(!items.length&&!tags.length) return `<section class="card stack clsec" style="gap:2px">
@@ -1282,7 +1297,7 @@ function vToday(){
         ${plan.length?'':`<div class="muted small">${type==='rest'?'Recovery day. You can still log a session.':'No exercises yet.'} <button class="link" data-a="edit-day" data-v="${dk}">Add exercises</button></div>`}
         ${dk!==tk?`<button class="link" style="align-self:center" data-a="pick" data-v="${tk}">Back to today's plan (${esc(workoutLabel(tk))})</button>`:''}`}
     </section>
-    ${weighCard()}
+    ${nameAsk()}${sexAsk()}${weighCard()}
     ${vProgramCard()}
     ${vChecklist()}
     ${a?'':`<div class="beginbar"><button class="btn primary" data-a="start-at" data-v="0">${ic('play','sm')}${plan.length?'Begin workout':'Begin empty workout'}</button></div>`}
@@ -1293,8 +1308,8 @@ function vPlan(){
   if(S.planDay) return vPlanDay(S.planDay);
   return `<div class="screen">
     <div class="stack" style="gap:4px"><span class="eyebrow">Weekly split</span><h1 class="h1">Your week</h1></div>
-    ${DAYS.every(([k])=>!(Pf.plans[k]||[]).length)?`<div class="card rowx" style="gap:12px;padding:14px 16px"><span class="ico">${ic('clock','sm')}</span><div style="flex:1;min-width:0"><b>About a 5–10 minute setup</b><div class="muted small">Build your week once and you never have to again. Tap a day to add its exercises.</div></div></div>`:''}
-    <div class="list">${DAYS.map(([k,l])=>{const t=Pf.split[k],n=(Pf.plans[k]||[]).length;return `<button class="li" data-a="edit-day" data-v="${k}"><span class="ico">${ic(typeIcon(t))}</span><span class="grow"><span class="t">${l}</span><br><span class="s">${TYPES[t]}${variantOf(k)?` <span class="vtag">${variantOf(k)}</span>`:''}${t!=='rest'||n?` · ${n} exercise${n===1?'':'s'}`:''}</span></span>${ic('right','sm')}</button>`}).join('')}</div>
+    ${DAYS.some(([k])=>Pf.split[k]!=='rest'&&!(Pf.plans[k]||[]).length)?`<div class="card rowx" style="gap:12px;padding:14px 16px"><span class="ico">${ic('clock','sm')}</span><div style="flex:1;min-width:0"><b>About a 5–10 minute setup</b><div class="muted small">Build your week once and you never have to again. Tap a day to add its exercises.</div></div></div>`:''}
+    <div class="list">${DAYS.map(([k,l])=>{const t=Pf.split[k],n=(Pf.plans[k]||[]).length;return `<button class="li ${t!=='rest'&&!n?'dimday':''}" data-a="edit-day" data-v="${k}"><span class="ico">${ic(typeIcon(t))}</span><span class="grow"><span class="t">${l}</span><br><span class="s">${TYPES[t]}${variantOf(k)?` <span class="vtag">${variantOf(k)}</span>`:''}${t!=='rest'||n?` · ${n} exercise${n===1?'':'s'}`:''}</span></span>${ic('right','sm')}</button>`}).join('')}</div>
     <p class="muted small" style="margin:0">Tap a day to set its type and add exercises from the library.</p>
     <div class="stack" style="gap:8px;margin-top:12px"><div class="rowx" style="gap:6px"><span class="eyebrow">Training block</span><span class="tag">Optional</span></div>${blockCard()}<span class="muted small">Skip it and your weeks just stay the same.</span></div>
   </div>${tabbar()}`;
@@ -1410,6 +1425,7 @@ function byWeek(pts,mode){ const m=new Map(); for(const q of pts){ const k=weekS
   return [...m.entries()].sort((a,b)=>a[0]-b[0]).map(([k,arr])=>{ const v=mode==='avg'?Math.round(arr.reduce((t,q)=>t+q.v,0)/arr.length*10)/10:Math.max(...arr.map(q=>q.v)); const top=arr.find(q=>q.v===v)||arr[0];
     return {t:k,v,label:`Week of ${shortDate(k)} · ${mode==='avg'?fmtN(v)+' avg':top.label.split(' · ').slice(1).join(' · ')||fmtN(v)}`}; }); }
 const daysSpan = pts => pts.length?(pts[pts.length-1].t-pts[0].t)/864e5:0;
+const daysOf = ts => new Set(ts.map(t=>dateKey(new Date(t)))).size;
 function gathering(msg,have,need,unit){ const fake=[3,4,3.6,5,5.4,6.2,6].map((v,i)=>({t:i,v,label:''}));
   return `<div class="gather"><div class="gather-chart" aria-hidden="true">${lineChart('g'+Math.random().toString(36).slice(2,6),fake,'',0)}</div>
     <div class="gather-msg"><b>Gathering data</b><span class="muted small">${msg}</span>${need?`<div class="gbar"><i style="width:${Math.min(100,100*have/need)}%"></i></div><span class="muted small num">${have} of ${need} ${unit||''}</span>`:''}</div></div>`; }
@@ -1484,11 +1500,12 @@ function vProgress(){
         :`<div class="stats"><div class="stat"><div class="k">Best</div><div class="v num">${fmtN(best)}</div></div><div class="stat"><div class="k">Last</div><div class="v num">${fmtN(last.v)}</div></div><div class="stat"><div class="k">Change</div><div class="v num" style="color:${last.v-first.v>0?'var(--good)':'var(--fg)'}">${last.v-first.v>0?'+':''}${fmtN(last.v-first.v)}</div></div></div>`}
       ${pts.length>=2?(overall?(()=>{ const rec=pts.slice(-8), ex=expStrength(pts,pts[pts.length-1].t).filter(p=>p.t>=rec[0].t); return `<div class="rowx" style="gap:6px;flex-wrap:wrap">${onTrack(pts,expStrength(pts,pts[pts.length-1].t),'str')}<span class="tag">${LEVELS[Pf.level||'beginner']} · ${GOALS[Pf.goal].l}</span><span class="spacer"></span><button class="btn sm" data-a="chart-open" data-v="str">Expand</button></div>`+lineChart('str',rec,'score',0,10,{exp:ex}); })()+'<p class="muted small" style="margin:0">100 is where you started. Each dot is a week: your lifts\' estimated max (weight and reps) compared with your first week, averaged across everything you trained. The dashed line is typical progress for your level and goal.</p>'
           :lineChart('str',pts,Pf.unit,0,Math.max(10,best*0.15))+'<p class="muted small" style="margin:0">Best top set each week.</p>')
-        :gathering(overall?'Train for another week and Boats compares every lift against your starting point to score your overall strength.':'Log this exercise for another week to see your trend. Each dot is your best set that week.',pts.length,2,'weeks')}`
+        :(!overall&&raw.length>=2&&daysOf(raw.map(x=>x.t))>=7?lineChart('str',raw.slice(-14),Pf.unit,0,Math.max(10,best*0.15))+'<p class="muted small" style="margin:0">Your top set each session. Weekly trends start next week.</p>'
+          :gathering(overall?'Boats needs at least 1 week of workouts to score your overall strength.':'Log this exercise for at least 1 week to see your trend.',Math.min(7,daysOf((overall?Store.workouts.map(w=>w.startedAt):raw.map(x=>x.t)))),7,'days logged'))}`
       :`<div class="muted small">Finish a workout to start tracking your lifts.</div>`}
     </section>`,bw:`<section class="card stack pcard" data-key="bw" style="gap:14px">
       <div class="rowx"><span class="h2">Weigh-ins</span><span class="spacer"></span>${bwCh!=null?`<span class="tag num">${bwCh>0?'+':''}${fmtN(bwCh)} ${Pf.unit}</span>`:''}<span class="handle chandle" data-drag="1" aria-label="Hold and drag to move this chart">${ic('grip','sm')}</span></div>
-      ${bw.length>=2?(()=>{ const rec=bw.slice(-8), ex=expWeight(bw,bw[bw.length-1].t).filter(p=>p.t>=rec[0].t); return `<div class="rowx" style="gap:6px">${onTrack(bw,expWeight(bw,bw[bw.length-1].t),'weight')}<span class="spacer"></span><button class="btn sm" data-a="chart-open" data-v="bw">Expand</button></div>`+lineChart('bw',rec,Pf.unit,num(Pf.goalWeight)||0,Pf.unit==='lb'?8:4,{exp:ex}); })()+'<p class="muted small" style="margin:0">Weekly average. The dashed line is your expected pace'+(num(Pf.goalWeight)&&goalDate()?' to your goal by '+esc(Pf.goalBy):' for your goal')+'.</p>':gathering('Log your weight for at least two weeks. Each dot will be that week\'s average, so daily water swings don\'t throw it off.',bw.length,2,'weeks')}${num(Pf.goalWeight)?`<div class="muted small">Goal ${fmtN(num(Pf.goalWeight))} ${Pf.unit}${Pf.goalBy?' by '+esc(Pf.goalBy):''}${bwLast?` · ${fmtN(Math.abs(num(Pf.goalWeight)-bwLast))} ${Pf.unit} to go`:''}</div>`:''}
+      ${bw.length>=2?(()=>{ const rec=bw.slice(-8), ex=expWeight(bw,bw[bw.length-1].t).filter(p=>p.t>=rec[0].t); return `<div class="rowx" style="gap:6px">${onTrack(bw,expWeight(bw,bw[bw.length-1].t),'weight')}<span class="spacer"></span><button class="btn sm" data-a="chart-open" data-v="bw">Expand</button></div>`+lineChart('bw',rec,Pf.unit,num(Pf.goalWeight)||0,Pf.unit==='lb'?8:4,{exp:ex}); })()+'<p class="muted small" style="margin:0">Weekly average. The dashed line is your expected pace'+(num(Pf.goalWeight)&&goalDate()?' to your goal by '+esc(Pf.goalBy):' for your goal')+'.</p>':(bwRaw.length>=2&&daysOf(bwRaw.map(x=>x.t))>=7?lineChart('bw',bwRaw.slice(-14),Pf.unit,num(Pf.goalWeight)||0,Pf.unit==='lb'?8:4)+'<p class="muted small" style="margin:0">Daily weigh-ins. Weekly averages start next week.</p>':gathering('Log your weight for at least 1 week. After that, each dot is a weekly average so daily water swings don\'t throw it off.',Math.min(7,daysOf(bwRaw.map(x=>x.t))),7,'days logged'))}${num(Pf.goalWeight)?`<div class="muted small">Goal ${fmtN(num(Pf.goalWeight))} ${Pf.unit}${Pf.goalBy?' by '+esc(Pf.goalBy):''}${bwLast?` · ${fmtN(Math.abs(num(Pf.goalWeight)-bwLast))} ${Pf.unit} to go`:''}</div>`:''}
       ${(()=>{ const last=Pf.bwLog[Pf.bwLog.length-1]; return last&&sameDay(last.t,Date.now())&&!S.bwEdit2?`<div class="rowx" style="gap:8px"><span class="ico" style="color:var(--good)">${ic('check','sm')}</span><div style="flex:1;min-width:0"><b>${fmtN(last.w)} ${Pf.unit}</b> <span class="muted small">logged today</span></div><button class="link small" data-a="bw-edit2">Update</button></div>`
         :`<div class="rowx" style="gap:8px"><div class="inwrap"><input class="input num" id="bw-in" inputmode="decimal" placeholder="Today's weight" value="${last&&sameDay(last.t,Date.now())?fmtN(last.w):''}"><span class="suf">${Pf.unit}</span></div><button class="btn sm primary" style="height:50px" data-a="bw-log">Log</button></div>`; })()}
       ${bw.length>1?`<div class="list">${[...Pf.bwLog].reverse().slice(0,5).map(x=>`<div class="li" style="padding:10px 14px"><span class="grow small">${new Date(x.t).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}</span><b class="num">${fmtN(x.w)} ${Pf.unit}</b></div>`).join('')}</div>`:''}
@@ -1640,7 +1657,8 @@ function vDms(){ const th=dmThreads(), reqs=th.filter(t=>t.req), main=th.filter(
       :`<div class="card empty">${ic('send')}<div style="margin-top:6px">${tab==='req'?'No message requests.':'No messages yet. Tap + to message someone you follow.'}</div></div>`}
     <p class="muted small" style="margin:0">Hold a chat to pin it (up to 5). Swipe left to delete. Test version: messages aren't private yet.</p>
   </div>${tabbar()}`; }
-function chatMsgs(u){ const msgs=chatWith(u); return msgs.length?msgs.map(m=>`<div class="bub ${m.me?'me':''}">${esc(m.text)}</div>`).join(''):`<div class="muted small" style="text-align:center;margin:30px 0">Say hi to ${esc(Social.nameOf(u))}.</div>`; }
+function mentionHtml(t){ return esc(t).replace(/@([A-Za-z0-9._]{3,20})/g,(m,u)=>{ const id=Object.keys(Social.people||{}).find(k=>String((Social.people[k]||{}).username||'').toLowerCase()===u.toLowerCase()); return !id?m:id===Social.me()?`<button class="link mention" data-a="tab" data-v="me">@${u}</button>`:`<button class="link mention" data-a="person" data-v="${esc(id)}">@${u}</button>`; }); }
+function chatMsgs(u){ const msgs=chatWith(u); return msgs.length?msgs.map(m=>`<div class="bub ${m.me?'me':''}">${mentionHtml(m.text)}</div>`).join(''):`<div class="muted small" style="text-align:center;margin:30px 0">Say hi to ${esc(Social.nameOf(u))}.</div>`; }
 function vChat(){ const u=S.chatWith, msgs=chatWith(u), req=dmThreads().find(t=>t.u===u&&t.req);
   return `<div class="screen actpage chatpage">
     <div class="rowx" style="gap:8px;margin:-4px 0 -4px -8px"><button class="iconbtn" data-a="dm-back" aria-label="Back">${ic('back')}</button><button class="whobtn" data-a="person" data-v="${esc(u)}">${avatar(Social.nameOf(u),Social.photoOf(u),null)}<b>${esc(Social.nameOf(u))}</b></button><span class="spacer"></span>${Pf.friends.includes(u)?`<button class="fpill on" data-a="follow-tog" data-v="${esc(u)}" aria-label="Following ${esc(Social.nameOf(u))}, tap to unfollow">${ic('check','xs')}Following</button>`:`<button class="fpill" data-a="follow-tog" data-v="${esc(u)}">${ic('plus','xs')}Follow</button>`}</div>
@@ -1653,10 +1671,10 @@ function vFriends(){
   if(S.fview==='dms') return vDms();
   if(S.fview==='chat') return vChat();
   return `<div class="screen">
-    <div class="rowx fhead"><span class="wordmark">BOATS<sup class="betatag sm">BETA</sup></span><span class="spacer"></span><button class="iconbtn ${dmUnread()?'dot':''}" data-a="dms" aria-label="Messages">${ic('send')}</button><button class="iconbtn ${actUnread()?'dot':''}" data-a="activity" aria-label="Activity: new followers and comments">${ic('heart')}</button></div>
+    <div class="rowx fhead"><span class="wordmark">BOATS<sup class="betatag sm">BETA</sup></span><span class="spacer"></span><button class="iconbtn" data-a="np-open" aria-label="New post">${ic('plus')}</button><button class="iconbtn ${dmUnread()?'dot':''}" data-a="dms" aria-label="Messages">${ic('send')}</button><button class="iconbtn ${actUnread()?'dot':''}" data-a="activity" aria-label="Activity: new followers and comments">${ic('heart')}</button></div>
     ${gymBubbles()}
     <div class="stack" id="feed" style="gap:14px">${feedList()}</div></div>
-    ${(Pf.friends||[]).length||Social.myPosts().length?'':`<div class="invitebar"><button class="btn primary" data-a="text-invite">${ic('plus','sm')}Invite friends to Boats</button></div>`}${tabbar()}`;
+    ${(Pf.friends||[]).some(f=>((Social.posts[f]||{}).items||[]).some(p=>p.photo))?'':`<div class="invitebar"><button class="btn primary" data-a="text-invite">${ic('plus','sm')}Invite friends to Boats</button></div>`}${tabbar()}`;
 }
 function vFriendList(){
   const crew=(S.flTab||'following')==='crew';
@@ -1698,7 +1716,7 @@ function profileBlock(uid,c,me){
       ${c.status?`<span class="small muted">${st.label}</span>`:''}${!me&&c.splitPub?`<button class="tag copytag" style="align-self:flex-start;margin-top:4px" data-a="split-view" data-v="${esc(uid)}">${ic('swap','xs')}Copy split</button>`:''}</div>
       ${me||c.status?`<button class="streakpill" data-a="ranks" aria-label="${streakN} day streak. See the rankings">${ic('flame','xs')}<span class="num">${streakN}</span> Day Streak</button>`:''}</div>
     ${!me&&S.unfAsk&&Pf.friends.includes(uid)?`<div class="card rowx" style="gap:8px;padding:10px 12px"><span style="flex:1;min-width:0">Unfollow ${esc(c.username||'')}?</span><button class="btn sm" style="width:auto" data-a="unf-ask">Cancel</button><button class="btn sm danger" style="width:auto" data-a="friend" data-v="${esc(uid)}">Unfollow</button></div>`:''}
-    ${c.bio?`<p class="bio2" style="margin:-6px 0 0;white-space:pre-line">${bioHtml(c.bio)}</p>`:me?`<button class="link" style="text-align:left;margin-top:-6px" data-a="settings">Add a bio</button>`:''}
+    ${c.link&&linkHtml(c.link)?`<div style="margin:-8px 0 0">${linkHtml(c.link)}</div>`:''}${c.bio?`<p class="bio2" style="margin:-6px 0 0;white-space:pre-line">${bioHtml(c.bio)}</p>`:me?`<button class="link" style="text-align:left;margin-top:-6px" data-a="settings">Add a bio</button>`:''}
     ${tags?`<div class="tagline1">${tags}</div>`:''}
     ${me?ownGrid():pics.length?`<div class="pgrid3">${pics.map(p=>`<button data-a="posts-open" data-v="${esc(uid+':'+p.id)}" aria-label="${esc(dayWord(p.type))}, ${shortDate(p.at)}"><img src="${esc(p.photo)}" alt="" loading="lazy"></button>`).join('')}</div>`
       :`<div class="card empty" style="padding:28px 16px">${ic('camera')}<div style="margin-top:6px">No posts yet.</div></div>`}
@@ -1726,7 +1744,7 @@ function vMe(){
   </div>${tabbar()}`;
 }
 function recTargets(){ const bw=num(Pf.bodyweight), lb=Pf.unit==='lb'?bw:bw*2.2046; if(!lb) return {steps:'8,000',cal:'2,400',protein:'150 g',sleep:'8 h'};
-  const cal=Math.round((lb*15+({bulk:300,maintain:0,cut:-500}[Pf.goal]||0))/50)*50, pr=Math.round(lb*(Pf.goal==='cut'?1:0.8)/5)*5;
+  const cal=Math.round(((Pf.sex?bmr()*1.55:lb*15)+({bulk:300,maintain:0,cut:-500}[Pf.goal]||0))/50)*50, pr=Math.round(lb*(Pf.goal==='cut'?1:0.8)/5)*5;
   return {steps:Pf.goal==='cut'?'10,000':'8,000',cal:cal.toLocaleString(),protein:pr+' g',sleep:'8 h'}; }
 function vAdmin(){
   const d=S.adm, tab=S.admTab||'users', now=Date.now(), day=864e5;
@@ -1771,14 +1789,17 @@ function screenWhere(){
   if(sk&&sk!=='feedback'&&sk!=='dev') w+=' › '+(SHEETS[sk]||sk);
   return w;
 }
+function linkOf(v){ v=String(v||'').trim(); if(!v) return ''; if(!/^https?:\/\//i.test(v)) v='https://'+v; try{ const u=new URL(v); return /^https?:$/.test(u.protocol)&&u.hostname.includes('.')?u.href.slice(0,200):''; }catch(e){ return ''; } }
+function linkHtml(l){ if(!/^https?:\/\//i.test(String(l||''))) return ''; let host=''; try{ host=new URL(l).hostname.replace(/^www\./,''); }catch(e){ return ''; } return `<a class="plink" href="${esc(l)}" target="_blank" rel="noopener nofollow ugc">${ic('link','xs')}${esc(host)}</a>`; }
 function bioHtml(b){ let done=false; return esc(b).replace(/@([A-Za-z0-9._]{3,20})/g,(m,u)=>{ if(done) return m; const id=Object.keys(Social.people||{}).find(k=>String((Social.people[k]||{}).username||'').toLowerCase()===u.toLowerCase()); if(!id) return m; done=true; return id===Social.me()?`<button class="link mention" data-a="tab" data-v="me">@${u}</button>`:`<button class="link mention" data-a="person" data-v="${esc(id)}">@${u}</button>`; }); }
 function vSettings(){
   return `<div class="screen">
     <div><button class="link rowx" style="gap:4px" data-a="profile">${ic('back','sm')}Profile</button></div>
-    <div class="stack" style="gap:4px"><span class="eyebrow">Profile</span><h1 class="h1">Settings</h1></div>
+    <div class="rowx"><div class="stack" style="gap:4px"><span class="eyebrow">Profile</span><h1 class="h1">Settings</h1></div><span class="spacer"></span>${window.boatsAdmin?`<button class="iconbtn admbtn" data-a="admin" aria-label="Data center">${ic('chart')}</button>`:''}</div>
     ${privacyNote()}
     ${idFields()}
-    <div class="field"><label for="f-bio">About the Captain</label><textarea class="input" id="f-bio" maxlength="90" rows="2" placeholder="A line about you and your training. You can @ one person." data-f="bio" style="height:auto;padding:12px 14px;resize:none">${esc(Pf.bio||'')}</textarea></div>
+    <div class="field"><label for="f-bio">About the Captain</label><textarea class="input" id="f-bio" maxlength="130" rows="3" placeholder="A line about you and your training. You can @ one person." data-f="bio" style="height:auto;padding:12px 14px;resize:none">${esc(Pf.bio||'')}</textarea></div>
+    <div class="field"><label for="f-link">Link</label><input class="input" id="f-link" type="url" inputmode="url" maxlength="120" placeholder="yourwebsite.com" autocapitalize="off" autocorrect="off" spellcheck="false" value="${esc(Pf.link||'')}" data-f="link"><span class="muted small">One link, shown on your profile.</span></div>
     <div class="stack" style="gap:8px"><span class="flabel">What others can see</span>
       <div class="list">
         ${lockRow('town','Town',Pf.town)}
@@ -1787,9 +1808,6 @@ function vSettings(){
         ${lockRow('weight','Body weight',Pf.bodyweight?Pf.bodyweight+' '+Pf.unit:'')}
         ${lockRow('status','Gym status and streak','At the gym, trained today, or not yet')}
       </div></div>
-    ${(()=>{ const ps=Store.workouts.filter(w=>w.pump); return `<div class="stack" style="gap:8px"><div class="rowx"><span class="flabel">Pump pictures</span><span class="spacer"></span><span class="muted small num">${ps.length}</span></div>
-      ${ps.length?`<div class="pgrid">${ps.slice(0,9).map(w=>`<button data-a="pump-view" data-v="${w.id}" aria-label="${esc(dayWord(w.type))}"><img src="${esc(w.pump)}" alt="" loading="lazy"><span>${shortDate(w.startedAt)}</span></button>`).join('')}</div>`
-        :`<div class="card muted small">Add a pump picture when you finish a workout, or from a workout's ··· menu in History. Only you can see them.</div>`}</div>`; })()}
     <div class="stack" style="gap:8px"><span class="flabel">Sharing</span>
       <button class="li card" style="padding:12px 16px" data-a="share-split"><span class="grow"><span class="t">Make my split public</span><br><span class="s">People who visit your profile can view and copy your weekly split</span></span><span class="toggle ${Pf.shareSplit?'on':''}"></span></button>
       <button class="li card" style="padding:12px 16px" data-a="autoshare"><span class="grow"><span class="t">Share workouts by default</span><br><span class="s">"Share to feed" starts switched on when you end a workout</span></span><span class="toggle ${Pf.autoShare!==false?'on':''}"></span></button></div>
@@ -1801,7 +1819,7 @@ function vSettings(){
     <div class="field"><span class="flabel">Default rep range</span>
       ${repPicker()}
       <span class="muted small">Used for new exercises. Hit the top of the range on every set to get a suggestion to go heavier.</span></div>
-    <div class="field"><span class="flabel">Appearance</span>${seg('theme',Pf.theme,{system:'Auto',light:'Light',dark:'Dark'})}</div>
+    <div class="field"><span class="flabel">Appearance</span>${seg('theme',Pf.theme==='light'?'light':'dark',{light:'Light',dark:'Dark'})}</div>
     <div class="stack" style="gap:8px"><span class="flabel">Connections</span>
       <div class="list">${[['heart','Apple Health','Body weight, workouts, steps, calories'],['heart','Android Health','Health Connect, including Samsung Health']].map(([i,n,d])=>`<div class="li"><span class="ico">${ic(i)}</span><span class="grow"><span class="t">${n}</span><br><span class="s">${d}</span></span><span class="tag">Soon</span></div>`).join('')}</div>
     <div class="list">
@@ -1809,7 +1827,6 @@ function vSettings(){
       <button class="li" data-a="flash"><span class="ico">${ic('bolt')}</span><span class="grow"><span class="t">Flash screen when rest ends</span><br><span class="s">A quick screen flash you can see without sound</span></span><span class="toggle ${Pf.flash?'on':''}"></span></button>
       <button class="li" data-a="vib"><span class="ico">${ic('vibrate')}</span><span class="grow"><span class="t">Vibrate when rest ends</span><br><span class="s">${false?'':'Buzzes your phone when the timer runs out'}</span></span><span class="toggle ${Pf.vibrate?'on':''}"></span></button>
       <button class="li" data-a="pdf-export"><span class="ico">${ic('cloud')}</span><span class="grow"><span class="t">${Store.mode==='cloud'?'Synced to your Claude account':'Saved on this device only'}</span><br><span class="s">${Store.workouts.length} workout${Store.workouts.length===1?'':'s'} logged · app ${BUILD}</span></span><span class="tag">${ic('down','xs')}PDF</span></button>
-      ${window.boatsAdmin?`<button class="li" data-a="admin"><span class="ico">${ic('lock')}</span><span class="grow"><span class="t">Data center</span><br><span class="s">Users, emails and feedback. Only you can see this.</span></span>${ic('right','sm')}</button>`:''}
     </div>
     <div class="stack" style="gap:8px">
       <button class="btn" data-a="sign-out">Sign out</button>
@@ -1905,6 +1922,14 @@ function stepper(f,val,mini){ return `<div class="stepper ${mini?'mini':''}"><bu
 function vSheet(){
   const sh=S.sheet; if(!sh) return '';
   const wrap=(head,body)=>`<div class="scrim ${S.sheetFull?'fullscrim':''}" data-a="close-sheet"><div class="sheet ${S.sheetFull?'full':''}" data-stop><div class="sheet-head"><span class="grab"></span>${head}${head.includes('data-a="close-sheet"')?'':`<button class="iconbtn sheetx" data-a="close-sheet" aria-label="Close">${ic('x')}</button>`}</div><div class="sheet-body" id="sbody">${body}</div></div></div>`;
+  if(sh.kind==='newpost'){
+    return wrap(`<span class="h2">New post</span>`,`<div class="stack" style="gap:14px">
+      ${sh.photo?`<div class="pumpwrap"><img class="pump" src="${esc(sh.photo)}" alt="Your photo"><button class="iconbtn pumpx" data-a="np-clear" aria-label="Remove photo">${ic('x','sm')}</button></div>`
+        :`<button class="btn npick" data-a="np-pick">${ic('grid','sm')}Choose a photo</button>`}
+      <div class="field"><label for="np-cap">Caption</label><textarea class="input" id="np-cap" maxlength="300" rows="3" placeholder="Say something about it" style="height:auto;padding:12px 14px;resize:none">${esc(sh.cap||'')}</textarea></div>
+      ${Social.postedToday()?`<div class="muted small">You’ve shared 3 posts today, the daily limit.</div>`:`<button class="btn primary" data-a="np-share" ${sh.photo?'':'disabled'}>Share to feed</button>`}
+      <span class="muted small">Pick any photo from your library. It shows in the feed and on your profile.</span></div>`);
+  }
   if(sh.kind==='picker' && sh.step==='list'){
     return wrap(`<div class="rowx"><span class="h2">${sh.ctx.swap?'Swap '+esc(exOf(sh.ctx.swapFrom).n)+' for…':'Exercise library'}</span><span class="spacer"></span><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>
         <div class="search">${ic('search','sm')}<input class="input" id="q" placeholder="Search exercises" value="${esc(sh.q)}" autocomplete="off"></div>${chipRow('cat',sh.cat,(Pf.custom||[]).length?{...CATS,mine:'Yours'}:CATS)}`, `<div class="stack" id="plist" style="gap:18px">${pickerList()}</div>`);
@@ -2075,7 +2100,7 @@ function vSheet(){
     return wrap(`<div class="rowx"><span class="h2">Preview tools</span><span class="spacer"></span><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>`,
       `<p class="muted small" style="margin:0">This copy saves nothing. Jump to any screen; every jump starts from fresh sample data.</p>
        <div class="list">${PREVIEW_STEPS.map(([l,k])=>`<button class="li" data-a="dev-go" data-v="${k}"><span class="grow"><span class="t">${l}</span></span>${ic('right','sm')}</button>`).join('')}</div>
-       <div class="field"><span class="flabel">Appearance</span>${seg('theme',Pf.theme,{system:'Auto',light:'Light',dark:'Dark'})}</div>`);
+       <div class="field"><span class="flabel">Appearance</span>${seg('theme',Pf.theme==='light'?'light':'dark',{light:'Light',dark:'Dark'})}</div>`);
   }
   if(sh.kind==='person'){
     const p=Social.people[sh.id]; if(!p) return wrap(`<span class="h2">Profile</span>`,`<div class="card muted">This profile is no longer available.</div>`);
@@ -2344,7 +2369,7 @@ function checkIdle(){ const a=Pf&&Pf.active; if(!a||!a.startedAt||a.pausedAt) re
   if(Date.now()-last<IDLE_PAUSE) return false; a.pausedAt=last+IDLE_GRACE; Store.save(); return true; }
 function workoutKcal(a,end){ const mins=(a.activeMs!=null?a.activeMs:elapsed(a,end))/60000; let cardioMin=0, ck=0;
   for(const it of a.items) if(it.cardio&&it.sets[0]&&it.sets[0].st==='ok'){ const m=num(it.sets[0].w); cardioMin+=m; ck+=it.kcal||cardioKcal(it,m); }
-  const lift=Math.max(0,mins-cardioMin); return Math.round(ck+5*3.5*bodyKg()/200*lift); }
+  const lift=Math.max(0,mins-cardioMin); return Math.round(ck+5*3.5*bodyKg()/200*lift*metCorr()); }
 function suggestionsFor(w){
   const out=[];
   for(const it of w.items){
@@ -2372,6 +2397,7 @@ const A = {
   'pick-acct'(v){ Store.use(v); Social.last=''; Social.publish(); if(Pf.onboarded) go(Pf.active?'session':'app',{tab:homeTab(),pick:null,planDay:null}); else go('onboard',{ob:0}); },
   splash(){ S.sheet=null; S.picker=true; go('splash'); },
   unit(v){ Pf.unit=v; Store.save(); render(); },
+  sex(v){ Pf.sex=v; document.getElementById('f-sex')?.classList.remove('bad'); Store.save(); render(); },
   goal(v){ Pf.goal=v; applyRecDefaults(); Store.save(); render(); },
   theme(v){ Pf.theme=v; applyTheme(); Store.save(); render(); },
   sound(){ Pf.sound=!Pf.sound; Store.save(); render(); if(Pf.sound) ding(); },
@@ -2383,9 +2409,10 @@ const A = {
   'pump-del'(v){ const w=Store.workouts.find(x=>x.id===v); if(w){ Store.updateWorkout(w,{pump:''}); S.sheet=null; render(); toast('Picture removed'); } },
   'pump-view'(v){ S.sheet={kind:'pump',id:v}; renderSheet(); },
   'ob-back'(){ S.ob--; render(); },
-  'ob-next'(){ if(S.ob===0){ const bad=[]; if(usernameIssue(Pf.username)) bad.push('f-user'); if(String(Pf.town||'').trim()&&!placeValid(Pf.town)) bad.push('f-town');
-      if(Pf.unit==='lb'){ if(!num(Pf.ft)) bad.push('f-ft'); } else if(!num(Pf.cm)) bad.push('f-cm'); if(!num(Pf.bodyweight)) bad.push('f-bw');
-      document.querySelectorAll('.input.bad').forEach(n=>n.classList.remove('bad')); if(bad.length){ bad.forEach(id=>document.getElementById(id)?.classList.add('bad')); const f=document.getElementById(bad[0]); if(f){ f.scrollIntoView({block:'center',behavior:'smooth'}); f.focus({preventScroll:true}); } return; } }
+  async 'ob-next'(){ if(S.ob===0){ const bad=[]; if(usernameIssue(Pf.username)) bad.push('f-user'); if(String(Pf.town||'').trim()&&!placeValid(Pf.town)) bad.push('f-town');
+      if(Pf.unit==='lb'){ if(!num(Pf.ft)) bad.push('f-ft'); } else if(!num(Pf.cm)) bad.push('f-cm'); if(!num(Pf.bodyweight)) bad.push('f-bw'); if(!Pf.sex) bad.push('f-sex');
+      document.querySelectorAll('.input.bad,.field.bad').forEach(n=>n.classList.remove('bad')); if(bad.length){ bad.forEach(id=>document.getElementById(id)?.classList.add('bad')); const f=document.getElementById(bad[0]); if(f){ f.scrollIntoView({block:'center',behavior:'smooth'}); f.focus({preventScroll:true}); } return; }
+      if(window.boatsClaimName){ const r=await window.boatsClaimName(Pf.username,Pf.nameClaimed); if(r==='taken'){ const i=document.getElementById('f-user'), m=document.getElementById('u-msg'); i?.classList.add('bad'); if(m) m.innerHTML=`<span style="color:var(--bad)">@${esc(Pf.username)} is already taken. Try another.</span>`; i?.focus(); return; } if(r==='ok') Pf.nameClaimed=Pf.username; } }
     if(S.ob===1) applyRecDefaults();
     if(S.ob<3){ S.ob++; window.scrollTo(0,0); render(); } else { Pf.onboarded=true; if(!Pf.bwLog.length&&num(Pf.bodyweight)) Pf.bwLog.push({t:Date.now(),w:num(Pf.bodyweight)}); Store.save(); go('app',{tab:'plan'}); } },
   tab(v){ S.sheet=null; S.sheetFull=false; S.fview=null; S.personId=null; S.postsOf=null; renderSheet(); if(v==='today'&&Pf.active&&S.tab==='today'){ go('session'); return; } if(v==='today'&&Pf.active&&S.route==='app'){ go('session'); return; } if(v!=='me'||S.tab!=='me') S.meView=null; S.tab=v; S.planDay=null; S.confirmErase=false; S.menu=null; S.route='app'; window.scrollTo(0,0); render(); },
@@ -2624,6 +2651,12 @@ const A = {
   'unf-ask'(v){ S.unfAsk=!S.unfAsk; render(); },
   friend(v,el,ok){ const i=Pf.friends.indexOf(v); if(i>=0&&!ok){ askConfirm('Unfollow '+Social.nameOf(v)+'?','Their workouts will leave your feed.','Unfollow',()=>A.friend(v,el,true)); return; } if(i>=0) Pf.friends.splice(i,1); else { Pf.friends.push(v); Pf.followedAt={...(Pf.followedAt||{}),[v]:Date.now()}; } Store.save(); Social.publish(); S.unfAsk=false; if(S.personId) render(); else renderSheet(); popCue(); },
   erase(){ S.confirmErase=true; render(); },
+  'np-open'(){ S.sheet={kind:'newpost',photo:null,cap:''}; renderSheet(); },
+  'np-pick'(){ const c=document.getElementById('np-cap'); if(c&&S.sheet) S.sheet.cap=c.value; S.photoFor='newpost'; document.getElementById('photo-in').click(); },
+  'np-clear'(){ const c=document.getElementById('np-cap'); if(c&&S.sheet){ S.sheet.cap=c.value; S.sheet.photo=null; } renderSheet(); },
+  async 'np-share'(){ const sh=S.sheet; if(!sh||!sh.photo) return; if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit.'); return; } const cap=(document.getElementById('np-cap')?.value||'').trim().slice(0,300);
+    boatLoading(true,'Posting…'); try{ const small=await shrinkData(sh.photo,380,.6); await Social.addPost({id:'u'+uid(),at:Date.now(),sharedAt:Date.now(),title:'',type:'',caption:cap,photo:small,kind:'photo'}); } finally{ boatLoading(false); }
+    S.sheet=null; renderSheet(); S.feedN=10; render(); popCue(); },
   admin(){ if(!window.boatsAdmin) return; S.meView='admin'; S.adm=null; window.scrollTo(0,0); render(); window.boatsAdmin.load().then(d=>{ S.adm=d; },e=>{ S.adm={error:'Could not load data ('+((e&&e.code)||'error')+').'}; }).then(()=>{ if(S.meView==='admin') render(); }); },
   'adm-tab'(v){ S.admTab=v; render(); },
   async 'adm-copy'(){ const t=((S.adm&&S.adm.accounts)||[]).map(a=>a.email).filter(Boolean).join(', '); try{ await navigator.clipboard.writeText(t); popCue(); }catch(e){ toast('Could not copy. Long-press to select instead.'); } },
@@ -2697,7 +2730,7 @@ function onInput(e){
     if(k==='w'&&!it.cardio){ s0.wEdited=true;
       it.sets.forEach((s,n)=>{ if(n>+j&&!s.st&&!s.wEdited){ s.w=t.value; const f=document.querySelector(`[data-set="${i}.${n}.w"]`); if(f) f.value=t.value; } }); }
     Store.save(); return; }
-  if(t.id==='f-bio'){ let v=t.value; const i=v.indexOf('\n'); if(i>=0) v=v.slice(0,i+1)+v.slice(i+1).replace(/\n/g,' '); if(v!==t.value) t.value=v; }
+  if(t.id==='f-bio'){ let n=0; const v=t.value.replace(/\n/g,()=>++n<=2?'\n':' '); if(v!==t.value) t.value=v; }
   if(t.dataset.f && !t.closest('.stepper')){ Pf[t.dataset.f]=t.value; if(t.id==='f-town'){ showTownSug(); const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); } if(t.id==='f-user'){ const m=document.getElementById('u-msg'); if(m) m.innerHTML=userMsg(); } Store.save(); return; }
   if(t.dataset.f){ const n=parseInt(t.value); if(n>0){ Pf[t.dataset.f]=n; Store.save(); } }
 }
@@ -2723,7 +2756,8 @@ document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.closest&&e
 function onChange(e){
   const t=e.target;
   if(t.dataset.set){ const [i,j,k]=t.dataset.set.split('.'); if(k==='r') autoMark(+i,+j); return; }
-  if(t.id==='f-user'&&Pf.onboarded&&S.nameOpen!=null){ const u=String(Pf.username||'').trim(); if(u!==String(S.nameOpen||'').trim()&&!usernameIssue(u)){ if(!Pf.nameAt||Date.now()-Pf.nameAt>NAME_GRACE) Pf.nameAt=Date.now(); S.nameOpen=u; Store.save(); const m=document.getElementById('u-msg'); if(m) m.innerHTML=userMsg()+'<br><span class="muted">Usernames can be changed once a week.</span>'; } return; }
+  if(t.id==='f-user'&&Pf.onboarded&&S.nameOpen!=null){ const u=String(Pf.username||'').trim(); if(u!==String(S.nameOpen||'').trim()&&!usernameIssue(u)){
+      if(window.boatsClaimName){ const prev=S.nameOpen; window.boatsClaimName(u,Pf.nameClaimed||prev).then(r=>{ if(r==='taken'){ Pf.username=prev; Pf.nameAt=S.nameAtPrev||0; S.nameOpen=prev; Store.save(); const i=document.getElementById('f-user'), m=document.getElementById('u-msg'); if(i) i.value=prev; if(m) m.innerHTML=`<span style="color:var(--bad)">@${esc(u)} is already taken. Try another.</span>`; } else if(r==='ok'){ Pf.nameClaimed=u; S.nameTaken=false; Store.save(); } }); S.nameAtPrev=Pf.nameAt; } if(!Pf.nameAt||Date.now()-Pf.nameAt>NAME_GRACE) Pf.nameAt=Date.now(); S.nameOpen=u; Store.save(); const m=document.getElementById('u-msg'); if(m) m.innerHTML=userMsg()+'<br><span class="muted">Usernames can be changed once a week.</span>'; } return; }
   if(t.id==='pex'){ S.pex=t.value; render(); return; }
   if(t.id==='daypick'){ S.pick=t.value===dayKey(new Date())?null:t.value; render(); }
   if((t.id==='photo-in'||t.id==='cam-in') && t.files[0]){
@@ -2731,6 +2765,7 @@ function onChange(e){
     boatLoading(true,'Loading picture…'); readImage(f, target==='avatar'?{square:192,q:.82}:{max:720,q:.72}).finally(()=>boatLoading(false)).then(url=>{
       if(target==='avatar'){ Pf.photo=url; Store.save(); render(); toast('Picture updated'); }
       else if(target==='active'){ if(Pf.active){ Pf.active.pump=url; Store.save(); render(); toast('Pump picture saved. It goes with this workout when you end it.'); } }
+      else if(target==='newpost'){ if(S.sheet&&S.sheet.kind==='newpost'){ S.sheet.photo=url; renderSheet(); } }
       else if(target==='finish'){ if(S.sheet&&S.sheet.kind==='finish'){ readTitle(); S.sheet.pump=url; renderSheet(); } }
       else { const w=Store.workouts.find(x=>x.id===target); if(w){ Store.updateWorkout(w,{pump:url}); render(); if(S.shareAfterPhoto===target){ S.shareAfterPhoto=null; A['wk-share'](target); } else toast('Pump picture added'); } }
     }).catch(()=>toast('That file is not an image Boats can read.'));
@@ -2811,6 +2846,7 @@ Store.init().catch(()=>{}).then(()=>{
   S.ready=true; S.bootMs=performance.now();
   try{ Social.start(); }catch(e){}
   if(S.route==='splash'){ const w=S.waiting; S.waiting=null; if(w) A.login(); else render(); }
+  if(window.boatsClaimName&&Pf&&Pf.onboarded&&Pf.username&&Pf.nameClaimed!==Pf.username) window.boatsClaimName(Pf.username,Pf.nameClaimed).then(r=>{ if(r==='ok'){ Pf.nameClaimed=Pf.username; Store.save(); } else if(r==='taken'){ S.nameTaken=true; Pf.nameAt=0; render(); } });
 });
 window.addEventListener('error',e=>reportErr('page',e.error||e.message));
 window.addEventListener('unhandledrejection',e=>reportErr('background',e.reason));
