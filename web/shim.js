@@ -111,6 +111,22 @@ window.boatsClaimName = async (name, old) => {
   if(o && o !== lc) { try { const r = doc(fs, "usernames", o); const s = await getDoc(r); if(s.exists() && s.data().uid === u.uid) await deleteDoc(r); } catch(e) {} }
   return "ok";
 };
+// Founding Crew: the first 100 members get a permanent number. meta/founders.next is the next free number;
+// it is created by the one-time backfill (tools/backfill-founders.mjs), so new members only claim once numbering exists.
+window.boatsClaimFounder = async () => {
+  const u = auth.currentUser; if(!u) return 0;
+  const mine = doc(fs, "founders", u.uid), meta = doc(fs, "meta", "founders");
+  try {
+    return await runTransaction(fs, async tx => {
+      const m = await tx.get(meta), f = await tx.get(mine);
+      if(f.exists()) return f.data().n;
+      if(!m.exists()) return 0;
+      const n = m.data().next; if(!(n >= 1 && n <= 100)) return 0;
+      tx.set(mine, { n, at: Date.now() }); tx.update(meta, { next: n + 1 });
+      return n;
+    });
+  } catch(e) { return 0; }
+};
 // Record who has an account (email + dates) for the owner's Data center, then check owner access.
 // Who counts as the owner lives only in firestore.rules, so no email appears in this public code.
 authReady.then(async u => {

@@ -146,6 +146,23 @@ svg.i.xs{width:14px;height:14px}
 .cmbox .input{height:40px;font-size:14px}
 .cmpost{font-weight:700;color:var(--accent)}
 .li.dimday{opacity:.45}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal>b{font-size:11px;color:var(--muted);font-weight:600;padding-bottom:2px}
+.cday{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;border-radius:10px;border:0;background:none;color:var(--fg);font-size:12px}
+.cday.today{background:var(--surface-2)}
+button.cday:active{background:var(--surface-2)}
+.cdot{width:9px;height:9px;border-radius:50%;border:2px solid var(--accent);display:inline-block;flex:none}
+.cdot.fill{background:var(--streak);border-color:var(--streak)}
+.cdot.none{border-color:transparent}
+.pname{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;text-align:center}
+.pname .h2{font-size:22px;margin:0;overflow-wrap:anywhere}
+.fglow{text-shadow:0 0 14px color-mix(in srgb,var(--accent) 55%,transparent),0 0 2px color-mix(in srgb,var(--accent) 35%,transparent),0 1px 0 rgba(0,0,0,.18)}
+.ftag{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;font:800 12px/1 var(--display);letter-spacing:.04em;color:var(--fg);border:1px solid color-mix(in srgb,var(--line) 55%,transparent);background:linear-gradient(180deg,color-mix(in srgb,var(--surface) 96%,#fff),color-mix(in srgb,var(--surface) 86%,#000 3%));box-shadow:0 6px 14px -6px rgba(0,0,0,.28),0 0 12px color-mix(in srgb,var(--accent) 18%,transparent),inset 0 1px 2px rgba(255,255,255,.25),inset 0 -3px 6px rgba(0,0,0,.06)}
+.ftag.big{height:34px;padding:0 14px;font-size:16px;align-self:center}
+.pmeta{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.pmeta .tagline1{justify-content:center;flex-wrap:wrap}
+.pstreak{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:999px;border:0;background:color-mix(in srgb,var(--streak) 16%,transparent);color:var(--streak);font-size:12px;font-weight:700;flex:none;white-space:nowrap}
+@media (max-width:370px){.streakpill .sl{display:block;width:100%;text-align:center}.streakpill:has(.sl){flex-wrap:wrap;justify-content:center;height:auto;padding-top:5px;padding-bottom:5px}}
 textarea::placeholder,input::placeholder{transition:color .15s}
 textarea:focus::placeholder,input:focus::placeholder{color:transparent}
 .phwrap{position:relative}
@@ -651,7 +668,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v94';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v95';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -975,7 +992,7 @@ const Store = {
 
 /* ---------- social: public cards other Boats users can see ---------- */
 const Social = {
-  ok:false, col:null, people:{}, posts:{}, reacts:{}, dms:{}, loaded:false, last:'', t:null, failed:false, rq:Promise.resolve(),
+  ok:false, col:null, people:{}, posts:{}, reacts:{}, dms:{}, founders:{}, loaded:false, last:'', t:null, failed:false, rq:Promise.resolve(),
   start(){
     if(!Store.db||!Store.uid) return;
     this.col=Store.db.collection('people'); this.ok=true;
@@ -985,6 +1002,7 @@ const Social = {
     this.publish();
     Store.db.collection('posts').onSnapshot(s=>{ const m={}; s.docs.forEach(d=>{ const x=d.data(); if(x) m[d.id]=x; }); this.posts=m; refreshSocial(); },()=>{});
     Store.db.collection('dms').onSnapshot(s=>{ const m={}; s.docs.forEach(d=>{ const x=d.data(); if(x) m[d.id]=x; }); this.dms=m; refreshSocial(); },()=>{});
+    try{ Store.db.collection('founders').onSnapshot(s=>{ const m={}; s.docs.forEach(d=>{ const x=d.data(); if(x&&x.n) m[d.id]=x.n; }); this.founders=m; refreshSocial(); },()=>{}); }catch(e){}
     Store.db.collection('reactions').onSnapshot(s=>{ const m={}; s.docs.forEach(d=>{ const x=d.data(); if(x) m[d.id]=x; }); this.reacts=m; refreshSocial(); },()=>{});
     Store.db.collection('library').onSnapshot(s=>{ LIB_EX=s.docs.map(d=>{const x=d.data()||{}; return {id:d.id,n:String(x.n||d.id),c:CATS[x.c]?x.c:'push',m:String(x.m||''),p:+x.p||50};}).filter(e=>e.c!=='all'); rebuildEx(); if(S.sheet&&S.sheet.kind==='picker'&&S.sheet.step==='list'){ const l=document.getElementById('plist'); if(l) l.innerHTML=pickerList(); } },()=>{});
   },
@@ -1492,12 +1510,48 @@ function onTrack(pts,exp,up){ if(pts.length<2||!exp.length) return ''; const las
   const ahead=up==='weight'?(Math.sign(exp[exp.length-1].v-exp[0].v)||1)*d:d;
   return ahead>tol?'<span class="tag good">Ahead of expected</span>':ahead<-tol?'<span class="tag bad">Behind expected</span>':'<span class="tag">On track</span>'; }
 const RANGES={'1m':{w:4,l:'1M'},'3m':{w:13,l:'3M'},'6m':{w:26,l:'6M'},'1y':{w:52,l:'1Y'}};
-function chartOrder(){ const all=['str','bw'], o=(Pf.chartOrder||[]).filter(k=>all.includes(k)); return [...o,...all.filter(k=>!o.includes(k))]; }
+function chartOrder(){ const all=['str','reps','bw','cal'], saved=Pf.chartOrder||[]; if(!saved.includes('reps')||!saved.includes('cal')) return all; const o=saved.filter(k=>all.includes(k)); return [...o,...all.filter(k=>!o.includes(k))]; }
 function exHistory(){
   const m=new Map();
   for(const w of [...Store.workouts].reverse()) for(const it of w.items){ if(it.cardio||!it.sets.length) continue; const k=keyOf(it.exId,it.equip), b=bestSet(it); if(!b||!b.w) continue; if(!m.has(k)) m.set(k,[]); m.get(k).push({t:w.startedAt,v:b.w,label:`${shortDate(w.startedAt)} · ${b.w} × ${b.r}`}); }
   return m;
 }
+// Rep PRs: most reps at the same weight on the same exercise (and equipment). First time at a weight sets the baseline; beating the best is a PR; ties aren't.
+function repPrs(){ const best={}, prs=[]; let any=false;
+  for(const w of [...Store.workouts].sort((a,b)=>a.startedAt-b.startedAt)) for(const it of (w.items||[])){ if(it.cardio) continue;
+    for(const st of (it.sets||[])){ if(!st.st) continue; const r=parseInt(st.r,10); if(!(r>0)) continue; any=true; const wt=num(st.w)||0, k=keyOf(it.exId,it.equip)+'@'+wt;
+      if(best[k]==null) best[k]=r; else if(r>best[k]){ prs.push({exId:it.exId,equip:it.equip,w:wt,r,prev:best[k],at:w.startedAt,wid:w.id}); best[k]=r; } } }
+  return {any,prs:prs.reverse()}; }
+function repPrCard(){ const {any,prs}=repPrs();
+  const row=x=>`<button class="li" data-a="wk-open" data-v="${esc(x.wid)}" style="align-items:flex-start"><span class="ico">${ic('star','sm')}</span><span class="grow"><span class="t">${esc(exOf(x.exId).n)} · ${x.w?fmtN(x.w)+' '+Pf.unit:'Bodyweight'} × ${x.r}</span><br><span class="s">${x.prev!=null?`Previous best at ${x.w?fmtN(x.w)+' '+Pf.unit:'bodyweight'} · ${x.prev} reps · `:''}${shortDate(x.at)}</span></span></button>`;
+  return `<section class="card stack pcard" data-key="reps" style="gap:12px">
+    <div class="rowx"><span class="h2">Rep PRs</span><span class="spacer"></span><span class="muted small">Same weight, more reps</span><span class="handle chandle" data-drag="1" aria-label="Hold and drag to move this card">${ic('grip','sm')}</span></div>
+    ${!any?`<div class="muted small">Log your reps to start tracking rep PRs.</div>`:prs.length?`<div class="list">${prs.slice(0,S.prMore?20:5).map(row).join('')}</div>${prs.length>5&&!S.prMore?`<button class="link small" data-a="pr-more">Show more</button>`:''}`
+      :`<div class="muted small">No rep PRs yet. Beat your reps at a weight you’ve lifted before and it shows up here.</div>`}
+  </section>`; }
+// Training calendar: last 28 local days. Outlined dot = finished workout; filled = streak credit.
+function calendarCard(){ const today=new Date(); today.setHours(0,0,0,0); const start=new Date(today); start.setDate(start.getDate()-27);
+  const byDay={}; for(const w of Store.workouts){ if(w.startedAt<start.getTime()) continue; (byDay[dateKey(new Date(w.startedAt))]=byDay[dateKey(new Date(w.startedAt))]||[]).push(w); }
+  const lead=(start.getDay()+6)%7, cells=[]; for(let i=0;i<lead;i++) cells.push('<span></span>');
+  for(let i=0;i<28;i++){ const d=new Date(start); d.setDate(start.getDate()+i); const k=dateKey(d), ws=byDay[k]||[], fill=ws.some(countsForStreak), isT=i===27;
+    const lbl=d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})+(ws.length?(fill?', streak credit':', workout logged'):', no workout');
+    cells.push(ws.length?`<button class="cday ${isT?'today':''}" data-a="cal-day" data-v="${k}" aria-label="${esc(lbl)}"><span>${d.getDate()}</span><i class="cdot ${fill?'fill':''}"></i></button>`:`<span class="cday ${isT?'today':''}" aria-label="${esc(lbl)}"><span>${d.getDate()}</span><i class="cdot none"></i></span>`); }
+  const anyW=Object.keys(byDay).length;
+  return `<section class="card stack pcard" data-key="cal" style="gap:12px">
+    <div class="rowx"><span class="h2">Training Calendar</span><span class="spacer"></span><span class="muted small">Last 28 days</span><span class="handle chandle" data-drag="1" aria-label="Hold and drag to move this card">${ic('grip','sm')}</span></div>
+    ${Store.workouts.length?`<div class="cal"><b>M</b><b>T</b><b>W</b><b>T</b><b>F</b><b>S</b><b>S</b>${cells.join('')}</div>
+      <div class="rowx small muted" style="gap:14px;justify-content:center"><span class="rowx" style="gap:6px"><i class="cdot"></i>Workout logged</span><span class="rowx" style="gap:6px"><i class="cdot fill"></i>Streak credit</span></div>${anyW?'':'<div class="muted small" style="text-align:center">No workouts in the last 28 days.</div>'}`
+      :`<div class="muted small">Finish a workout to start filling your training calendar.</div>`}
+  </section>`; }
+function cardOf(uid){ return uid===Social.me()?Social.card():(Social.people||{})[uid]; }
+function streakOf(c){ return (c&&c.status&&c.status.streak)||0; }
+const cityOf = t => String(t||'').split(',')[0].trim();
+// Competition ranking (ties share a rank) on the same data the Streak Captains boards use.
+function streakRank(uid){ const c=cardOf(uid), sN=streakOf(c); if(!sN) return {s:0}; const me=Social.me();
+  const all=Object.entries({...(Social.people||{}),[me]:Social.card()}).filter(([,x])=>x&&x.username&&streakOf(x)>0);
+  const g=1+all.filter(([,x])=>streakOf(x)>sN).length;
+  const town=c.town&&placeValid(c.town)?c.town:'', ct=town?1+all.filter(([,x])=>x.town===town&&streakOf(x)>sN).length:0;
+  return {s:sN,g,c:ct,city:cityOf(town)}; }
 function avgTime(){ const ws=Store.workouts.slice(0,20).map(durOf).filter(d=>d>5*60000&&d<5*3600000); return ws.length?fmtDur(ws.reduce((a,b)=>a+b,0)/ws.length):'–'; }
 function vProgress(){
 
@@ -1516,9 +1570,9 @@ function vProgress(){
   return `<div class="screen">
     <div class="stack" style="gap:4px"><span class="eyebrow">Progress</span><h1 class="h1">Your progress</h1></div>
     <div class="card"><div class="stats">
-      <div class="stat"><div class="k">Workouts</div><div class="v num">${total}</div></div>
-      <div class="stat"><div class="k">Avg time</div><div class="v num">${avgTime()}</div></div>
-      <div class="stat"><div class="k">This week</div><div class="v num" style="white-space:nowrap">${fmtBig(bars[7].v)}<span class="muted" style="font-size:13px;font-weight:600"> ${Pf.unit}</span></div></div>
+      ${(()=>{ const wk=Store.workouts.filter(w=>w.startedAt>=ws.getTime()), ds=wk.map(durOf).filter(d=>d>60000); return `<div class="stat"><div class="k">Workouts this week</div><div class="v num">${wk.length}</div></div>
+      <div class="stat"><div class="k">Avg time this week</div><div class="v num">${ds.length?fmtDur(ds.reduce((a,b)=>a+b,0)/ds.length):'–'}</div></div>
+      <div class="stat"><div class="k">Lifted this week</div><div class="v num" style="white-space:nowrap">${fmtBig(bars[7].v)}<span class="muted" style="font-size:13px;font-weight:600"> ${Pf.unit}</span></div></div>`; })()}
     </div></div>
     <div class="stack" id="pcards" style="gap:20px">${(()=>{ const cards={str:`<section class="card stack pcard" data-key="str" style="gap:14px">
       <div class="rowx"><span class="h2">Strength</span><span class="spacer"></span><span class="muted small">${overall?'All lifts':'Top set weight'}</span><span class="handle chandle" data-drag="1" aria-label="Hold and drag to move this chart">${ic('grip','sm')}</span></div>
@@ -1536,7 +1590,7 @@ function vProgress(){
       ${(()=>{ const last=Pf.bwLog[Pf.bwLog.length-1]; return last&&sameDay(last.t,Date.now())&&!S.bwEdit2?`<div class="rowx" style="gap:8px"><span class="ico" style="color:var(--good)">${ic('check','sm')}</span><div style="flex:1;min-width:0"><b>${fmtN(last.w)} ${Pf.unit}</b> <span class="muted small">logged today</span></div><button class="link small" data-a="bw-edit2">Update</button></div>`
         :`<div class="rowx" style="gap:8px"><div class="inwrap"><input class="input num" id="bw-in" inputmode="decimal" placeholder="Today's weight" value="${last&&sameDay(last.t,Date.now())?fmtN(last.w):''}"><span class="suf">${Pf.unit}</span></div><button class="btn sm primary" style="height:50px" data-a="bw-log">Log</button></div>`; })()}
       ${bw.length>1?`<div class="list">${[...Pf.bwLog].reverse().slice(0,5).map(x=>`<div class="li" style="padding:10px 14px"><span class="grow small">${new Date(x.t).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}</span><b class="num">${fmtN(x.w)} ${Pf.unit}</b></div>`).join('')}</div>`:''}
-    </section>`}; return chartOrder().map(k=>cards[k]).join(''); })()}</div>
+    </section>`, reps:repPrCard(), cal:calendarCard()}; return chartOrder().map(k=>cards[k]).join(''); })()}</div>
   </div>${tabbar()}`;
 }
 
@@ -1595,10 +1649,12 @@ function hqSrc(uid,p){ return HQ[uid+'_'+p.id]||p.photo; }
 function hqScan(){ if(!Store.db) return; document.querySelectorAll('img[data-hq]').forEach(img=>{ const id=img.dataset.hq; if(HQ[id]){ img.src=HQ[id]; img.removeAttribute('data-hq'); return; } if(HQ_ASK[id]) return; HQ_ASK[id]=1;
   Store.db.collection('photos').doc(id).get().then(g=>{ const d=g&&g.data&&g.data(); if(d&&d.d){ HQ[id]=d.d; document.querySelectorAll(`img[data-hq="${CSS.escape(id)}"]`).forEach(x=>{ x.src=d.d; x.removeAttribute('data-hq'); }); } }).catch(()=>{}); }); }
 async function savePhotoHq(postId,dataUrl){ if(!Store.db||!Store.uid||!dataUrl) return false; try{ await Store.db.collection('photos').doc(Store.uid+'_'+postId).set({d:dataUrl}); HQ[Store.uid+'_'+postId]=dataUrl; return true; }catch(e){ return false; } }
+function rankLabel(r,top){ const g=r.g&&r.g<=top, c=r.c&&r.c<=top&&r.city; if(!g&&!c) return ''; return g&&(!c||r.g<=r.c)?`#${r.g} Global`:`#${r.c} in ${r.city}`; }
+function postStreakBadge(uid){ const r=streakRank(uid), l=rankLabel(r,3); return l?`<button class="pstreak" data-a="streak-detail" data-v="${esc(uid)}" data-top="3" aria-label="${esc(l)} streak">${ic('flame','xs')}${esc(l)}</button>`:''; }
 function postCard(uid,p,mine,suggest){
   const key=uid+':'+p.id, likes=Social.likes(key), liked=Social.liked(key), cm=Social.comments(key), d=new Date(p.at), go=uid===Social.me()?'data-a="tab" data-v="me"':`data-a="person" data-v="${esc(uid)}"`;
   return `<article class="card post igpost ${p.photo?'hasphoto':''}" data-key="${esc(key)}" ${suggest?'data-sug="1"':''}>
-    <div class="who"><button class="whobtn" ${go} aria-label="Open ${esc(Social.nameOf(uid))}'s profile">${avatar(Social.nameOf(uid),Social.photoOf(uid),null)}<span style="flex:1;min-width:0;text-align:left"><b>${esc(Social.nameOf(uid))}</b></span></button>
+    <div class="who"><button class="whobtn" ${go} aria-label="Open ${esc(Social.nameOf(uid))}'s profile">${avatar(Social.nameOf(uid),Social.photoOf(uid),null)}<span style="flex:1;min-width:0;text-align:left"><b>${esc(Social.nameOf(uid))}</b></span></button>${postStreakBadge(uid)}
       ${mine?`<button class="iconbtn" data-a="post-del" data-v="${esc(p.id)}" aria-label="Delete post">${ic('trash','sm')}</button>`:''}${suggest&&!Pf.friends.includes(uid)?`<button class="btn sm primary" style="width:auto;flex:none" data-a="follow-sug" data-v="${esc(uid)}">Follow</button>`:''}</div>
     ${p.photo?`<div class="phwrap"><div class="ovwrap" data-pk="${esc(key)}"><img class="pump" src="${esc(hqSrc(uid,p))}" ${p.hq&&!HQ[uid+'_'+p.id]?`data-hq="${esc(uid+'_'+p.id)}"`:''} alt="${esc(Social.nameOf(uid))}'s photo. Double tap to like, hold to see stats" loading="lazy" draggable="false"><div class="holdstats">${p.kind==='photo'?`<div><b class="num">${fmtK(likes)}</b><span>like${likes===1?'':'s'}</span></div><div><b class="num">${fmtK(cm.length)}</b><span>comment${cm.length===1?'':'s'}</span></div>`:`<div><b class="num">${fmtN(p.vol||0)}</b><span>${Pf.unit} lifted</span></div><div><b class="num">${esc(p.time||'')}</b><span>time</span></div><div><b class="num">${esc(String(p.sets??''))}</b><span>sets</span></div>${p.kcal?`<div><b class="num">~${p.kcal}</b><span>kcal</span></div>`:''}`}</div><i class="burst">${ic('heart')}</i></div><div class="pacts ov"><button class="pact ${liked?'liked':''}" data-a="post-like" data-v="${esc(key)}" aria-pressed="${liked}" aria-label="${liked?'Unlike':'Like'}">${ic('heart')}${likes?`<span class="num">${fmtK(likes)}</span>`:''}</button><button class="pact" data-a="cm-open" data-v="${esc(key)}" aria-label="Comment">${ic('chat')}${cm.length?`<span class="num">${fmtK(cm.length)}</span>`:''}</button><span class="spacer"></span>${dayTag(p.type)}</div></div>`:''}
     <div class="stats" ${p.photo?'hidden':''}><div class="stat"><div class="k">Time</div><div class="v num">${esc(p.time||'')}</div></div><div class="stat"><div class="k">Sets</div><div class="v num">${esc(String(p.sets??''))}</div></div><div class="stat"><div class="k">${p.kcal?'Calories':'Volume'}</div><div class="v num">${p.kcal?'~'+p.kcal:fmtN(p.vol||0)}</div></div></div>
@@ -1614,33 +1670,48 @@ function suggestedPosts(n){ const me=Social.me(), now=Date.now(), out=[];
   const score=([id,p])=>{ const k=id+':'+p.id, age=(now-p.at)/864e5; return (Social.likes(k)*2+Social.comments(k).length*3+followersOf(id)+1)/Math.pow(age+2,1.2); };
   return out.sort((a,b)=>score(b)-score(a)).slice(0,n||3);
 }
-function hashN(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); } return ((h>>>0)%1000)/1000; }
-function feedItems(){
-  const me=Social.me(), now=Date.now(), seed=String(S.feedSeed||0), mine=new Set([me,...Pf.friends]);
-  const st=t=>String(t||'').split(',').pop().trim().toUpperCase(), myState=st(Pf.town);
-  const fof=new Set(); for(const f of Pf.friends) for(const x of (((Social.people||{})[f]||{}).following||[])) fof.add(x);
-  const eng=(id,p)=>{ const k=id+':'+p.id; return Social.likes(k)*2+Social.comments(k).length*3; };
-  const crew=[], disc=[];
-  for(const [id,doc] of Object.entries(Social.posts||{})) for(const p of ((doc||{}).items||[])){ if(!p.photo) continue;
-    const age=(now-p.at)/864e5;
-    if(mine.has(id)) crew.push({id,p,s:(eng(id,p)+4)/Math.pow(age+1,1.5)});
-    else { const card=(Social.people||{})[id]||{}; let sc=(eng(id,p)+followersOf(id)+1)/Math.pow(age+2,1.2);
-      if(myState&&st(card.town)===myState) sc*=1.7; if(fof.has(id)) sc*=1.6; sc*=0.55+hashN(seed+id+p.id)*0.9; disc.push({id,p,s:sc,sug:true}); } }
-  crew.sort((a,b)=>b.p.at-a.p.at||b.s-a.s); disc.sort((a,b)=>b.s-a.s);
-  const out=[]; let d=0; crew.forEach((c,n)=>{ out.push(c); if(n%3===2&&d<disc.length) out.push(disc[d++]); }); while(d<disc.length) out.push(disc[d++]);
-  return out;
-}
+// Feed ranking (beta defaults, tune here). score = 40·relationship + 25·recency + 20·engagement + 15·interest, each 0..1.
+const FEED_W={rel:40,rec:25,eng:20,int:15}, FEED_PAGE=10;
+function feedScoreParts(){ const me=Social.me(), mine=Social.myReacts?Social.myReacts():{likes:{},comments:{}}, kinds={};
+  const kindOf=k=>{ const [u,id]=k.split(':'); const p=(((Social.posts||{})[u]||{}).items||[]).find(x=>x.id===id); return p?(p.kind==='photo'?'photo':'workout'):null; };
+  const touched=new Set([...Object.keys(mine.likes||{}).filter(k=>!k.startsWith('c|')),...Object.keys(mine.comments||{})]);
+  let n=0; touched.forEach(k=>{ const t=kindOf(k); if(t){ kinds[t]=(kinds[t]||0)+1; n++; } });
+  return {interest:t=>n>=5?(kinds[t]||0)/n:0.5}; }
+function buildFeed(){ const me=Social.me(), now=Date.now(), fol=new Set(Pf.friends||[]), {interest}=feedScoreParts(), pool=[];
+  for(const [id,doc] of Object.entries(Social.posts||{})) for(const p of ((doc||{}).items||[])){ if(!p.photo) continue; const k=id+':'+p.id;
+    const likes=Social.likes(k), cmUsers=new Set(Social.comments(k).map(c=>c.uid)).size, E=likes+2*cmUsers, age=Math.max(0,(now-p.at)/864e5), kind=p.kind==='photo'?'photo':'workout';
+    const rel=id===me||fol.has(id)?1:0, sc=FEED_W.rel*rel+FEED_W.rec*Math.pow(2,-age/3)+FEED_W.eng*Math.min(1,Math.log(1+E)/Math.log(31))+FEED_W.int*interest(kind);
+    pool.push({k,id,p,likes,cmUsers,rel,sc}); }
+  const cmp=(a,b)=>b.sc-a.sc||b.p.at-a.p.at||(a.k<b.k?-1:1), used=new Set(), first=[], per={};
+  const take=x=>{ used.add(x.k); first.push(x); per[x.id]=(per[x.id]||0)+1; };
+  // 1) up to 2 recent posts from different people you follow
+  const known=pool.filter(x=>x.id!==me&&fol.has(x.id)).sort((a,b)=>b.p.at-a.p.at); const seen=new Set();
+  for(const x of known){ if(first.length>=2) break; if(seen.has(x.id)) continue; seen.add(x.id); take(x); }
+  // 2) public highlights from the last 7 days: most likes, then most unique commenters
+  const wk=pool.filter(x=>!used.has(x.k)&&now-x.p.at<7*864e5);
+  const topL=wk.filter(x=>x.likes>0).sort((a,b)=>b.likes-a.likes||b.p.at-a.p.at)[0]; if(topL) take(topL);
+  const topC=wk.filter(x=>!used.has(x.k)&&x.cmUsers>0).sort((a,b)=>b.cmUsers-a.cmUsers||b.p.at-a.p.at)[0]; if(topC) take(topC);
+  if(!topL&&!topC) wk.filter(x=>!used.has(x.k)).sort((a,b)=>b.p.at-a.p.at).slice(0,2).forEach(take);
+  // 3) fill the first 10 by score, max 2 per author when there are enough authors
+  const rest=pool.filter(x=>!used.has(x.k)).sort(cmp); const authors=new Set(pool.map(x=>x.id)).size;
+  for(const x of rest){ if(first.length>=FEED_PAGE) break; if(authors>=5&&(per[x.id]||0)>=2) continue; take(x); }
+  for(const x of rest){ if(first.length>=FEED_PAGE) break; if(!used.has(x.k)) take(x); }
+  const tail=pool.filter(x=>!used.has(x.k)).sort(cmp);
+  return {keys:[...first,...tail].map(x=>x.k),firstN:first.length,invite:fol.size===0}; }
+function feedSession(){ const S2=S.feedSess; if(S2&&S2.seed===S.feedSeed&&(S.feedN||FEED_PAGE)>FEED_PAGE) return S2; const b=buildFeed(); S.feedSess={...b,seed:S.feedSeed}; return S.feedSess; }
+function feedItems(){ const me=Social.me(), fol=new Set(Pf.friends||[]); return feedSession().keys.map(k=>{ const [id,pid]=k.split(':'); const p=(((Social.posts||{})[id]||{}).items||[]).find(x=>x.id===pid); return p&&p.photo?{id,p,sug:id!==me&&!fol.has(id)}:null; }).filter(Boolean); }
 function feedList(){
   if(!Social.ok&&!PREVIEW) return `<div class="card muted small">The feed needs your Claude account. Open Boats from its link while signed in.</div>`;
   const skel=`<div class="skel"><div class="sk-row"><i class="sk-av"></i><i class="sk-line" style="width:40%"></i></div><i class="sk-img"></i><i class="sk-line"></i><i class="sk-line" style="width:60%"></i></div>`;
   if(!Social.loaded) return skel+skel+skel;
-  const items=feedItems(), n=S.feedN||10;
-  const invite=`<button class="btn primary" data-a="text-invite">${ic('plus','sm')}Invite to Boats</button>`;
-  if(!items.length) return `<div class="card empty stack" style="gap:10px"><div class="h2" style="color:var(--fg)">Nothing here yet</div><span>Share a workout and make it public, and invite your crew. Their posts show up here.</span>${invite}</div>`;
-  let lastSug=false;
-  const html=items.slice(0,n).map(x=>{ const head=x.sug&&!lastSug?`<div class="stack" style="gap:2px;margin-top:4px"><span class="eyebrow">Suggested for you</span></div>`:''; lastSug=!!x.sug; return head+postCard(x.id,x.p,x.id===Social.me(),!!x.sug); }).join('');
-  return html+(items.length>n?`<div id="feedmore" class="muted small" style="text-align:center;padding:14px">Loading more…</div>`
-    :`<div class="card stack" style="gap:10px;text-align:center"><b>You’re all caught up</b><span class="muted small">Pull down to refresh for new posts, or bring your crew.</span>${invite}</div>`);
+  const sess=feedSession(), items=feedItems(), n=S.feedN||FEED_PAGE, at=Math.min(sess.firstN||0,items.length);
+  const invite=`<div class="card stack invitecard" style="gap:10px;text-align:center"><b class="h2" style="font-size:18px">You’re all caught up</b><span class="muted small">Invite friends to build your crew.</span><button class="btn primary" data-a="text-invite">${ic('plus','sm')}Invite to BOATS</button></div>`;
+  const shown=items.slice(0,n); let html='';
+  shown.forEach((x,i)=>{ if(sess.invite&&i===at) html+=invite; html+=postCard(x.id,x.p,x.id===Social.me(),x.sug); });
+  if(sess.invite&&at>=shown.length&&shown.length<=n) html+=invite;
+  if(items.length>n) html+=`<div id="feedmore" class="muted small" style="text-align:center;padding:14px">Loading more…</div>`;
+  else if(items.length&&!(sess.invite&&at>=items.length)) html+=`<div class="muted small" style="text-align:center;padding:14px 0 4px">That’s everything for now. Pull down to refresh.</div>`;
+  return html;
 }
 function myPostsList(){ const ps=Social.myPosts(); return ps.length?ps.map(p=>postCard(Social.me(),p,true)).join(''):`<div class="card muted small">Share a workout when you end it and it shows here. Up to 3 posts a day.</div>`; }
 function inviteCard(){ return `<button class="btn sm primary" style="width:auto;flex:none" data-a="text-invite">${ic('plus','sm')}Invite to Boats</button>`; }
@@ -1743,6 +1814,7 @@ function ownGrid(){
 }
 function isShipmate(id){ const c=(Social.people||{})[id]; return Pf.friends.includes(id)&&!!(c&&Array.isArray(c.following)&&c.following.includes(Social.me())); }
 function followersOf(uid){ const me=Social.me(); return Object.entries(Social.people||{}).filter(([id,c])=>id!==uid&&id!==me&&c&&Array.isArray(c.following)&&c.following.includes(uid)).length+(uid!==me&&(Pf.friends||[]).includes(uid)?1:0); }
+function founderNo(uid){ const n=((Social.founders||{})[uid]); return n>=1&&n<=100?n:0; }
 function profileBlock(uid,c,me){
   c=c||{}; const st=statusOf(c.status), posts=((Social.posts[uid]||{}).items||[]), pics=posts.filter(p=>p.photo);
   const tags=[c.town?`<span class="tag">${ic('pin','xs')}${esc(c.town)}</span>`:'', c.height?`<span class="tag">${esc(c.height)}</span>`:'', c.weight?`<span class="tag">${esc(c.weight)}</span>`:'', c.goal&&GOALS[c.goal]?`<span class="tag">${({bulk:'Bulking',maintain:'Maintaining',cut:'Cutting'})[c.goal]}</span>`:''].join('');
@@ -1750,16 +1822,16 @@ function profileBlock(uid,c,me){
   const stat=(n,l)=>me?`<button data-a="my-friends" data-v="${l==='crew'?'crew':'following'}" aria-label="${n} ${l}"><b class="num">${n}</b><span>${l}</span></button>`:`<div><b class="num">${n}</b><span>${l}</span></div>`;
   const gtag='';
   const streakN=me?streak():(c.status?c.status.streak:0);
+  const fn=founderNo(uid), r=streakRank(uid), rl=rankLabel(r,5);
   return `<div class="prof">
     <div class="rowx" style="gap:18px">${avatar(c.username||'?',c.photo,c.status?st.cls:null,true)}
       <div class="pstats"><div><b class="num">${wk}</b><span>voyages</span></div>${stat(fol,'crew')}${stat(fing,'following')}</div></div>
-    <div class="rowx" style="align-items:flex-start;gap:12px"><div class="stack" style="gap:4px;flex:1;min-width:0"><div class="rowx" style="gap:8px;flex-wrap:nowrap;min-width:0">${me?`<h2 class="h2" style="font-size:22px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.username||'Lifter')}</h2>`:''}${gtag}</div>
-      ${c.status?`<span class="small muted">${st.label}</span>`:''}</div>
-      <div class="stack" style="gap:6px;align-items:flex-end;flex:none">${me||c.status?`<button class="streakpill" data-a="ranks" aria-label="${streakN} day streak. See the rankings">${ic('flame','xs')}<span class="num">${streakN}</span> Day Streak</button>`:''}${!me&&c.splitPub?`<button class="tag copytag" data-a="split-view" data-v="${esc(uid)}">${ic('clip','xs')}Copy split</button>`:''}</div></div>
+    <div class="pname"><h2 class="h2 ${fn?'fglow':''}">${esc(c.username||'Lifter')}</h2>${fn?`<button class="ftag" data-a="founder-info" data-v="${fn}" aria-label="Founding Crew member number ${fn}">#${String(fn).padStart(3,'0')}</button>`:''}</div>
+    ${tags||c.status?`<div class="pmeta">${tags?`<div class="tagline1">${tags}</div>`:''}${c.status?`<span class="small muted">${st.label}</span>`:''}</div>`:''}
+    ${me||c.status||(!me&&c.splitPub)?`<div class="rowx" style="gap:8px;justify-content:flex-end;flex-wrap:wrap">${!me&&c.splitPub?`<button class="tag copytag" data-a="split-view" data-v="${esc(uid)}">${ic('clip','xs')}Copy split</button>`:''}${me||c.status?`<button class="streakpill" data-a="streak-detail" data-v="${esc(uid)}" data-top="5" aria-label="${streakN} day streak${rl?', '+esc(rl):''}">${ic('flame','xs')}${rl?`<span>${esc(rl)}</span><span class="sl"> · <span class="num">${streakN}</span> days</span>`:`<span><span class="num">${streakN}</span>-day streak</span>`}</button>`:''}</div>`:''}
     ${!me&&S.unfAsk&&Pf.friends.includes(uid)?`<div class="card rowx" style="gap:8px;padding:10px 12px"><span style="flex:1;min-width:0">Unfollow ${esc(c.username||'')}?</span><button class="btn sm" style="width:auto" data-a="unf-ask">Cancel</button><button class="btn sm danger" style="width:auto" data-a="friend" data-v="${esc(uid)}">Unfollow</button></div>`:''}
     ${c.bio?`<p class="bio2" style="margin:-6px 0 0;white-space:pre-line">${bioHtml(c.bio)}</p>`:me?`<button class="link" style="text-align:left;margin-top:-6px" data-a="settings">Add a bio</button>`:''}
     ${c.link&&linkHtml(c.link)?`<div style="margin:-8px 0 0">${linkHtml(c.link)}</div>`:''}
-    ${tags?`<div class="tagline1">${tags}</div>`:''}
     ${me?ownGrid():pics.length?`<div class="pgrid3">${pics.map(p=>`<button data-a="posts-open" data-v="${esc(uid+':'+p.id)}" aria-label="${esc(dayWord(p.type))}, ${shortDate(p.at)}"><img src="${esc(p.photo)}" alt="" loading="lazy"></button>`).join('')}</div>`
       :`<div class="card empty" style="padding:28px 16px">${ic('camera')}<div style="margin-top:6px">No posts yet.</div></div>`}
   </div>`;
@@ -1965,6 +2037,8 @@ function stepper(f,val,mini){ return `<div class="stepper ${mini?'mini':''}"><bu
 function vSheet(){
   const sh=S.sheet; if(!sh) return '';
   const wrap=(head,body)=>`<div class="scrim ${S.sheetFull?'fullscrim':''}" data-a="close-sheet"><div class="sheet ${S.sheetFull?'full':''}" data-stop><div class="sheet-head"><span class="grab"></span>${head}${head.includes('data-a="close-sheet"')?'':`<button class="iconbtn sheetx" data-a="close-sheet" aria-label="Close">${ic('x')}</button>`}</div><div class="sheet-body" id="sbody">${body}</div></div></div>`;
+  if(sh.kind==='calday'){ const ws=Store.workouts.filter(w=>dateKey(new Date(w.startedAt))===sh.day).sort((a,b)=>a.startedAt-b.startedAt), d=new Date(ws[0]?ws[0].startedAt:Date.now());
+    return wrap(`<span class="h2">${d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})}</span>`,`<div class="list">${ws.map(w=>`<button class="li" data-a="wk-open" data-v="${esc(w.id)}"><span class="ico">${ic(typeIcon(w.type))}</span><span class="grow"><span class="t">${esc(w.title||dayWord(w.type))}</span><br><span class="s">${new Date(w.startedAt).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})} · ${fmtDur(durOf(w))}${countsForStreak(w)?' · streak credit':''}</span></span>${ic('right','sm')}</button>`).join('')}</div>`); }
   if(sh.kind==='picker' && sh.step==='list'){
     return wrap(`<div class="rowx"><span class="h2">${sh.ctx.swap?'Swap '+esc(exOf(sh.ctx.swapFrom).n)+' for…':'Exercise library'}</span><span class="spacer"></span><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>
         <div class="search">${ic('search','sm')}<input class="input" id="q" placeholder="Search exercises" value="${esc(sh.q)}" autocomplete="off"></div>${chipRow('cat',sh.cat,(Pf.custom||[]).length?{...CATS,mine:'Yours'}:CATS)}`, `<div class="stack" id="plist" style="gap:18px">${pickerList()}</div>`);
@@ -2184,6 +2258,7 @@ function previewLoad(kind){
   const p=sampleProfile(); Store.profiles={sample:p}; Store.all=sampleWorkouts(p); Store.use('sample');
   // sample friends
   Store.uid='me'; Social.ok=true; Social.loaded=true; const now=Date.now();
+  Social.founders={me:7,f1:12};
   Social.people={me:Social.card(),
     f1:{following:['me','f2'],username:'jordan.lifts',town:'Nashville, TN',goal:'cut',height:'5′11″',weight:'',photo:'',status:{activeSince:now-25*60000,lastAt:now-2*864e5,lastTitle:'Pull Day',streak:12}},
     f2:{following:['me'],username:'mia_strong',town:'Franklin, TN',goal:'bulk',height:'',weight:'',photo:'',status:{activeSince:0,lastAt:now-20*60000,lastTitle:'Legs',streak:4}},
@@ -2450,7 +2525,7 @@ const A = {
       document.querySelectorAll('.input.bad,.field.bad').forEach(n=>n.classList.remove('bad')); if(bad.length){ bad.forEach(id=>document.getElementById(id)?.classList.add('bad')); const f=document.getElementById(bad[0]); if(f){ f.scrollIntoView({block:'center',behavior:'smooth'}); f.focus({preventScroll:true}); } return; }
       if(window.boatsClaimName){ const r=await window.boatsClaimName(Pf.username,Pf.nameClaimed); if(r==='taken'){ const i=document.getElementById('f-user'), m=document.getElementById('u-msg'); i?.classList.add('bad'); if(m) m.innerHTML=`<span style="color:var(--bad)">@${esc(Pf.username)} is already taken. Try another.</span>`; i?.focus(); return; } if(r==='ok') Pf.nameClaimed=Pf.username; } }
     if(S.ob===1) applyRecDefaults();
-    if(S.ob<3){ S.ob++; window.scrollTo(0,0); render(); } else { Pf.onboarded=true; if(!Pf.bwLog.length&&num(Pf.bodyweight)) Pf.bwLog.push({t:Date.now(),w:num(Pf.bodyweight)}); Store.save(); go('app',{tab:'plan'}); } },
+    if(S.ob<3){ S.ob++; window.scrollTo(0,0); render(); } else { Pf.onboarded=true; if(!Pf.bwLog.length&&num(Pf.bodyweight)) Pf.bwLog.push({t:Date.now(),w:num(Pf.bodyweight)}); Store.save(); if(window.boatsClaimFounder) window.boatsClaimFounder(); go('app',{tab:'plan'}); } },
   tab(v){ S.sheet=null; S.sheetFull=false; S.fview=null; S.personId=null; S.postsOf=null; renderSheet(); if(v==='today'&&Pf.active&&S.tab==='today'){ go('session'); return; } if(v==='today'&&Pf.active&&S.route==='app'){ go('session'); return; } if(v!=='me'||S.tab!=='me') S.meView=null; S.tab=v; S.planDay=null; S.confirmErase=false; S.menu=null; S.route='app'; window.scrollTo(0,0); render(); },
   'edit-day'(v){ S.tab='plan'; S.planDay=v; window.scrollTo(0,0); render(); },
   'plan-back'(){ S.planDay=null; render(); },
@@ -2602,7 +2677,11 @@ const A = {
   'fl-tab'(v){ S.flTab=v; render(); },
   'act-f'(v){ S.actF=v; render(); },
   'follow-back'(v,el){ if(!Pf.friends.includes(v)){ Pf.friends.push(v); Pf.followedAt={...(Pf.followedAt||{}),[v]:Date.now()}; } Store.save(); Social.publish(); if(el) el.outerHTML=`<button class="btn sm" style="width:auto;flex:none" data-a="person" data-v="${esc(v)}">Following</button>`; popCue(); },
-  ranks(){ S.sheet={kind:'ranks'}; renderSheet(); },
+  ranks(){ document.getElementById('ask').innerHTML=''; S.sheet={kind:'ranks'}; renderSheet(); },
+  'founder-info'(v){ const n=String(+v).padStart(3,'0'); infoBox('Founding Crew',`<div class="stack" style="gap:6px"><b class="ftag big">#${n}</b><span><b>Founding Crew · #${n} of 100</b></span><span class="muted small">One of the first 100 members to join BOATS.</span></div>`); },
+  'streak-detail'(v,el){ const r=streakRank(v), c=cardOf(v), sN=v===Social.me()?streak():streakOf(c), top=+(el&&el.dataset.top)||5, nm=v===Social.me()?'Your':esc(Social.nameOf(v))+'’s';
+    const ranks=[r.g&&r.g<=top?`<span class="tag accent">${ic('trophy','xs')}#${r.g} Global</span>`:'', r.c&&r.c<=top&&r.city?`<span class="tag accent">${ic('pin','xs')}#${r.c} in ${esc(r.city)}</span>`:''].join('');
+    infoBox(`${sN}-day streak`,`<div class="stack" style="gap:10px;align-items:center"><span class="muted small">${nm} current streak: <b>${sN} day${sN===1?'':'s'}</b> of workouts that count.</span>${ranks?`<div class="rowx" style="gap:6px;justify-content:center;flex-wrap:wrap">${ranks}</div>`:''}<button class="btn" data-a="ranks">${ic('trophy','sm')}See the leaderboards</button></div>`); },
   prog(){ S.sheet={kind:'prog'}; renderSheet(); },
   'prog-shift'(v){ Pf.program.start+= (+v)*7*864e5; Store.save(); render(); },
   chk(v,el){ const k=dateKey(), arr=Pf.checks[k]=Pf.checks[k]||[]; const i=arr.indexOf(v); if(i>=0) arr.splice(i,1); else { arr.push(v); ding(); }
@@ -2621,6 +2700,8 @@ const A = {
   level(v){ Pf.level=v; Store.save(); render(); },
   pview(v){ S.pview=v; render(); },
   'wk-open'(v){ S.sheet={kind:'wk',id:v}; renderSheet(); },
+  'pr-more'(){ S.prMore=true; render(); },
+  'cal-day'(v){ const ws=Store.workouts.filter(w=>dateKey(new Date(w.startedAt))===v); if(ws.length===1) return A['wk-open'](ws[0].id); S.sheet={kind:'calday',day:v}; renderSheet(); },
   async 'wk-share'(v){ if(Social.postedToday()){ toast('You’ve shared 3 workouts today, the daily limit.'); return; } const w=Store.workouts.find(x=>x.id===v); if(!w) return; if(!w.pump){ toast('Add a pump picture first. The feed is photos only.'); return; } S.menu=null; S.sheet=null; await shareWorkout(w); render(); renderSheet(); toast('Shared to your feed'); },
   async 'wk-unshare'(v){ S.menu=null; S.sheet=null; await Social.delPost(v); render(); renderSheet(); toast('Now private: only you can see it'); },
   'pick-day'(){ S.sheet={kind:'pickday'}; renderSheet(); },
@@ -2708,7 +2789,7 @@ const A = {
   'np-pick'(){ const c=document.getElementById('np-cap'); if(c&&S.np) S.np.cap=c.value; S.photoFor='newpost'; document.getElementById('photo-in').click(); },
   async 'np-share'(){ const np=S.np; if(!np||!np.photo) return; if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit.'); return; } const cap=(document.getElementById('np-cap')?.value||'').trim().slice(0,300), id='u'+uid();
     boatLoading(true,'Posting…'); try{ const small=await shrinkData(np.photo,480,.72); const hq=await savePhotoHq(id,np.photo); await Social.addPost({id,at:Date.now(),sharedAt:Date.now(),title:'',type:'',caption:cap,photo:small,hq,kind:'photo'}); } finally{ boatLoading(false); }
-    S.np=null; S.fview=null; S.feedN=10; window.scrollTo(0,0); render(); popCue(); },
+    S.np=null; S.fview=null; S.feedN=10; S.feedSeed=Date.now(); window.scrollTo(0,0); render(); popCue(); },
   admin(){ if(!window.boatsAdmin) return; S.meView='admin'; S.adm=null; window.scrollTo(0,0); render(); window.boatsAdmin.load().then(d=>{ S.adm=d; },e=>{ S.adm={error:'Could not load data ('+((e&&e.code)||'error')+').'}; }).then(()=>{ if(S.meView==='admin') render(); }); },
   'adm-tab'(v){ S.admTab=v; render(); },
   async 'adm-copy'(){ const t=((S.adm&&S.adm.accounts)||[]).map(a=>a.email).filter(Boolean).join(', '); try{ await navigator.clipboard.writeText(t); popCue(); }catch(e){ toast('Could not copy. Long-press to select instead.'); } },
@@ -2898,6 +2979,7 @@ Store.init().catch(()=>{}).then(()=>{
   S.ready=true; S.bootMs=performance.now();
   try{ Social.start(); }catch(e){}
   if(S.route==='splash'){ const w=S.waiting; S.waiting=null; if(w) A.login(); else render(); }
+  if(window.boatsClaimFounder&&Pf&&Pf.onboarded) window.boatsClaimFounder().then(n=>{ if(n&&!Social.founders[Social.me()]){ Social.founders={...Social.founders,[Social.me()]:n}; refreshSocial(); } });
   if(window.boatsClaimName&&Pf&&Pf.onboarded&&Pf.username&&Pf.nameClaimed!==Pf.username) window.boatsClaimName(Pf.username,Pf.nameClaimed).then(r=>{ if(r==='ok'){ Pf.nameClaimed=Pf.username; Store.save(); } else if(r==='taken'){ S.nameTaken=true; Pf.nameAt=0; render(); } });
 });
 window.addEventListener('error',e=>reportErr('page',e.error||e.message));

@@ -30,6 +30,20 @@ service cloud.firestore {
       allow create, update: if signedIn() && id.matches(request.auth.uid + '_.+') && small();
       allow delete: if signedIn() && id.matches(request.auth.uid + '_.+');
     }
+    // Founding Crew numbers 1-100. Each member can take exactly one number, only the next free one, in the same write that advances the counter.
+    match /meta/founders {
+      allow read: if signedIn();
+      allow update: if signedIn() && resource.data.next <= 100
+        && request.resource.data.next == resource.data.next + 1
+        && request.resource.data.keys().hasOnly(['next'])
+        && getAfter(/databases/$(database)/documents/founders/$(request.auth.uid)).data.n == resource.data.next;
+    }
+    match /founders/{uid} {
+      allow read: if signedIn();
+      allow create: if isMe(uid) && request.resource.data.n is int
+        && request.resource.data.n == get(/databases/$(database)/documents/meta/founders).data.next
+        && getAfter(/databases/$(database)/documents/meta/founders).data.next == request.resource.data.n + 1;
+    }
     // Usernames: first come, first served; only the holder can release one.
     match /usernames/{name} {
       allow get: if signedIn();
