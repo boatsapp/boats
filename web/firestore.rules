@@ -3,6 +3,8 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
     function isMe(uid) { return signedIn() && request.auth.uid == uid; }
+    // The app owner (Data center). Kept only here, not in the public site code.
+    function isAdmin() { return signedIn() && request.auth.token.email == 'swaizyofficial@gmail.com' && request.auth.token.email_verified == true; }
     function small() { return request.resource.data.j is string && request.resource.data.j.size() < 900000; }
 
     // Your own profile and workouts: only you.
@@ -14,7 +16,14 @@ service cloud.firestore {
     match /posts/{uid}     { allow read: if signedIn(); allow delete: if isMe(uid); allow create, update: if isMe(uid) && small(); }
     match /reactions/{uid} { allow read: if signedIn(); allow delete: if isMe(uid); allow create, update: if isMe(uid) && small(); }
     // Feedback: only you (the app owner reads it in the Firebase console).
-    match /feedback/{uid}  { allow read, delete: if isMe(uid); allow create, update: if isMe(uid) && small(); }
+    match /feedback/{uid}  { allow read: if isMe(uid) || isAdmin(); allow delete: if isMe(uid); allow create, update: if isMe(uid) && small(); }
+    // Account list (email, name, join/last-seen dates): you write your own, only the owner reads all.
+    match /accounts/{uid} {
+      allow get: if isMe(uid) || isAdmin();
+      allow list: if isAdmin();
+      allow create, update: if isMe(uid) && request.resource.data.email == request.auth.token.email
+        && request.resource.data.keys().hasOnly(['email','name','createdAt','lastAt']);
+    }
     // Exercise library: read-only for the app; edit in the console.
     match /library/{id}    { allow read: if signedIn(); }
     // Direct messages: one doc per sender→recipient, readable only by those two.

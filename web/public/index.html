@@ -646,7 +646,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v88';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v89';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1709,6 +1709,7 @@ function vPerson(){ const id=S.personId, p=Social.people[id];
 function vMe(){
   if(S.meView==='settings') return vSettings();
   if(S.meView==='friends') return vFriendList();
+  if(S.meView==='admin') return vAdmin();
   return `<div class="screen">
     <div class="rowx"><span class="eyebrow">Your profile</span><span class="spacer"></span><button class="iconbtn" data-a="settings" aria-label="Settings">${ic('gear')}</button></div>
     ${profileBlock(Social.me(),Social.card(),true)}
@@ -1717,6 +1718,31 @@ function vMe(){
 function recTargets(){ const bw=num(Pf.bodyweight), lb=Pf.unit==='lb'?bw:bw*2.2046; if(!lb) return {steps:'8,000',cal:'2,400',protein:'150 g',sleep:'8 h'};
   const cal=Math.round((lb*15+({bulk:300,maintain:0,cut:-500}[Pf.goal]||0))/50)*50, pr=Math.round(lb*(Pf.goal==='cut'?1:0.8)/5)*5;
   return {steps:Pf.goal==='cut'?'10,000':'8,000',cal:cal.toLocaleString(),protein:pr+' g',sleep:'8 h'}; }
+function vAdmin(){
+  const d=S.adm, tab=S.admTab||'users', now=Date.now(), day=864e5;
+  const head=`<div><button class="link rowx" style="gap:4px" data-a="settings">${ic('back','sm')}Settings</button></div>
+    <div class="rowx"><div class="stack" style="gap:4px"><span class="eyebrow">Only you</span><h1 class="h1">Data center</h1></div><span class="spacer"></span><button class="iconbtn" data-a="admin" aria-label="Refresh">${ic('reset')}</button></div>`;
+  if(!d) return `<div class="screen">${head}<div class="card muted small">Loading…</div></div>${tabbar()}`;
+  if(d.error) return `<div class="screen">${head}<div class="card small" style="color:var(--bad)">${esc(d.error)}</div></div>${tabbar()}`;
+  const ppl=Social.people||{}, users=d.accounts.map(a=>({...a,card:ppl[a.uid]||null})).sort((x,y)=>(y.createdAt||0)-(x.createdAt||0));
+  const fb=d.feedback.slice().sort((x,y)=>y.at-x.at);
+  const q=(S.admQ||'').trim().toLowerCase(), shown=q?users.filter(u=>[u.email,u.name,u.card&&u.card.username].some(x=>String(x||'').toLowerCase().includes(q))):users;
+  const tile=(k,v)=>`<div class="card stat" style="padding:12px 14px;display:flex;flex-direction:column;gap:2px"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+  const dt=t=>t?new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}):'—';
+  return `<div class="screen">${head}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      ${tile('Users',fmtN(users.length))}${tile('Profiles set up',fmtN(users.filter(u=>u.card).length))}
+      ${tile('New this week',fmtN(users.filter(u=>now-(u.createdAt||0)<7*day).length))}${tile('Active today',fmtN(users.filter(u=>now-(u.lastAt||0)<day).length))}
+    </div>
+    <div class="itabs" role="tablist">${[['users','Users ('+users.length+')'],['fb','Feedback ('+fb.length+')']].map(([k,l])=>`<button class="${tab===k?'on':''}" data-a="adm-tab" data-v="${k}" role="tab" aria-selected="${tab===k}">${l}</button>`).join('')}</div>
+    ${tab==='users'?`<div class="search">${ic('search','sm')}<input class="input" id="adm-q" placeholder="Search name or email" value="${esc(S.admQ||'')}" autocomplete="off"></div>
+      <div class="list">${shown.map(u=>`<div class="li" style="align-items:flex-start">${avatar((u.card&&u.card.username)||u.name||u.email||'?',u.card&&u.card.photo,null)}<span class="grow" style="min-width:0"><span class="t">${esc((u.card&&u.card.username)||u.name||'No profile yet')}</span><br>
+        <span class="s" style="overflow-wrap:anywhere">${esc(u.email||'')}</span><br>
+        <span class="s">Joined ${dt(u.createdAt)} · active ${u.lastAt?ago(u.lastAt):'—'}${u.card?` · ${fmtN(u.card.wcount||0)} workouts${(u.card.status&&u.card.status.streak)?` · ${u.card.status.streak} day streak`:''}`:''}</span></span></div>`).join('')||`<div class="li muted small">No users${q?' match':' yet'}.</div>`}</div>
+      <button class="btn" data-a="adm-copy">Copy all emails</button>`
+    :`<div class="stack" style="gap:10px">${fb.map(f=>{ const u=d.accounts.find(a=>a.uid===f.uid)||{}; return `<div class="card stack" style="gap:6px"><span style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(f.text)}</span><span class="muted small">${esc(f.user||(ppl[f.uid]&&ppl[f.uid].username)||u.name||'Someone')}${u.email?' · '+esc(u.email):''} · ${ago(f.at)}${f.where?' · on '+esc(f.where):''}${f.build?' · '+esc(f.build):''}</span></div>`; }).join('')||`<div class="card muted small">No feedback yet.</div>`}</div>`}
+  </div>${tabbar()}`;
+}
 function vSettings(){
   return `<div class="screen">
     <div><button class="link rowx" style="gap:4px" data-a="profile">${ic('back','sm')}Profile</button></div>
@@ -1754,6 +1780,7 @@ function vSettings(){
       <button class="li" data-a="flash"><span class="ico">${ic('bolt')}</span><span class="grow"><span class="t">Flash screen when rest ends</span><br><span class="s">A quick screen flash you can see without sound</span></span><span class="toggle ${Pf.flash?'on':''}"></span></button>
       <button class="li" data-a="vib"><span class="ico">${ic('vibrate')}</span><span class="grow"><span class="t">Vibrate when rest ends</span><br><span class="s">${false?'':'Buzzes your phone when the timer runs out'}</span></span><span class="toggle ${Pf.vibrate?'on':''}"></span></button>
       <button class="li" data-a="pdf-export"><span class="ico">${ic('cloud')}</span><span class="grow"><span class="t">${Store.mode==='cloud'?'Synced to your account':'Saved on this device only'}</span><br><span class="s">${Store.workouts.length} workout${Store.workouts.length===1?'':'s'} logged · app ${BUILD}</span></span><span class="tag">${ic('down','xs')}PDF</span></button>
+      ${window.boatsAdmin?`<button class="li" data-a="admin"><span class="ico">${ic('lock')}</span><span class="grow"><span class="t">Data center</span><br><span class="s">Users, emails and feedback. Only you can see this.</span></span>${ic('right','sm')}</button>`:''}
     </div>
     <div class="stack" style="gap:8px">
       <button class="btn" data-a="sign-out">Sign out</button>
@@ -2563,6 +2590,9 @@ const A = {
   'unf-ask'(v){ S.unfAsk=!S.unfAsk; render(); },
   friend(v,el,ok){ const i=Pf.friends.indexOf(v); if(i>=0&&!ok){ askConfirm('Unfollow '+Social.nameOf(v)+'?','Their workouts will leave your feed.','Unfollow',()=>A.friend(v,el,true)); return; } if(i>=0) Pf.friends.splice(i,1); else { Pf.friends.push(v); Pf.followedAt={...(Pf.followedAt||{}),[v]:Date.now()}; } Store.save(); Social.publish(); S.unfAsk=false; if(S.personId) render(); else renderSheet(); popCue(); },
   erase(){ S.confirmErase=true; render(); },
+  admin(){ if(!window.boatsAdmin) return; S.meView='admin'; S.adm=null; window.scrollTo(0,0); render(); window.boatsAdmin.load().then(d=>{ S.adm=d; },e=>{ S.adm={error:'Could not load data ('+((e&&e.code)||'error')+').'}; }).then(()=>{ if(S.meView==='admin') render(); }); },
+  'adm-tab'(v){ S.admTab=v; render(); },
+  async 'adm-copy'(){ const t=((S.adm&&S.adm.accounts)||[]).map(a=>a.email).filter(Boolean).join(', '); try{ await navigator.clipboard.writeText(t); popCue(); }catch(e){ toast('Could not copy. Long-press to select instead.'); } },
   'sign-out'(){ if(!window.boatsSignOut) return A.splash(); askConfirm('Sign out?','Your workouts stay saved to your account.','Sign out',()=>window.boatsSignOut&&window.boatsSignOut()); },
   'targets-rec'(){ const r=recTargets(); Pf.targets={...Pf.targets,...r}; Store.save(); render(); },
   'erase-next'(){ S.confirmErase=2; render(); },
@@ -2620,6 +2650,7 @@ document.addEventListener('input',e=>{ try{ onInput(e); }catch(err){ reportErr('
 function onInput(e){
   const t=e.target;
   if(t.id==='q'){ S.sheet.q=t.value; document.getElementById('plist').innerHTML=pickerList(); return; }
+  if(t.id==='adm-q'){ S.admQ=t.value; const pos=t.selectionStart; render(); const n=document.getElementById('adm-q'); if(n){ n.focus(); n.setSelectionRange(pos,pos); } return; }
   if(t.id==='fq'){ S.fq=t.value; document.getElementById('flist').innerHTML=friendsList(); return; }
   if(t.id==='f-restr'){ Pf.rest=+t.value; Pf.defaultsTouched=true; document.getElementById('restv').textContent=fmtSec(Pf.rest); const r=document.getElementById('restrec'); r.textContent=restTag(); r.classList.toggle('good',Pf.rest===recRest()); Store.save(); return; }
   if(t.id==='dm-q'){ S.dmQ=t.value; const r=document.getElementById('dmres'); if(r) r.innerHTML=dmResults(); return; }

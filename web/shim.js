@@ -2,7 +2,7 @@
 // The app keeps calling claude.use(...); this file answers with Firebase Auth + Firestore.
 import { initializeApp } from "firebase/app";
 import { getAuth, connectAuthEmulator, onAuthStateChanged, GoogleAuthProvider, OAuthProvider, signInWithPopup, signInWithRedirect, signInWithCredential, getRedirectResult, signOut, setPersistence, browserLocalPersistence } from "firebase/auth";
-import { initializeFirestore, connectFirestoreEmulator, persistentLocalCache, memoryLocalCache, collection, doc, getDoc, getDocs, setDoc, deleteDoc, onSnapshot, query, where } from "firebase/firestore";
+import { initializeFirestore, connectFirestoreEmulator, persistentLocalCache, memoryLocalCache, collection, doc, getDoc, getDocs, setDoc, deleteDoc, onSnapshot, query, where, limit } from "firebase/firestore";
 import { firebaseConfig } from "./firebase-config.js";
 
 const app = initializeApp(firebaseConfig);
@@ -10,7 +10,8 @@ const EMU = location.hostname === "localhost" && new URLSearchParams(location.se
 const auth = getAuth(app);
 const fs = initializeFirestore(app, { localCache: EMU ? memoryLocalCache() : persistentLocalCache() });
 if(EMU){ connectAuthEmulator(auth, "http://127.0.0.1:9199", { disableWarnings: true }); connectFirestoreEmulator(fs, "127.0.0.1", 8181);
-  window.__emuSignIn = n => signInWithCredential(auth, GoogleAuthProvider.credential(JSON.stringify({ sub: n, email: n + "@test.com", email_verified: true, name: n }))).then(() => location.reload()); }
+  window.__emuSignIn = n => signInWithCredential(auth, GoogleAuthProvider.credential(JSON.stringify({ sub: n, email: n + "@test.com", email_verified: true, name: n }))).then(() => location.reload());
+  window.__emuSignIn2 = (n, e) => signInWithCredential(auth, GoogleAuthProvider.credential(JSON.stringify({ sub: n, email: e, email_verified: true, name: n }))).then(() => location.reload()); }
 
 // Data is stored as JSON text so any app shape fits Firestore; a few top-level fields stay queryable for rules.
 const pack = (data, extra={}) => ({ j: JSON.stringify(data), at: Date.now(), ...extra });
@@ -98,4 +99,27 @@ await setPersistence(auth, browserLocalPersistence).catch(() => {});
 getRedirectResult(auth).then(r => { if(r && r.user && !window.__boatsHadUser) location.reload(); }).catch(() => {});
 const authReady = new Promise(res => { const off = onAuthStateChanged(auth, u => { off(); window.__boatsHadUser = !!u; res(u); }); });
 user.id = async () => (await authReady)?.uid || null;
+// Record who has an account (email + dates) for the owner's Data center, then check owner access.
+// Who counts as the owner lives only in firestore.rules, so no email appears in this public code.
+authReady.then(async u => {
+  if(!u) return;
+  const ref = doc(fs, "accounts", u.uid);
+  try {
+    const old = await getDoc(ref);
+    await setDoc(ref, { email: u.email || "", name: u.displayName || "", createdAt: old.exists() ? (old.data().createdAt || Date.now()) : Date.now(), lastAt: Date.now() });
+  } catch(e) {}
+  try {
+    await getDocs(query(collection(fs, "accounts"), limit(1)));   // only the owner is allowed to list accounts
+    window.boatsAdmin = {
+      load: async () => {
+        const [a, f] = await Promise.all([getDocs(collection(fs, "accounts")), getDocs(collection(fs, "feedback"))]);
+        const accounts = a.docs.map(d => ({ uid: d.id, ...d.data() }));
+        const feedback = [];
+        f.docs.forEach(d => { const x = unpack(d); ((x && x.items) || []).forEach(it => feedback.push({ ...it, uid: d.id })); });
+        return { accounts, feedback };
+      },
+    };
+    if(window.render) try { window.render(); } catch(e) {}
+  } catch(e) { window.boatsAdmin = null; }
+});
 const s = document.createElement("script"); s.textContent = document.getElementById("appsrc").textContent; document.body.appendChild(s);
