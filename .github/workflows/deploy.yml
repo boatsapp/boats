@@ -22,3 +22,11 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
         run: npx --yes firebase-tools@13 deploy --only hosting,firestore:rules --project boats-40d0f --non-interactive
+      - name: Check live site
+        run: |
+          sleep 5
+          for u in https://boats-40d0f.web.app/ https://carrytheboats.app/; do
+            echo "== $u"; curl -sSI "$u" | grep -i -E "^HTTP|cache-control" || true
+            curl -sS "$u" | grep -o "const BUILD = '[^']*'" || echo "build not found"
+            curl -sS "$u" | grep -c 'data-a="admin"' || true
+          done
