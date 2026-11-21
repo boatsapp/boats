@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isMe(uid) { return signedIn() && request.auth.uid == uid; }
+    function small() { return request.resource.data.j is string && request.resource.data.j.size() < 900000; }
+
+    // Your own profile and workouts: only you.
+    match /users/{uid}/data/{docId} {
+      allow read, write: if isMe(uid);
+    }
+    // Public cards, posts, likes/comments: signed-in users read, only the owner writes.
+    match /people/{uid}    { allow read: if signedIn(); allow delete: if isMe(uid); allow create, update: if isMe(uid) && small(); }
+    match /posts/{uid}     { allow read: if signedIn(); allow delete: if isMe(uid); allow create, update: if isMe(uid) && small(); }
+    match /reactions/{uid} { allow read: if signedIn(); allow delete: if isMe(uid); allow create, update: if isMe(uid) && small(); }
+    // Feedback: only you (the app owner reads it in the Firebase console).
+    match /feedback/{uid}  { allow read, delete: if isMe(uid); allow create, update: if isMe(uid) && small(); }
+    // Exercise library: read-only for the app; edit in the console.
+    match /library/{id}    { allow read: if signedIn(); }
+    // Direct messages: one doc per sender→recipient, readable only by those two.
+    match /threads/{id} {
+      allow read: if signedIn() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
+      allow delete: if signedIn() && resource.data.from == request.auth.uid;
+      allow create, update: if signedIn() && small()
+        && request.resource.data.from == request.auth.uid
+        && id == request.auth.uid + '_' + request.resource.data.to;
+    }
+  }
+}
