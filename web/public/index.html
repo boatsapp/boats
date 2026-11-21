@@ -646,7 +646,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v90';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v91';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1743,6 +1743,24 @@ function vAdmin(){
     :`<div class="stack" style="gap:10px">${fb.map(f=>{ const u=d.accounts.find(a=>a.uid===f.uid)||{}; return `<div class="card stack" style="gap:6px"><span style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(f.text)}</span><span class="muted small">${esc(f.user||(ppl[f.uid]&&ppl[f.uid].username)||u.name||'Someone')}${u.email?' · '+esc(u.email):''} · ${ago(f.at)}${f.where?' · on '+esc(f.where):''}${f.build?' · '+esc(f.build):''}</span></div>`; }).join('')||`<div class="card muted small">No feedback yet.</div>`}</div>`}
   </div>${tabbar()}`;
 }
+// Plain-English name of the screen (and open panel) for feedback, e.g. "Feed › Chat with mia_strong" or "Workout › Exercise library".
+function screenWhere(){
+  const nm=u=>Social.nameOf(u)||'someone', sk=S.sheet&&S.sheet.kind;
+  const SHEETS={picker:'Exercise library',finish:'End workout',export:'Share image',wk:'Workout details',splitview:'Copied split',settings:'Settings panel'};
+  let w;
+  if(S.route==='session') w='Workout'+(Pf.active&&Pf.active.items&&Pf.active.items.length?` (${Pf.active.items.length} exercises)`:'');
+  else if(S.route==='onboard') w='Setup, step '+((S.ob||0)+1);
+  else if(S.route==='splash') w='Start screen';
+  else if(S.postsOf) w='Posts of '+nm(S.postsOf);
+  else if(S.personId) w='Profile of '+nm(S.personId);
+  else if(S.tab==='friends') w=S.fview==='chat'?'Feed › Chat with '+nm(S.chatWith):S.fview==='dms'?'Feed › Messages':S.fview==='activity'?'Feed › Activity':'Feed';
+  else if(S.tab==='me') w=S.meView==='settings'?'Profile › Settings':S.meView==='friends'?'Profile › Friends list':S.meView==='admin'?'Profile › Data center':'Profile';
+  else if(S.tab==='plan') w='Plan'+(S.planDay?' › '+S.planDay:'');
+  else if(S.tab==='progress') w='Progress'+(S.ptab?' › '+S.ptab:'');
+  else w='Lift (home)';
+  if(sk&&sk!=='feedback'&&sk!=='dev') w+=' › '+(SHEETS[sk]||sk);
+  return w;
+}
 function vSettings(){
   return `<div class="screen">
     <div><button class="link rowx" style="gap:4px" data-a="profile">${ic('back','sm')}Profile</button></div>
@@ -2034,7 +2052,7 @@ function vSheet(){
       sh.sent?`<div class="card empty">${ic('check')}<div style="margin-top:6px"><b>Thanks, got it.</b><br>Your feedback goes straight to the Boats team.</div></div><button class="btn" data-a="close-sheet">Done</button>`
       :`<textarea class="input" id="fb-in" rows="5" maxlength="1500" placeholder="What’s working, what’s not, what you wish it did…" style="height:auto;padding:12px 14px;resize:none;font:inherit;font-size:15px"></textarea>
        <button class="btn primary" data-a="fb-send">Send feedback</button>
-       <span class="muted small">We’ll also see which screen you were on (${esc(S.fbWhere||'')}) and the app version, nothing else.</span>`); }
+       <span class="muted small">${window.boatsAdmin?`Owner note: this goes to your Claude inbox (GitHub issues) with the screen: <b>${esc(S.fbWhere||'')}</b>.`:`We’ll also see which screen you were on (${esc(S.fbWhere||'')}) and the app version, nothing else.`}</span>`); }
   if(sh.kind==='prog'){
     const pr=Pf.program, w=progWeek();
     return wrap(`<div class="rowx"><span class="h2">${esc(pr.name)}</span><span class="spacer"></span><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>`,
@@ -2559,7 +2577,7 @@ const A = {
         return {pid:'p'+uid(),exId:p.exId,equip:p.equip,sets:p.sets||3,repMin:p.repMin||Pf.repMin,repMax:p.repMax||Pf.repMax,weight:'',setting:'',note:'',min:p.min||20}; }); }
     Store.save(); S.sheet=null; renderSheet(); S.personId=null; go('app',{tab:'plan',planDay:null}); popCue(); },
   'share-split'(){ Pf.shareSplit=!Pf.shareSplit; Store.save(); Social.publish(); render(); },
-  feedback(){ S.fbWhere=S.route==='app'?({today:'Lift',plan:'Plan',progress:'Progress',friends:'Feed',me:'Profile'}[S.tab]||S.tab):S.route==='session'?'Workout':S.route==='onboard'?'Setup':S.route; S.sheet={kind:'feedback'}; renderSheet(); setTimeout(()=>document.getElementById('fb-in')?.focus(),60); },
+  feedback(){ S.fbWhere=screenWhere(); S.sheet={kind:'feedback'}; renderSheet(); setTimeout(()=>document.getElementById('fb-in')?.focus(),60); },
   async 'fb-send'(){ const i=document.getElementById('fb-in'), t=(i&&i.value||'').trim(); if(!t){ i&&i.classList.add('bad'); i&&i.focus(); return; }
     const item={at:Date.now(),text:t.slice(0,1500),where:S.fbWhere||'',build:BUILD,user:Pf.username||''};
     try{ if(Store.db&&Store.uid){ const ref=Store.db.collection('feedback').doc(Store.uid); let prev=[]; try{ const g=await ref.get(); prev=((g&&g.data&&g.data())||{}).items||[]; }catch(e){} await ref.set({items:[...prev,item].slice(-100)}); } else { Pf.feedbackLocal=[...(Pf.feedbackLocal||[]),item].slice(-50); Store.save(); } }
