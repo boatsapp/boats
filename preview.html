@@ -146,6 +146,16 @@ svg.i.xs{width:14px;height:14px}
 .cmbox .input{height:40px;font-size:14px}
 .cmpost{font-weight:700;color:var(--accent)}
 .li.dimday{opacity:.45}
+textarea.input{padding:12px 14px;height:auto;resize:none}
+.tagline1.tagcenter{justify-content:center;flex-wrap:wrap}
+.npimg{aspect-ratio:auto!important;height:auto!important;max-height:70vh;object-fit:contain!important;border-radius:14px;background:#000}
+.nptools{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.nptools button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font-size:12px;font-weight:600}
+.nptools button.on{border-color:var(--accent);color:var(--accent)}
+.cropbox{position:relative;width:100%;overflow:hidden;border-radius:14px;background:#000;touch-action:none;cursor:grab;max-height:70vh}
+.cropbox img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;user-select:none;-webkit-user-drag:none}
+.psong{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--muted);margin:-6px 0 -2px}
+.psong a{color:inherit;text-decoration:none}
 .insttabs button{display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .istep .h2{font-size:20px}
 .istep .dots{display:flex;gap:6px;justify-content:center}
@@ -678,7 +688,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v96';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v97';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -817,6 +827,8 @@ const P = {
   clip:'<path d="M21 11.5l-8.5 8.5a5 5 0 0 1-7-7L14 4.5a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7.5"/>',
   android:'<path d="M6.5 9.5h11v7.5a1.5 1.5 0 0 1-1.5 1.5H8a1.5 1.5 0 0 1-1.5-1.5z"/><path d="M6.8 8.5a5.2 5.2 0 0 1 10.4 0z"/><path d="M8 4.2l1.2 1.8M16 4.2l-1.2 1.8M9.5 18.5V21M14.5 18.5V21M4 10.5v4.5M20 10.5v4.5"/>',
   dl:'<path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/>',
+  music:'<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
+  crop:'<path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/>',
   chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
   progress:'<path d="M4 19.5h16"/><path d="M5 15l4.5-4.5 3.5 3L19 7"/><path d="M15 7h4v4"/>',
   scale:'<rect x="3.5" y="4" width="17" height="16" rx="4"/><path d="M8.5 9.5a4.5 4.5 0 0 1 7 0L12 12"/>',
@@ -1108,7 +1120,7 @@ let Pf;
 const app = document.getElementById('app'), sheetEl = document.getElementById('sheet'), askEl = document.getElementById('ask');
 let ASKFN=null;
 function infoBox(title,html){ ASKFN=null; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="dialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${html}<div class="askbtns"><button class="btn primary" data-a="ask-no">Got it</button></div></div></div>`; }
-function askConfirm(title,sub,yes,fn){ ASKFN=fn; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="alertdialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${sub?`<span class="muted small">${esc(sub)}</span>`:''}<div class="askbtns"><button class="btn" data-a="ask-no">Cancel</button><button class="btn danger" data-a="ask-yes">${esc(yes)}</button></div></div></div>`; }
+function askConfirm(title,sub,yes,fn,no){ ASKFN=fn; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="alertdialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${sub?`<span class="muted small">${esc(sub)}</span>`:''}<div class="askbtns"><button class="btn" data-a="ask-no">${esc(no||'Cancel')}</button><button class="btn danger" data-a="ask-yes">${esc(yes)}</button></div></div></div>`; }
 let rootTheme = document.documentElement.getAttribute('data-theme');
 function applyTheme(){ const r=document.documentElement; if(Pf.theme!=='light') Pf.theme='dark'; if(Pf.theme==='system'){ if(rootTheme) r.setAttribute('data-theme',rootTheme); else r.removeAttribute('data-theme'); } else r.setAttribute('data-theme',Pf.theme); }
 
@@ -1668,9 +1680,10 @@ function postCard(uid,p,mine,suggest){
   return `<article class="card post igpost ${p.photo?'hasphoto':''}" data-key="${esc(key)}" ${suggest?'data-sug="1"':''}>
     <div class="who"><button class="whobtn" ${go} aria-label="Open ${esc(Social.nameOf(uid))}'s profile">${avatar(Social.nameOf(uid),Social.photoOf(uid),null)}<span style="flex:1;min-width:0;text-align:left"><b>${esc(Social.nameOf(uid))}</b></span></button>${postStreakBadge(uid)}
       ${mine?`<button class="iconbtn" data-a="post-del" data-v="${esc(p.id)}" aria-label="Delete post">${ic('trash','sm')}</button>`:''}${suggest&&!Pf.friends.includes(uid)?`<button class="btn sm primary" style="width:auto;flex:none" data-a="follow-sug" data-v="${esc(uid)}">Follow</button>`:''}</div>
-    ${p.photo?`<div class="phwrap"><div class="ovwrap" data-pk="${esc(key)}"><img class="pump" src="${esc(hqSrc(uid,p))}" ${p.hq&&!HQ[uid+'_'+p.id]?`data-hq="${esc(uid+'_'+p.id)}"`:''} alt="${esc(Social.nameOf(uid))}'s photo. Double tap to like, hold to see stats" loading="lazy" draggable="false"><div class="holdstats">${p.kind==='photo'?`<div><b class="num">${fmtK(likes)}</b><span>like${likes===1?'':'s'}</span></div><div><b class="num">${fmtK(cm.length)}</b><span>comment${cm.length===1?'':'s'}</span></div>`:`<div><b class="num">${fmtN(p.vol||0)}</b><span>${Pf.unit} lifted</span></div><div><b class="num">${esc(p.time||'')}</b><span>time</span></div><div><b class="num">${esc(String(p.sets??''))}</b><span>sets</span></div>${p.kcal?`<div><b class="num">~${p.kcal}</b><span>kcal</span></div>`:''}`}</div><i class="burst">${ic('heart')}</i></div><div class="pacts ov"><button class="pact ${liked?'liked':''}" data-a="post-like" data-v="${esc(key)}" aria-pressed="${liked}" aria-label="${liked?'Unlike':'Like'}">${ic('heart')}${likes?`<span class="num">${fmtK(likes)}</span>`:''}</button><button class="pact" data-a="cm-open" data-v="${esc(key)}" aria-label="Comment">${ic('chat')}${cm.length?`<span class="num">${fmtK(cm.length)}</span>`:''}</button><span class="spacer"></span>${dayTag(p.type)}</div></div>`:''}
+    ${p.song&&p.song.title?`<div class="psong">${ic('music','xs')}${p.song.link&&/^https?:\/\//.test(p.song.link)?`<a href="${esc(p.song.link)}" target="_blank" rel="noopener nofollow ugc">`:'<span>'}${esc(p.song.artist?p.song.artist+' · ':'')}${esc(p.song.title)}${p.song.link&&/^https?:\/\//.test(p.song.link)?'</a>':'</span>'}</div>`:''}
+    ${p.photo?`<div class="phwrap"><div class="ovwrap" data-pk="${esc(key)}"><img class="pump" src="${esc(hqSrc(uid,p))}" ${p.hq&&!HQ[uid+'_'+p.id]?`data-hq="${esc(uid+'_'+p.id)}"`:''} alt="${esc(Social.nameOf(uid))}'s photo. Double tap to like, hold to see stats" loading="lazy" draggable="false"><div class="holdstats">${p.kind==='photo'?`<div><b class="num">${fmtK(likes)}</b><span>like${likes===1?'':'s'}</span></div><div><b class="num">${fmtK(cm.length)}</b><span>comment${cm.length===1?'':'s'}</span></div>`:`<div><b class="num">${fmtN(p.vol||0)}</b><span>${Pf.unit} lifted</span></div><div><b class="num">${esc(p.time||'')}</b><span>time</span></div><div><b class="num">${esc(String(p.sets??''))}</b><span>sets</span></div>${p.kcal?`<div><b class="num">~${p.kcal}</b><span>kcal</span></div>`:''}`}</div><i class="burst">${ic('heart')}</i></div>`:''}
     <div class="stats" ${p.photo?'hidden':''}><div class="stat"><div class="k">Time</div><div class="v num">${esc(p.time||'')}</div></div><div class="stat"><div class="k">Sets</div><div class="v num">${esc(String(p.sets??''))}</div></div><div class="stat"><div class="k">${p.kcal?'Calories':'Volume'}</div><div class="v num">${p.kcal?'~'+p.kcal:fmtN(p.vol||0)}</div></div></div>
-    ${p.photo?'':`<div class="pacts "><button class="pact ${liked?'liked':''}" data-a="post-like" data-v="${esc(key)}" aria-pressed="${liked}" aria-label="${liked?'Unlike':'Like'}">${ic('heart')}${likes?`<span class="num">${fmtK(likes)}</span>`:''}</button><button class="pact" data-a="cm-open" data-v="${esc(key)}" aria-label="Comment">${ic('chat')}${cm.length?`<span class="num">${fmtK(cm.length)}</span>`:''}</button><span class="spacer"></span>${dayTag(p.type)}</div>`}
+    ${`<div class="pacts"><button class="pact ${liked?'liked':''}" data-a="post-like" data-v="${esc(key)}" aria-pressed="${liked}" aria-label="${liked?'Unlike':'Like'}">${ic('heart')}${likes?`<span class="num">${fmtK(likes)}</span>`:''}</button><button class="pact" data-a="cm-open" data-v="${esc(key)}" aria-label="Comment">${ic('chat')}${cm.length?`<span class="num">${fmtK(cm.length)}</span>`:''}</button><span class="spacer"></span>${dayTag(p.type)}</div>`}
     ${likedLine(key)}
     ${p.caption?`<p class="cap"><button class="link" ${go}><b>${esc(Social.nameOf(uid))}</b></button> ${esc(p.caption)}</p>`:''}
     ${cm.length||S.cmCompose===key?`<div class="cms">${feedComments(key,uid)}</div>`:''}
@@ -1718,6 +1731,7 @@ function feedList(){
   if(!Social.loaded) return skel+skel+skel;
   const sess=feedSession(), items=feedItems(), n=S.feedN||FEED_PAGE, at=Math.min(sess.firstN||0,items.length);
   const invite=`<div class="card stack invitecard" style="gap:10px;text-align:center"><b class="h2" style="font-size:18px">You’re all caught up</b><span class="muted small">Invite friends to build your crew.</span><button class="btn primary" data-a="text-invite">${ic('plus','sm')}Invite to BOATS</button></div>`;
+  if(!items.length) return `<div class="card empty stack" style="gap:10px"><div class="h2" style="color:var(--fg)">Nothing here yet</div><span>Share a photo with the + button or invite your crew. Their posts show up here.</span><button class="btn primary" data-a="text-invite">${ic('plus','sm')}Invite to BOATS</button></div>`;
   const shown=items.slice(0,n); let html='';
   shown.forEach((x,i)=>{ if(sess.invite&&i===at) html+=invite; html+=postCard(x.id,x.p,x.id===Social.me(),x.sug); });
   if(sess.invite&&at>=shown.length&&shown.length<=n) html+=invite;
@@ -1781,13 +1795,26 @@ function vChat(){ const u=S.chatWith, msgs=chatWith(u), req=dmThreads().find(t=>
     ${req?`<div class="card stack" style="gap:8px"><span class="small"><b>${esc(Social.nameOf(u))}</b> wants to message you.</span><div class="rowx" style="gap:8px"><button class="btn sm" style="flex:1" data-a="dm-hide" data-v="${esc(u)}">Delete</button><button class="btn sm fbbtn" style="flex:1" data-a="dm-accept" data-v="${esc(u)}">Accept</button></div></div>`
       :`<div class="chatbar"><input class="input" id="dm-in" maxlength="500" placeholder="Message…" autocomplete="off" enterkeyhint="send"><button class="btn primary" style="width:auto;flex:none" data-a="dm-send">${ic('send','sm')}</button></div>`}
   </div>`; }
-function vNewPost(){ const np=S.np||{};
+function npKeep(){ const c=document.getElementById('np-cap'); if(c&&S.np) S.np.cap=c.value; }
+function vNewPost(){ const np=S.np||{}, cr=np.crop, AR={orig:'Original','1:1':'Square','4:5':'Portrait'};
+  const photo=!np.photo?`<button class="btn npick" data-a="np-pick">${ic('grid','sm')}Choose a photo<span class="muted small" style="font-weight:500">From your library, in good quality</span></button>`
+    :cr?`<div class="stack" style="gap:10px"><div class="cropbox" id="cropbox" style="aspect-ratio:${cr.ar==='1:1'?'1/1':cr.ar==='4:5'?'4/5':(np.w+'/'+np.h)}"><img src="${esc(np.orig)}" alt="" draggable="false" style="object-position:${cr.x*100}% ${cr.y*100}%"></div>
+        <div class="seg">${Object.entries(AR).map(([k,l])=>`<button class="${cr.ar===k?'on':''}" data-a="np-ar" data-v="${k}">${l}</button>`).join('')}</div>
+        <span class="muted small" style="text-align:center">${cr.ar==='orig'?'Pick a shape to crop.':'Drag the photo to choose what shows.'}</span>
+        <div class="rowx" style="gap:8px"><button class="btn" style="flex:1" data-a="np-crop-cancel">Cancel</button><button class="btn primary" style="flex:1" data-a="np-crop-done">Done</button></div></div>`
+    :`<div class="stack" style="gap:10px"><img class="pump npimg" src="${esc(np.photo)}" alt="Your photo">
+        <div class="nptools"><button data-a="np-crop">${ic('crop','sm')}<span>Crop</span></button><button data-a="np-song" class="${np.song&&np.song.title?'on':''}">${ic('music','sm')}<span>${np.song&&np.song.title?'Song added':'Add song'}</span></button><button data-a="np-pick">${ic('swap','sm')}<span>Replace</span></button><button data-a="np-trash" aria-label="Remove photo">${ic('trash','sm')}<span>Remove</span></button></div></div>`;
+  const song=np.songOpen?`<div class="card stack" style="gap:10px"><b>Add a song</b>
+      <div class="grid2"><input class="input" id="np-st" maxlength="60" placeholder="Song" value="${esc((np.song||{}).title||'')}"><input class="input" id="np-sa" maxlength="60" placeholder="Artist" value="${esc((np.song||{}).artist||'')}"></div>
+      <input class="input" id="np-sl" type="url" inputmode="url" maxlength="200" placeholder="Link (Spotify, Apple Music, YouTube), optional" autocapitalize="off" value="${esc((np.song||{}).link||'')}">
+      <span class="muted small">Shows as a song tag on your post. Tapping it opens the link.</span>
+      <div class="rowx" style="gap:8px">${np.song&&np.song.title?`<button class="btn" style="flex:1" data-a="np-song-clear">Remove song</button>`:`<button class="btn" style="flex:1" data-a="np-song-cancel">Cancel</button>`}<button class="btn primary" style="flex:1" data-a="np-song-save">Add</button></div></div>`
+    :np.song&&np.song.title?`<div class="psong">${ic('music','xs')}<span>${esc(np.song.artist?np.song.artist+' · ':'')}${esc(np.song.title)}</span></div>`:'';
   return `<div class="screen npage">
-    <div class="rowx" style="gap:8px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="np-close" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">New post</span>${Social.postedToday()?'':`<button class="btn sm primary" style="width:auto;flex:none" data-a="np-share" ${np.photo?'':'disabled'}>Share</button>`}</div>
-    ${np.photo?`<div class="pumpwrap"><img class="pump" style="aspect-ratio:auto" src="${esc(np.photo)}" alt="Your photo"><button class="iconbtn pumpx" data-a="np-pick" aria-label="Change photo">${ic('swap','sm')}</button></div>`
-      :`<button class="btn npick" data-a="np-pick">${ic('grid','sm')}Choose a photo<span class="muted small" style="font-weight:500">From your library, in good quality</span></button>`}
-    <div class="field"><label for="np-cap">Caption</label><textarea class="input" id="np-cap" maxlength="300" rows="3" placeholder="Say something about it">${esc(np.cap||'')}</textarea></div>
-    ${Social.postedToday()?`<div class="card muted small">You’ve shared 3 posts today, the daily limit.</div>`:`<span class="muted small">It shows in the feed and on your profile. Up to 3 posts a day.</span>`}
+    <div class="rowx" style="gap:8px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="np-close" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">New post</span></div>
+    ${photo}${cr?'':song}
+    ${cr?'':`<div class="field"><label for="np-cap">Caption</label><textarea class="input" id="np-cap" maxlength="300" rows="3" placeholder="Say something about it">${esc(np.cap||'')}</textarea></div>
+    ${Social.postedToday()?`<div class="card muted small">You’ve shared 3 posts today, the daily limit.</div>`:`<button class="btn primary" data-a="np-share" ${np.photo?'':'disabled'}>Share to feed</button><span class="muted small" style="text-align:center;margin-top:-6px">Shows in the feed and on your profile. Up to 3 posts a day.</span>`}`}
   </div>`; }
 function vFriends(){
   if(S.fview==='activity') return vActivity();
@@ -1838,12 +1865,13 @@ function profileBlock(uid,c,me){
   return `<div class="prof">
     <div class="rowx" style="gap:18px">${avatar(c.username||'?',c.photo,c.status?st.cls:null,true)}
       <div class="pstats"><div><b class="num">${wk}</b><span>voyages</span></div>${stat(fol,'crew')}${stat(fing,'following')}</div></div>
-    <div class="pname"><h2 class="h2 ${fn?'fglow':''}">${esc(c.username||'Lifter')}</h2>${fn?`<button class="ftag" data-a="founder-info" data-v="${fn}" aria-label="Founding Crew member number ${fn}">#${String(fn).padStart(3,'0')}</button>`:''}</div>
-    ${tags||c.status?`<div class="pmeta">${tags?`<div class="tagline1">${tags}</div>`:''}${c.status?`<span class="small muted">${st.label}</span>`:''}</div>`:''}
-    ${me||c.status||(!me&&c.splitPub)?`<div class="rowx" style="gap:8px;justify-content:flex-end;flex-wrap:wrap">${!me&&c.splitPub?`<button class="tag copytag" data-a="split-view" data-v="${esc(uid)}">${ic('clip','xs')}Copy split</button>`:''}${me||c.status?`<button class="streakpill" data-a="streak-detail" data-v="${esc(uid)}" data-top="5" aria-label="${streakN} day streak${rl?', '+esc(rl):''}">${ic('flame','xs')}${rl?`<span>${esc(rl)}</span><span class="sl"> · <span class="num">${streakN}</span> days</span>`:`<span><span class="num">${streakN}</span>-day streak</span>`}</button>`:''}</div>`:''}
+    <div class="rowx" style="align-items:flex-start;gap:12px"><div class="stack" style="gap:4px;flex:1;min-width:0"><div class="rowx" style="gap:8px;flex-wrap:nowrap;min-width:0">${me?`<h2 class="h2 ${fn?'fglow':''}" style="font-size:22px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.username||'Lifter')}</h2>`:''}${fn?`<button class="ftag" data-a="founder-info" data-v="${fn}" aria-label="Founding Crew member number ${fn}">#${String(fn).padStart(3,'0')}</button>`:''}</div>
+      ${c.status?`<span class="small muted">${st.label}</span>`:''}</div>
+      <div class="stack" style="gap:6px;align-items:flex-end;flex:none">${me||c.status?`<button class="streakpill" data-a="streak-detail" data-v="${esc(uid)}" data-top="5" aria-label="${streakN} day streak${rl?', '+esc(rl):''}">${ic('flame','xs')}${rl?`<span>${esc(rl)}</span><span class="sl"> · <span class="num">${streakN}</span> days</span>`:`<span><span class="num">${streakN}</span>-day streak</span>`}</button>`:''}${!me&&c.splitPub?`<button class="tag copytag" data-a="split-view" data-v="${esc(uid)}">${ic('clip','xs')}Copy split</button>`:''}</div></div>
     ${!me&&S.unfAsk&&Pf.friends.includes(uid)?`<div class="card rowx" style="gap:8px;padding:10px 12px"><span style="flex:1;min-width:0">Unfollow ${esc(c.username||'')}?</span><button class="btn sm" style="width:auto" data-a="unf-ask">Cancel</button><button class="btn sm danger" style="width:auto" data-a="friend" data-v="${esc(uid)}">Unfollow</button></div>`:''}
     ${c.bio?`<p class="bio2" style="margin:-6px 0 0;white-space:pre-line">${bioHtml(c.bio)}</p>`:me?`<button class="link" style="text-align:left;margin-top:-6px" data-a="settings">Add a bio</button>`:''}
     ${c.link&&linkHtml(c.link)?`<div style="margin:-8px 0 0">${linkHtml(c.link)}</div>`:''}
+    ${tags?`<div class="tagline1 tagcenter">${tags}</div>`:''}
     ${me?ownGrid():pics.length?`<div class="pgrid3">${pics.map(p=>`<button data-a="posts-open" data-v="${esc(uid+':'+p.id)}" aria-label="${esc(dayWord(p.type))}, ${shortDate(p.at)}"><img src="${esc(p.photo)}" alt="" loading="lazy"></button>`).join('')}</div>`
       :`<div class="card empty" style="padding:28px 16px">${ic('camera')}<div style="margin-top:6px">No posts yet.</div></div>`}
   </div>`;
@@ -1962,6 +1990,11 @@ function vInstall(){ const pl=S.instTab||'ios', steps=INSTALL_STEPS[pl], i=Math.
     </div>
     <span class="muted small" style="text-align:center">Swipe the card to move between steps.</span>
   </div>${tabbar()}`; }
+let CRD=null;
+document.addEventListener('pointerdown',e=>{ const b=e.target.closest('#cropbox'); if(!b||!S.np||!S.np.crop) return; e.preventDefault(); CRD={b,x:e.clientX,y:e.clientY,cx:S.np.crop.x,cy:S.np.crop.y}; });
+document.addEventListener('pointermove',e=>{ if(!CRD) return; const np=S.np, r=CRD.b.getBoundingClientRect(), sc=Math.max(r.width/np.w,r.height/np.h), ox=np.w*sc-r.width, oy=np.h*sc-r.height;
+  const cl=v=>Math.max(0,Math.min(1,v)); if(ox>1) np.crop.x=cl(CRD.cx-(e.clientX-CRD.x)/ox); if(oy>1) np.crop.y=cl(CRD.cy-(e.clientY-CRD.y)/oy); const im=CRD.b.querySelector('img'); if(im) im.style.objectPosition=`${np.crop.x*100}% ${np.crop.y*100}%`; });
+['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,()=>{ CRD=null; }));
 let ISW=null;
 document.addEventListener('touchstart',e=>{ const c=e.target.closest('#istep'); if(!c) return; ISW={x:e.touches[0].clientX,y:e.touches[0].clientY}; },{passive:true});
 document.addEventListener('touchend',e=>{ if(!ISW) return; const t=e.changedTouches[0], dx=t.clientX-ISW.x, dy=t.clientY-ISW.y; ISW=null; if(Math.abs(dx)<50||Math.abs(dx)<Math.abs(dy)*1.3) return; S.noClick=Date.now(); A[dx<0?'inst-next':'inst-back'](); },{passive:true});
@@ -1982,9 +2015,9 @@ function vSettings(){
         ${lockRow('goal','Goal',GOALS[Pf.goal].l)}
         ${lockRow('height','Height',heightStr())}
         ${lockRow('weight','Body weight',Pf.bodyweight?Pf.bodyweight+' '+Pf.unit:'')}
-        ${lockRow('status','Gym status and streak','At the gym, trained today, or not yet')}
       </div></div>
     <div class="stack" style="gap:8px"><span class="flabel">Sharing</span>
+      <button class="li card" style="padding:12px 16px" data-a="show" data-v="status"><span class="grow"><span class="t">Gym status and streak</span><br><span class="s">Show if you’re at the gym, trained today, and your streak</span></span><span class="small muted" style="margin-right:6px">${Pf.show.status?'Public':'Private'}</span><span class="toggle ${Pf.show.status?'on':''}"></span></button>
       <button class="li card" style="padding:12px 16px" data-a="share-split"><span class="grow"><span class="t">Make my split public</span><br><span class="s">People who visit your profile can view and copy your weekly split</span></span><span class="toggle ${Pf.shareSplit?'on':''}"></span></button>
       <button class="li card" style="padding:12px 16px" data-a="autoshare"><span class="grow"><span class="t">Share workouts by default</span><br><span class="s">"Share to feed" starts switched on when you end a workout</span></span><span class="toggle ${Pf.autoShare!==false?'on':''}"></span></button></div>
     <div class="field"><span class="flabel">Goal</span>${seg('goal',Pf.goal,{bulk:'Bulk',maintain:'Maintain',cut:'Cut'})}</div>
@@ -2776,8 +2809,8 @@ const A = {
   'cm-reply'(v){ S.sheet.re=+v; renderSheet(); setTimeout(()=>document.getElementById('cm-in')?.focus(),30); },
   'cm-add'(){ const i=document.getElementById('cm-in'), t=(i.value||'').trim(); if(!t) return; const r=Social.myReacts(); const list=r.comments[S.sheet.key]=r.comments[S.sheet.key]||[]; const o={at:Date.now(),text:t.slice(0,200)}; if(S.sheet.re) o.re=S.sheet.re; S.sheet.re=null; list.push(o); if(list.length>20) list.shift(); Social.saveReacts(r); renderSheet(); },
   'cm-del'(v){ const r=Social.myReacts(), k=S.sheet.key; r.comments[k]=(r.comments[k]||[]).filter(c=>String(c.at)!==String(v)); Social.saveReacts(r); renderSheet(); },
-  'post-del'(v){ S.sheet={kind:'postdel',id:v}; renderSheet(); },
-  'post-del-yes'(v){ Social.delPost(v); S.sheet=null; renderSheet(); toast('Post deleted'); },
+  'post-del'(v){ askConfirm('Delete post?','It’s removed from the feed.','Delete post',()=>A['post-del-yes'](v),'Keep it'); },
+  'post-del-yes'(v){ Social.delPost(v); S.sheet=null; renderSheet(); S.feedSeed=Date.now(); popCue(); },
   autoshare(){ Pf.autoShare=Pf.autoShare===false; Store.save(); render(); },
   ptab(v){ S.ptab=v; render(); },
   'bw-edit'(){ S.bwEdit=true; render(); setTimeout(()=>document.getElementById('bw-today')?.focus(),30); },
@@ -2856,9 +2889,23 @@ const A = {
     S.draft={username:Pf.username,town:Pf.town,bio:Pf.bio,link:Pf.link}; Store.save(true); Social.publish(); render(); popCue(); },
   'np-open'(){ S.np={photo:null,cap:''}; S.fview='newpost'; S.tab='friends'; S.route='app'; window.scrollTo(0,0); render(); },
   'np-close'(){ S.np=null; S.fview=null; render(); },
+  'np-trash'(){ npKeep(); Object.assign(S.np,{photo:null,orig:null,crop:null}); render(); },
+  'np-crop'(){ npKeep(); S.np.crop={ar:'4:5',x:.5,y:.5}; render(); },
+  'np-ar'(v){ S.np.crop.ar=v; render(); },
+  'np-crop-cancel'(){ S.np.crop=null; render(); },
+  async 'np-crop-done'(){ const np=S.np, cr=np.crop; if(cr.ar==='orig'){ np.photo=np.orig; np.crop=null; render(); return; }
+    const img=await loadImg(np.orig), iw=img.width, ih=img.height, r=cr.ar==='1:1'?1:4/5; let sw=iw, sh=iw/r; if(sh>ih){ sh=ih; sw=ih*r; }
+    const sx=(iw-sw)*cr.x, sy=(ih-sh)*cr.y, ow=Math.min(1080,Math.round(sw)), oh=Math.round(ow/r), c=document.createElement('canvas'); c.width=ow; c.height=oh;
+    c.getContext('2d').drawImage(img,sx,sy,sw,sh,0,0,ow,oh); np.photo=c.toDataURL('image/jpeg',.85); np.crop=null; render(); },
+  'np-song'(){ npKeep(); S.np.songOpen=true; render(); setTimeout(()=>document.getElementById('np-st')?.focus(),30); },
+  'np-song-cancel'(){ S.np.songOpen=false; render(); },
+  'np-song-clear'(){ S.np.song=null; S.np.songOpen=false; render(); },
+  'np-song-save'(){ const t=(document.getElementById('np-st')?.value||'').trim(), a=(document.getElementById('np-sa')?.value||'').trim(), l=(document.getElementById('np-sl')?.value||'').trim();
+    if(!t){ document.getElementById('np-st')?.classList.add('bad'); return; } const link=l?linkOf(l):''; if(l&&!link){ document.getElementById('np-sl')?.classList.add('bad'); return; }
+    S.np.song={title:t.slice(0,60),artist:a.slice(0,60),link}; S.np.songOpen=false; render(); },
   'np-pick'(){ const c=document.getElementById('np-cap'); if(c&&S.np) S.np.cap=c.value; S.photoFor='newpost'; document.getElementById('photo-in').click(); },
   async 'np-share'(){ const np=S.np; if(!np||!np.photo) return; if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit.'); return; } const cap=(document.getElementById('np-cap')?.value||'').trim().slice(0,300), id='u'+uid();
-    boatLoading(true,'Posting…'); try{ const small=await shrinkData(np.photo,480,.72); const hq=await savePhotoHq(id,np.photo); await Social.addPost({id,at:Date.now(),sharedAt:Date.now(),title:'',type:'',caption:cap,photo:small,hq,kind:'photo'}); } finally{ boatLoading(false); }
+    boatLoading(true,'Posting…'); try{ const small=await shrinkData(np.photo,480,.72); const hq=await savePhotoHq(id,np.photo); await Social.addPost({id,at:Date.now(),sharedAt:Date.now(),title:'',type:'',caption:cap,photo:small,hq,kind:'photo',...(np.song&&np.song.title?{song:np.song}:{})}); } finally{ boatLoading(false); }
     S.np=null; S.fview=null; S.feedN=10; S.feedSeed=Date.now(); window.scrollTo(0,0); render(); popCue(); },
   admin(){ if(!window.boatsAdmin) return; S.meView='admin'; S.adm=null; window.scrollTo(0,0); render(); window.boatsAdmin.load().then(d=>{ S.adm=d; },e=>{ S.adm={error:'Could not load data ('+((e&&e.code)||'error')+').'}; }).then(()=>{ if(S.meView==='admin') render(); }); },
   'adm-tab'(v){ S.admTab=v; render(); },
@@ -2968,7 +3015,7 @@ function onChange(e){
     boatLoading(true,'Loading picture…'); readImage(f, target==='avatar'?{square:400,q:.86,minSide:200}:{max:1080,q:.82,minSide:600}).finally(()=>boatLoading(false)).then(url=>{
       if(target==='avatar'){ Pf.photo=url; Store.save(); render(); toast('Picture updated'); }
       else if(target==='active'){ if(Pf.active){ Pf.active.pump=url; Store.save(); render(); toast('Pump picture saved. It goes with this workout when you end it.'); } }
-      else if(target==='newpost'){ if(S.np){ S.np.photo=url; render(); } }
+      else if(target==='newpost'){ if(S.np){ const im=new Image(); im.onload=()=>{ S.np.orig=url; S.np.photo=url; S.np.w=im.width; S.np.h=im.height; S.np.crop=null; render(); }; im.src=url; } }
       else if(target==='finish'){ if(S.sheet&&S.sheet.kind==='finish'){ readTitle(); S.sheet.pump=url; renderSheet(); } }
       else { const w=Store.workouts.find(x=>x.id===target); if(w){ Store.updateWorkout(w,{pump:url}); render(); if(S.shareAfterPhoto===target){ S.shareAfterPhoto=null; A['wk-share'](target); } else toast('Pump picture added'); } }
     }).catch(e=>toast(e&&e.message==='small'?(target==='avatar'?'That picture is too small. Pick one that is at least 200 pixels wide.':'That photo is too low quality. Pick one that is at least 600 pixels on its shortest side.'):'That file is not an image Boats can read.'));
