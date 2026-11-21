@@ -146,6 +146,17 @@ svg.i.xs{width:14px;height:14px}
 .cmbox .input{height:40px;font-size:14px}
 .cmpost{font-weight:700;color:var(--accent)}
 .li.dimday{opacity:.45}
+.cropcv{width:100%;aspect-ratio:4/5;border-radius:14px;background:#000;touch-action:none;cursor:grab;display:block}
+.nptools{grid-template-columns:repeat(3,1fr)!important}
+.mfield{position:relative}
+.msug{display:flex;flex-direction:column;margin-top:6px;border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.msug button{display:flex;align-items:center;gap:10px;padding:9px 12px;border:0;background:none;color:var(--fg);text-align:left}
+.msug button+button{border-top:1px solid var(--line)}
+.msug .av{width:30px;height:30px;font-size:12px}
+.cmbox{flex-wrap:wrap}.cmbox .msug{flex-basis:100%}
+.post .cap .link.mention,.cmtx .link.mention,.cmline .link.mention{color:var(--accent);font-weight:600}
+.fbitem.sel{border-color:var(--accent)}
+.fbchk{color:var(--muted)}.fbchk.on{color:#fff;background:var(--accent);border-radius:50%}
 .illo{border-radius:16px;overflow:hidden;line-height:0}
 .illo svg{width:100%;height:auto;display:block}
 textarea.input{padding:12px 14px;height:auto;resize:none}
@@ -179,11 +190,12 @@ button.cday:active{background:var(--surface-2)}
 .pname{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;text-align:center}
 .pname .h2{font-size:22px;margin:0;overflow-wrap:anywhere}
 .fglow{text-shadow:0 0 14px color-mix(in srgb,var(--accent) 55%,transparent),0 0 2px color-mix(in srgb,var(--accent) 35%,transparent),0 1px 0 rgba(0,0,0,.18)}
-.ftag{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;font:800 12px/1 var(--display);letter-spacing:.04em;color:var(--fg);border:1px solid color-mix(in srgb,var(--line) 55%,transparent);background:linear-gradient(180deg,color-mix(in srgb,var(--surface) 96%,#fff),color-mix(in srgb,var(--surface) 86%,#000 3%));box-shadow:0 6px 14px -6px rgba(0,0,0,.28),0 0 12px color-mix(in srgb,var(--accent) 18%,transparent),inset 0 1px 2px rgba(255,255,255,.25),inset 0 -3px 6px rgba(0,0,0,.06)}
+.ftag{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;font:800 12px/1 var(--display);letter-spacing:.04em;color:var(--fg);border:1px solid color-mix(in srgb,var(--line) 55%,transparent);background:linear-gradient(180deg,color-mix(in srgb,var(--surface) 96%,#fff),color-mix(in srgb,var(--surface) 86%,#000 3%));box-shadow:0 8px 18px -8px rgba(0,0,0,.35),0 0 22px 2px color-mix(in srgb,var(--accent) 30%,transparent);overflow:visible}
 .ftag.big{height:34px;padding:0 14px;font-size:16px;align-self:center}
 .pmeta{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
 .pmeta .tagline1{justify-content:center;flex-wrap:wrap}
-.pstreak{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:999px;border:0;background:color-mix(in srgb,var(--streak) 16%,transparent);color:var(--streak);font-size:12px;font-weight:700;flex:none;white-space:nowrap}
+.pstreak{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 11px;border-radius:999px;border:0;background:var(--streak);color:#fff;font-size:13px;font-weight:800;letter-spacing:.01em;flex:none;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.pstreak svg{width:14px;height:14px}
 @media (max-width:370px){.streakpill .sl{display:block;width:100%;text-align:center}.streakpill:has(.sl){flex-wrap:wrap;justify-content:center;height:auto;padding-top:5px;padding-bottom:5px}}
 textarea::placeholder,input::placeholder{transition:color .15s}
 textarea:focus::placeholder,input:focus::placeholder{color:transparent}
@@ -247,7 +259,7 @@ textarea.input{font-family:inherit;font-size:16px;line-height:1.4}
 .input:focus::placeholder,textarea:focus::placeholder{color:transparent}
 .followsm{width:auto;min-width:110px;height:36px}
 [hidden]{display:none!important}
-html{touch-action:manipulation}
+html{touch-action:manipulation;background:var(--bg)}
 .daytag{margin-left:auto;flex:none}
 .pacts{align-items:center}
 .swrap{position:relative;overflow:hidden;border-radius:12px}
@@ -277,14 +289,17 @@ html{touch-action:manipulation}
 .chatpage .whobtn{gap:8px}
 .chatpage .whobtn .av{width:32px;height:32px}
 .igpost{position:relative}
-.igpost.hasphoto .who{position:absolute;top:16px;left:0;right:0;z-index:2;padding:0 8px;color:#fff;gap:7px;font-size:12px}
+.igpost.hasphoto .who{position:absolute;top:16px;left:0;right:0;z-index:2;padding:0 8px;color:#fff;gap:8px;font-size:15px}
+.igpost.hasphoto .who .av{width:38px;height:38px;font-size:15px}
 .igpost.hasphoto .who .av{width:28px;height:28px;font-size:12px}
 .igpost.hasphoto .who .whobtn{gap:7px}
 .igpost.hasphoto .who b{text-shadow:0 1px 6px rgba(0,0,0,.55)}
 .igpost.hasphoto .who .iconbtn{color:#fff}
 .igpost.hasphoto .ovwrap::before{content:'';position:absolute;left:0;right:0;top:0;height:90px;background:linear-gradient(rgba(0,0,0,.38),transparent);z-index:1;pointer-events:none}
 .igpost.hasphoto .who .av{box-shadow:0 0 0 2px rgba(255,255,255,.9)}
-.pact{display:inline-flex;align-items:center;gap:5px;height:40px;padding:0 8px;background:none;border:0;color:var(--fg);font-weight:600;font-size:14px}
+.pact{display:inline-flex;align-items:center;gap:6px;height:48px;padding:0 9px;background:none;border:0;color:var(--fg);font-weight:600;font-size:17.5px}
+.pact svg{width:28px;height:28px}
+.pago{color:var(--muted);font-size:13px;white-space:nowrap;margin-left:8px}
 .pact.liked{color:var(--bad)}
 .pact.liked svg{fill:currentColor}
 .pacts .daytag{margin-left:0}
@@ -365,7 +380,7 @@ html{touch-action:manipulation}
 .prtag{background:var(--good-soft);color:var(--good);font-weight:700}
 .prtag svg{fill:currentColor}
 .whobtn{display:flex;align-items:center;gap:10px;flex:1;min-width:0;background:none;border:0;padding:0;color:inherit;font:inherit}
-.pacts{display:flex;gap:2px;margin:-4px 0 -8px -8px}
+.pacts{display:flex;gap:2px;margin:4px 0 -8px -9px;align-items:center}
 .pacts .liked{color:var(--bad)}
 .pacts .liked svg{fill:currentColor}
 .post .cap{margin:0;line-height:1.4}
@@ -691,7 +706,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v99';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v100';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -922,7 +937,7 @@ const dateKey = (d=new Date()) => { const x=new Date(d); return x.getFullYear()+
 function defaultProfile(){
   return { v:2, onboarded:false, username:'', town:'', photo:'', unit:guessUnit(), ft:5, inch:10, cm:178, bodyweight:'', goal:'bulk',
     repMin:7, repMax:10, rest:90, sound:true, theme:'dark',
-    show:{photo:false,town:false,goal:true,height:false,weight:false,status:true}, vibrate:true, flash:true,
+    show:{photo:false,town:true,goal:true,height:false,weight:false,status:true}, vibrate:false, flash:false,
     split:{mon:'push',tue:'pull',wed:'legs',thu:'rest',fri:'push',sat:'pull',sun:'legs'},
     plans:{mon:[],tue:[],wed:[],thu:[],fri:[],sat:[],sun:[]}, active:null, adjusted:{}, nextW:{}, friends:[], custom:[], bwLog:[],
     program:null, checklist:[], checks:{}, targets:{steps:'',cal:'',protein:'',sleep:''}, goalWeight:'', goalBy:'', sessionMin:'' };
@@ -1662,7 +1677,7 @@ function feedComments(key,owner){ const all=Social.comments(key), top=all.filter
   const sc=c=>Social.likes(ckOf(key,c)); const own=top.filter(c=>c.uid===owner).sort((a,b)=>b.at-a.at), oth=top.filter(c=>c.uid!==owner).sort((a,b)=>sc(b)-sc(a)||a.at-b.at);
   const extra=(S.cmShow||{})[key]||0, shown=[...own.slice(0,1+(extra?own.length:0)), ...oth.slice(0,1+extra)], more=top.length-shown.length;
   const row=(c,sub,parent)=>{ const ck=ckOf(key,c), n=Social.likes(ck), on=Social.liked(ck);
-    return `<div class="cmt ${sub?'sub':''}"><div class="cmrow"><span class="cmtx"><button class="link" data-a="${c.uid===Social.me()?'tab':'person'}" data-v="${c.uid===Social.me()?'me':esc(c.uid)}"><b>${esc(Social.nameOf(c.uid))}</b></button> ${esc(c.text)}</span><button class="cmheart ${on?'on':''}" data-a="cm-like" data-v="${esc(ck)}" aria-label="${on?'Unlike':'Like'} comment">${ic('heart','xs')}</button></div>
+    return `<div class="cmt ${sub?'sub':''}"><div class="cmrow"><span class="cmtx"><button class="link" data-a="${c.uid===Social.me()?'tab':'person'}" data-v="${c.uid===Social.me()?'me':esc(c.uid)}"><b>${esc(Social.nameOf(c.uid))}</b></button> ${mentionHtml(c.text)}</span><button class="cmheart ${on?'on':''}" data-a="cm-like" data-v="${esc(ck)}" aria-label="${on?'Unlike':'Like'} comment">${ic('heart','xs')}</button></div>
       <div class="cmmeta">${ago(c.at)}${n?` · ${fmtK(n)} like${n===1?'':'s'}`:''} · <button class="link" data-a="fcm-reply" data-v="${esc(ckOf(key,parent||c))}">Reply</button>${c.uid===Social.me()||owner===Social.me()?` · <button class="link" data-a="cm-del" data-v="${esc(ck)}">Delete</button>`:''}</div></div>`; };
   const box=(re,ph)=>`<div class="cmbox"><input class="input" maxlength="300" placeholder="${esc(ph)}" enterkeyhint="send"><button class="link cmpost" data-a="fcm-post" data-v="${esc(key)}" ${re?`data-re="${re}"`:''}>Post</button></div>`;
   return `${shown.map(c=>{ const ks=kids(c), ck=ckOf(key,c), open=(S.repOpen||{})[ck];
@@ -1683,14 +1698,12 @@ function postCard(uid,p,mine,suggest){
   return `<article class="card post igpost ${p.photo?'hasphoto':''}" data-key="${esc(key)}" ${suggest?'data-sug="1"':''}>
     <div class="who"><button class="whobtn" ${go} aria-label="Open ${esc(Social.nameOf(uid))}'s profile">${avatar(Social.nameOf(uid),Social.photoOf(uid),null)}<span style="flex:1;min-width:0;text-align:left"><b>${esc(Social.nameOf(uid))}</b></span></button>${postStreakBadge(uid)}
       ${mine?`<button class="iconbtn" data-a="post-del" data-v="${esc(p.id)}" aria-label="Delete post">${ic('trash','sm')}</button>`:''}${suggest&&!Pf.friends.includes(uid)?`<button class="btn sm primary" style="width:auto;flex:none" data-a="follow-sug" data-v="${esc(uid)}">Follow</button>`:''}</div>
-    ${p.song&&p.song.title?`<div class="psong">${ic('music','xs')}${p.song.link&&/^https?:\/\//.test(p.song.link)?`<a href="${esc(p.song.link)}" target="_blank" rel="noopener nofollow ugc">`:'<span>'}${esc(p.song.artist?p.song.artist+' · ':'')}${esc(p.song.title)}${p.song.link&&/^https?:\/\//.test(p.song.link)?'</a>':'</span>'}</div>`:''}
     ${p.photo?`<div class="phwrap"><div class="ovwrap" data-pk="${esc(key)}"><img class="pump" src="${esc(hqSrc(uid,p))}" ${p.hq&&!HQ[uid+'_'+p.id]?`data-hq="${esc(uid+'_'+p.id)}"`:''} alt="${esc(Social.nameOf(uid))}'s photo. Double tap to like, hold to see stats" loading="lazy" draggable="false"><div class="holdstats">${p.kind==='photo'?`<div><b class="num">${fmtK(likes)}</b><span>like${likes===1?'':'s'}</span></div><div><b class="num">${fmtK(cm.length)}</b><span>comment${cm.length===1?'':'s'}</span></div>`:`<div><b class="num">${fmtN(p.vol||0)}</b><span>${Pf.unit} lifted</span></div><div><b class="num">${esc(p.time||'')}</b><span>time</span></div><div><b class="num">${esc(String(p.sets??''))}</b><span>sets</span></div>${p.kcal?`<div><b class="num">~${p.kcal}</b><span>kcal</span></div>`:''}`}</div><i class="burst">${ic('heart')}</i></div>`:''}
     <div class="stats" ${p.photo?'hidden':''}><div class="stat"><div class="k">Time</div><div class="v num">${esc(p.time||'')}</div></div><div class="stat"><div class="k">Sets</div><div class="v num">${esc(String(p.sets??''))}</div></div><div class="stat"><div class="k">${p.kcal?'Calories':'Volume'}</div><div class="v num">${p.kcal?'~'+p.kcal:fmtN(p.vol||0)}</div></div></div>
-    ${`<div class="pacts"><button class="pact ${liked?'liked':''}" data-a="post-like" data-v="${esc(key)}" aria-pressed="${liked}" aria-label="${liked?'Unlike':'Like'}">${ic('heart')}${likes?`<span class="num">${fmtK(likes)}</span>`:''}</button><button class="pact" data-a="cm-open" data-v="${esc(key)}" aria-label="Comment">${ic('chat')}${cm.length?`<span class="num">${fmtK(cm.length)}</span>`:''}</button><span class="spacer"></span>${dayTag(p.type)}</div>`}
+    ${`<div class="pacts"><button class="pact ${liked?'liked':''}" data-a="post-like" data-v="${esc(key)}" aria-pressed="${liked}" aria-label="${liked?'Unlike':'Like'}">${ic('heart')}${likes?`<span class="num">${fmtK(likes)}</span>`:''}</button><button class="pact" data-a="cm-open" data-v="${esc(key)}" aria-label="Comment">${ic('chat')}${cm.length?`<span class="num">${fmtK(cm.length)}</span>`:''}</button><span class="spacer"></span>${dayTag(p.type)}<span class="pago">${agoLong(p.at)}</span></div>`}
     ${likedLine(key)}
-    ${p.caption?`<p class="cap"><button class="link" ${go}><b>${esc(Social.nameOf(uid))}</b></button> ${esc(p.caption)}</p>`:''}
+    ${p.caption?`<p class="cap"><button class="link" ${go}><b>${esc(Social.nameOf(uid))}</b></button> ${mentionHtml(p.caption)}</p>`:''}
     ${cm.length||S.cmCompose===key?`<div class="cms">${feedComments(key,uid)}</div>`:''}
-    <div class="muted small" style="margin-top:-4px">${agoLong(p.at)}</div>
   </article>`;
 }
 function suggestedPosts(n){ const me=Social.me(), now=Date.now(), out=[];
@@ -1712,6 +1725,7 @@ function buildFeed(){ const me=Social.me(), now=Date.now(), fol=new Set(Pf.frien
     pool.push({k,id,p,likes,cmUsers,rel,sc}); }
   const cmp=(a,b)=>b.sc-a.sc||b.p.at-a.p.at||(a.k<b.k?-1:1), used=new Set(), first=[], per={};
   const take=x=>{ used.add(x.k); first.push(x); per[x.id]=(per[x.id]||0)+1; };
+  const pin=S.pinNow&&pool.find(x=>x.id===me&&x.p.id===S.pinNow); if(pin) take(pin);
   // 1) up to 2 recent posts from different people you follow
   const known=pool.filter(x=>x.id!==me&&fol.has(x.id)).sort((a,b)=>b.p.at-a.p.at); const seen=new Set();
   for(const x of known){ if(first.length>=2) break; if(seen.has(x.id)) continue; seen.add(x.id); take(x); }
@@ -1799,26 +1813,25 @@ function vChat(){ const u=S.chatWith, msgs=chatWith(u), req=dmThreads().find(t=>
       :`<div class="chatbar"><input class="input" id="dm-in" maxlength="500" placeholder="Message…" autocomplete="off" enterkeyhint="send"><button class="btn primary" style="width:auto;flex:none" data-a="dm-send">${ic('send','sm')}</button></div>`}
   </div>`; }
 function npKeep(){ const c=document.getElementById('np-cap'); if(c&&S.np) S.np.cap=c.value; }
-function vNewPost(){ const np=S.np||{}, cr=np.crop, AR={orig:'Original','1:1':'Square','4:5':'Portrait'};
+function vNewPost(){ const np=S.np||{}, cr=np.crop;
   const photo=!np.photo?`<button class="btn npick" data-a="np-pick">${ic('grid','sm')}Choose a photo<span class="muted small" style="font-weight:500">From your library, in good quality</span></button>`
-    :cr?`<div class="stack" style="gap:10px"><div class="cropbox" id="cropbox" style="aspect-ratio:${cr.ar==='1:1'?'1/1':cr.ar==='4:5'?'4/5':(np.w+'/'+np.h)}"><img src="${esc(np.orig)}" alt="" draggable="false" style="object-position:${cr.x*100}% ${cr.y*100}%"></div>
-        <div class="seg">${Object.entries(AR).map(([k,l])=>`<button class="${cr.ar===k?'on':''}" data-a="np-ar" data-v="${k}">${l}</button>`).join('')}</div>
-        <span class="muted small" style="text-align:center">${cr.ar==='orig'?'Pick a shape to crop.':'Drag the photo to choose what shows.'}</span>
+    :np.editing?`<div class="stack" style="gap:12px"><canvas class="cropcv" id="cropcv" width="800" height="1000" aria-label="Drag to move the photo"></canvas>
+        <div class="rowx" style="gap:10px">${ic('search','sm')}<input type="range" id="np-zoom" min="1" max="3" step="0.01" value="${cr.z}" aria-label="Zoom" style="flex:1"></div>
+        <span class="muted small" style="text-align:center">Drag to move · slide to zoom</span>
         <div class="rowx" style="gap:8px"><button class="btn" style="flex:1" data-a="np-crop-cancel">Cancel</button><button class="btn primary" style="flex:1" data-a="np-crop-done">Done</button></div></div>`
     :`<div class="stack" style="gap:10px"><img class="pump npimg" src="${esc(np.photo)}" alt="Your photo">
-        <div class="nptools"><button data-a="np-crop">${ic('crop','sm')}<span>Crop</span></button><button data-a="np-song" class="${np.song&&np.song.title?'on':''}">${ic('music','sm')}<span>${np.song&&np.song.title?'Song added':'Add song'}</span></button><button data-a="np-pick">${ic('swap','sm')}<span>Replace</span></button><button data-a="np-trash" aria-label="Remove photo">${ic('trash','sm')}<span>Remove</span></button></div></div>`;
-  const song=np.songOpen?`<div class="card stack" style="gap:10px"><b>Add a song</b>
-      <div class="grid2"><input class="input" id="np-st" maxlength="60" placeholder="Song" value="${esc((np.song||{}).title||'')}"><input class="input" id="np-sa" maxlength="60" placeholder="Artist" value="${esc((np.song||{}).artist||'')}"></div>
-      <input class="input" id="np-sl" type="url" inputmode="url" maxlength="200" placeholder="Link (Spotify, Apple Music, YouTube), optional" autocapitalize="off" value="${esc((np.song||{}).link||'')}">
-      <span class="muted small">Shows as a song tag on your post. Tapping it opens the link.</span>
-      <div class="rowx" style="gap:8px">${np.song&&np.song.title?`<button class="btn" style="flex:1" data-a="np-song-clear">Remove song</button>`:`<button class="btn" style="flex:1" data-a="np-song-cancel">Cancel</button>`}<button class="btn primary" style="flex:1" data-a="np-song-save">Add</button></div></div>`
-    :np.song&&np.song.title?`<div class="psong">${ic('music','xs')}<span>${esc(np.song.artist?np.song.artist+' · ':'')}${esc(np.song.title)}</span></div>`:'';
+        <div class="nptools"><button data-a="np-crop">${ic('crop','sm')}<span>Crop & zoom</span></button><button data-a="np-pick">${ic('swap','sm')}<span>Replace</span></button><button data-a="np-trash" aria-label="Remove photo">${ic('trash','sm')}<span>Remove</span></button></div></div>`;
   return `<div class="screen npage">
     <div class="rowx" style="gap:8px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="np-close" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">New post</span></div>
-    ${photo}${cr?'':song}
-    ${cr?'':`<div class="field"><label for="np-cap">Caption</label><textarea class="input" id="np-cap" maxlength="300" rows="3" placeholder="Say something about it">${esc(np.cap||'')}</textarea></div>
+    ${photo}
+    ${np.editing?'':`<div class="field mfield"><label for="np-cap">Caption</label><textarea class="input" id="np-cap" maxlength="300" rows="3" placeholder="Say something about it. Type @ to tag someone.">${esc(np.cap||'')}</textarea></div>
     ${Social.postedToday()?`<div class="card muted small">You’ve shared 3 posts today, the daily limit.</div>`:`<button class="btn primary" data-a="np-share" ${np.photo?'':'disabled'}>Share to feed</button><span class="muted small" style="text-align:center;margin-top:-6px">Shows in the feed and on your profile. Up to 3 posts a day.</span>`}`}
   </div>`; }
+// 4:5 crop at zoom z (1 = fill), centred on x/y (0..1)
+function npRegion(img,cr){ const iw=img.width, ih=img.height, r=4/5; let sw=iw, sh=iw/r; if(sh>ih){ sh=ih; sw=ih*r; } sw/=cr.z; sh/=cr.z; return {sx:(iw-sw)*cr.x, sy:(ih-sh)*cr.y, sw, sh}; }
+function npRender(img,cr,maxW){ const g=npRegion(img,cr), ow=Math.min(maxW,Math.max(720,Math.round(g.sw))), oh=Math.round(ow*5/4), c=document.createElement('canvas'); c.width=ow; c.height=oh; c.getContext('2d').drawImage(img,g.sx,g.sy,g.sw,g.sh,0,0,ow,oh); return c.toDataURL('image/jpeg',.85); }
+function npDraw(){ const cv=document.getElementById('cropcv'), np=S.np; if(!cv||!np||!NPIMG) return; const g=npRegion(NPIMG,np.crop), x=cv.getContext('2d'); x.clearRect(0,0,cv.width,cv.height); x.drawImage(NPIMG,g.sx,g.sy,g.sw,g.sh,0,0,cv.width,cv.height); }
+let NPIMG=null;
 function vFriends(){
   if(S.fview==='activity') return vActivity();
   if(S.fview==='dms') return vDms();
@@ -1857,8 +1870,13 @@ function ownGrid(){
 function isShipmate(id){ const c=(Social.people||{})[id]; return Pf.friends.includes(id)&&!!(c&&Array.isArray(c.following)&&c.following.includes(Social.me())); }
 function followerIds(uid){ const me=Social.me(); const ids=Object.entries(Social.people||{}).filter(([id,c])=>id!==uid&&id!==me&&c&&Array.isArray(c.following)&&c.following.includes(uid)).map(([id])=>id); if(uid!==me&&(Pf.friends||[]).includes(uid)) ids.unshift(me); return ids; }
 function followingIds(uid){ return uid===Social.me()?(Pf.friends||[]).slice():((cardOf(uid)||{}).following||[]).slice(); }
-function vPeopleList(){ const {uid,tab}=S.plist, me=Social.me(), ok=id=>id===me||(Social.people||{})[id], ids=(tab==='crew'?followerIds(uid):followingIds(uid)).filter(ok);
-  const rowp=id=>{ const c=id===me?Social.card():Social.people[id]; return `<div class="li"><button class="whobtn" style="flex:1;min-width:0" data-a="person" data-v="${esc(id)}">${avatar(c.username||'?',c.photo,null)}<span style="flex:1;min-width:0;text-align:left"><b>${esc(c.username||'Lifter')}${id===me?' (you)':''}</b>${c.town?`<br><span class="muted small">${esc(c.town)}</span>`:''}</span></button>${id===me?'':`<button class="btn sm ${Pf.friends.includes(id)?'':'primary'}" style="width:auto;flex:none" data-a="plist-follow" data-v="${esc(id)}">${Pf.friends.includes(id)?'Following':'Follow'}</button>`}</div>`; };
+function relInfo(id,tab){ const me=Social.me(), mine=new Set(Pf.friends||[]); if(id===me) return {g:-1,l:''};
+  if(mine.has(id)) return {g:0,l:tab==='crew'?'You follow them':'You both follow'};
+  const via=(Pf.friends||[]).filter(f=>f!==id&&(((Social.people||{})[f]||{}).following||[]).includes(id));
+  if(via.length) return {g:1,l:`${esc(Social.nameOf(via[0]))} follows them${via.length>1?` + ${via.length-1} more`:''}`};
+  return {g:2,l:''}; }
+function vPeopleList(){ const {uid,tab}=S.plist, me=Social.me(), ok=id=>id===me||(Social.people||{})[id], ids=(tab==='crew'?followerIds(uid):followingIds(uid)).filter(ok).map(id=>({id,r:relInfo(id,tab)})).sort((a,b)=>a.r.g-b.r.g||String(Social.nameOf(a.id)).localeCompare(String(Social.nameOf(b.id)))).map(x=>x.id);
+  const rowp=id=>{ const c=id===me?Social.card():Social.people[id]; return `<div class="li"><button class="whobtn" style="flex:1;min-width:0" data-a="person" data-v="${esc(id)}">${avatar(c.username||'?',c.photo,null)}<span style="flex:1;min-width:0;text-align:left"><b>${esc(c.username||'Lifter')}${id===me?' (you)':''}</b>${(()=>{ const r=relInfo(id,tab); return r.l?`<br><span class="small" style="color:var(--accent)">${r.l}</span>`:c.town?`<br><span class="muted small">${esc(c.town)}</span>`:''; })()}</span></button>${id===me?'':`<button class="btn sm ${Pf.friends.includes(id)?'':'primary'}" style="width:auto;flex:none" data-a="plist-follow" data-v="${esc(id)}">${Pf.friends.includes(id)?'Following':'Follow'}</button>`}</div>`; };
   return `<div class="screen">
     <div class="rowx" style="gap:6px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="plist-back" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">${esc(Social.nameOf(uid))}</span></div>
     <div class="itabs" role="tablist">${[['crew','Crew'],['following','Following']].map(([k,l])=>`<button class="${tab===k?'on':''}" role="tab" aria-selected="${tab===k}" data-a="plist-tab" data-v="${k}">${l} (${(k==='crew'?followerIds(uid):followingIds(uid)).filter(ok).length})</button>`).join('')}</div>
@@ -1877,9 +1895,9 @@ function profileBlock(uid,c,me){
   return `<div class="prof">
     <div class="rowx" style="gap:18px">${avatar(c.username||'?',c.photo,c.status?st.cls:null,true)}
       <div class="pstats"><div><b class="num">${wk}</b><span>voyages</span></div>${stat(fol,'crew')}${stat(fing,'following')}</div></div>
-    <div class="rowx" style="align-items:flex-start;gap:12px"><div class="stack" style="gap:4px;flex:1;min-width:0"><div class="rowx" style="gap:8px;flex-wrap:nowrap;min-width:0">${me?`<h2 class="h2" style="font-size:22px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.username||'Lifter')}</h2>`:''}${fn?`<button class="ftag" data-a="founder-info" data-v="${fn}" aria-label="Founding Crew member number ${fn}">#${String(fn).padStart(3,'0')}</button>`:''}</div>
+    <div class="rowx" style="align-items:flex-start;gap:12px"><div class="stack" style="gap:4px;flex:1;min-width:0"><div class="rowx" style="gap:8px;flex-wrap:nowrap;min-width:0"><h2 class="h2" style="font-size:22px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.username||'Lifter')}</h2>${fn?`<button class="ftag" data-a="founder-info" data-v="${fn}" aria-label="Founding Crew member number ${fn}">#${String(fn).padStart(3,'0')}</button>`:''}</div>
       ${c.status?`<span class="small muted">${st.label}</span>`:''}</div>
-      <div class="stack" style="gap:6px;align-items:flex-end;flex:none">${me||c.status?`<button class="streakpill" data-a="streak-detail" data-v="${esc(uid)}" data-top="5" aria-label="${streakN} day streak${rl?', '+esc(rl):''}">${ic('flame','xs')}${rl?`<span>${esc(rl)}</span><span class="sl"> · <span class="num">${streakN}</span> days</span>`:`<span><span class="num">${streakN}</span>-day streak</span>`}</button>`:''}${!me&&c.splitPub?`<button class="tag copytag" data-a="split-view" data-v="${esc(uid)}">${ic('clip','xs')}Copy split</button>`:''}</div></div>
+      <div class="stack" style="gap:6px;align-items:flex-end;flex:none">${me||c.status?`<button class="streakpill" data-a="streak-detail" data-v="${esc(uid)}" data-top="5" aria-label="${streakN} day streak${rl?', '+esc(rl):''}">${ic('flame','xs')}${rl?`<span>${esc(rl)}</span>`:`<span><span class="num">${streakN}</span>-day streak</span>`}</button>`:''}${!me&&c.splitPub?`<button class="tag copytag" data-a="split-view" data-v="${esc(uid)}">${ic('clip','xs')}Copy split</button>`:''}</div></div>
     ${!me&&S.unfAsk&&Pf.friends.includes(uid)?`<div class="card rowx" style="gap:8px;padding:10px 12px"><span style="flex:1;min-width:0">Unfollow ${esc(c.username||'')}?</span><button class="btn sm" style="width:auto" data-a="unf-ask">Cancel</button><button class="btn sm danger" style="width:auto" data-a="friend" data-v="${esc(uid)}">Unfollow</button></div>`:''}
     ${c.bio?`<p class="bio2" style="margin:-6px 0 0;white-space:pre-line">${bioHtml(c.bio)}</p>`:me?`<button class="link" style="text-align:left;margin-top:-6px" data-a="settings">Add a bio</button>`:''}
     ${c.link&&linkHtml(c.link)?`<div style="margin:-8px 0 0">${linkHtml(c.link)}</div>`:''}
@@ -1897,7 +1915,7 @@ function vPosts(){ const uid=S.postsOf, ps=(((Social.posts[uid]||{}).items)||[])
   </div>${tabbar()}`; }
 function vPerson(){ const id=S.personId, p=Social.people[id];
   return `<div class="screen">
-    <div class="rowx phead" style="margin:-4px -4px -10px -8px"><button class="iconbtn" data-a="person-back" aria-label="Back">${ic('back')}</button><span class="ptitle">${esc((p&&p.username)||'')}</span>${p?`<button class="iconbtn" data-a="dm-open" data-v="${esc(id)}" aria-label="Message ${esc(p.username||'')}">${ic('send')}</button><button class="iconbtn followrot ${Pf.friends.includes(id)?'on':''}" data-a="follow-tog" data-v="${esc(id)}" aria-label="${Pf.friends.includes(id)?'Unfollow':'Follow'} ${esc(p.username||'')}" aria-pressed="${Pf.friends.includes(id)}">${ic('plus')}</button>`:''}</div>
+    <div class="rowx phead" style="margin:-4px -4px -10px -8px"><button class="iconbtn" data-a="person-back" aria-label="Back">${ic('back')}</button><span class="ptitle"></span>${p?`<button class="iconbtn" data-a="dm-open" data-v="${esc(id)}" aria-label="Message ${esc(p.username||'')}">${ic('send')}</button><button class="iconbtn followrot ${Pf.friends.includes(id)?'on':''}" data-a="follow-tog" data-v="${esc(id)}" aria-label="${Pf.friends.includes(id)?'Unfollow':'Follow'} ${esc(p.username||'')}" aria-pressed="${Pf.friends.includes(id)}">${ic('plus')}</button>`:''}</div>
     ${p?profileBlock(id,p,false):`<div class="card muted">This profile is no longer available.</div>`}
   </div>${tabbar()}`; }
 function vMe(){
@@ -1934,11 +1952,14 @@ function vAdmin(){
     </div>
     <div class="itabs" role="tablist">${[['users','Users ('+users.length+')'],['fb','Feedback ('+fb.length+')']].map(([k,l])=>`<button class="${tab===k?'on':''}" data-a="adm-tab" data-v="${k}" role="tab" aria-selected="${tab===k}">${l}</button>`).join('')}</div>
     ${tab==='users'?`<div class="search">${ic('search','sm')}<input class="input" id="adm-q" placeholder="Search name or email" value="${esc(S.admQ||'')}" autocomplete="off"></div>
-      <div class="list">${shown.map(u=>`<div class="li" style="align-items:flex-start">${avatar((u.card&&u.card.username)||u.name||u.email||'?',u.card&&u.card.photo,null)}<span class="grow" style="min-width:0"><span class="t">${esc((u.card&&u.card.username)||u.name||'No profile yet')}</span><br>
+      <div class="list">${shown.map(u=>`<div class="li" style="align-items:flex-start;cursor:pointer" ${u.card?`data-a="person" data-v="${esc(u.uid)}"`:''}>${avatar((u.card&&u.card.username)||u.name||u.email||'?',u.card&&u.card.photo,null)}<span class="grow" style="min-width:0"><span class="t">${esc((u.card&&u.card.username)||u.name||'No profile yet')}</span><br>
         <span class="s" style="overflow-wrap:anywhere">${u.noRecord?'<i>Email not recorded yet. Appears after their next visit or an account sync.</i>':esc(u.email||'')}</span><br>
         <span class="s">${u.noRecord&&!u.createdAt?'Joined before v89':'Joined '+dt(u.createdAt)} · active ${u.lastAt?ago(u.lastAt):'—'}${u.card?` · ${fmtN(u.card.wcount||0)} workouts${(u.card.status&&u.card.status.streak)?` · ${u.card.status.streak} day streak`:''}`:''}</span></span></div>`).join('')||`<div class="li muted small">No users${q?' match':' yet'}.</div>`}</div>
       <button class="btn" data-a="adm-copy">Copy all emails</button>`
-    :`<div class="stack" style="gap:10px">${fb.map(f=>{ const u=d.accounts.find(a=>a.uid===f.uid)||{}; return `<div class="card stack" style="gap:6px"><span style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(f.text)}</span><span class="muted small">${esc(f.user||(ppl[f.uid]&&ppl[f.uid].username)||u.name||'Someone')}${u.email?' · '+esc(u.email):''} · ${ago(f.at)}${f.where?' · on '+esc(f.where):''}${f.build?' · '+esc(f.build):''}</span></div>`; }).join('')||`<div class="card muted small">No feedback yet.</div>`}</div>`}
+    :`<div class="stack" style="gap:10px">${(()=>{ const sel=S.fbSel||{}, n=Object.keys(sel).length; return n?`<button class="btn primary" data-a="fb-submit">${ic('send','sm')}Send ${n} to Claude</button><span class="muted small" style="text-align:center;margin-top:-4px">Checked items go to your Claude inbox (GitHub issues) when you tap Send.</span>`:''; })()}
+      ${fb.map(f=>{ const u=d.accounts.find(a=>a.uid===f.uid)||{}, k=f.uid+'|'+f.at, on=!!(S.fbSel||{})[k]; return `<div class="card stack fbitem ${on?'sel':''}" style="gap:6px"><div class="rowx" style="gap:8px;align-items:flex-start"><span style="flex:1;min-width:0;white-space:pre-wrap;overflow-wrap:anywhere">${esc(f.text)}</span>
+        ${f.forClaude?`<span class="tag accent">${ic('check','xs')}Sent to Claude</span>`:`<button class="iconbtn fbchk ${on?'on':''}" data-a="fb-check" data-v="${esc(k)}" aria-pressed="${on}" aria-label="${on?'Uncheck':'Check to send to Claude'}">${ic('check','sm')}</button>`}<button class="iconbtn" data-a="fb-del" data-v="${esc(k)}" aria-label="Delete feedback">${ic('x','sm')}</button></div>
+        <span class="muted small">${esc(f.user||(ppl[f.uid]&&ppl[f.uid].username)||u.name||'Someone')}${u.email?' · '+esc(u.email):''} · ${ago(f.at)}${f.where?' · on '+esc(f.where):''}${f.build?' · '+esc(f.build):''}</span></div>`; }).join('')||`<div class="card muted small">No feedback yet.</div>`}</div>`}
   </div>${tabbar()}`;
 }
 // Plain-English name of the screen (and open panel) for feedback, e.g. "Feed › Chat with mia_strong" or "Workout › Exercise library".
@@ -2006,10 +2027,11 @@ function vInstall(){ const pl=S.instTab||'ios', steps=INSTALL_STEPS[pl], i=Math.
     <span class="muted small" style="text-align:center">Swipe the card to move between steps.</span>
   </div>${tabbar()}`; }
 let CRD=null;
-document.addEventListener('pointerdown',e=>{ const b=e.target.closest('#cropbox'); if(!b||!S.np||!S.np.crop) return; e.preventDefault(); CRD={b,x:e.clientX,y:e.clientY,cx:S.np.crop.x,cy:S.np.crop.y}; });
-document.addEventListener('pointermove',e=>{ if(!CRD) return; const np=S.np, r=CRD.b.getBoundingClientRect(), sc=Math.max(r.width/np.w,r.height/np.h), ox=np.w*sc-r.width, oy=np.h*sc-r.height;
-  const cl=v=>Math.max(0,Math.min(1,v)); if(ox>1) np.crop.x=cl(CRD.cx-(e.clientX-CRD.x)/ox); if(oy>1) np.crop.y=cl(CRD.cy-(e.clientY-CRD.y)/oy); const im=CRD.b.querySelector('img'); if(im) im.style.objectPosition=`${np.crop.x*100}% ${np.crop.y*100}%`; });
+document.addEventListener('pointerdown',e=>{ const cv=e.target.closest('#cropcv'); if(!cv||!S.np||!S.np.editing||!NPIMG) return; e.preventDefault(); CRD={cv,x:e.clientX,y:e.clientY,cx:S.np.crop.x,cy:S.np.crop.y}; });
+document.addEventListener('pointermove',e=>{ if(!CRD) return; const np=S.np, g=npRegion(NPIMG,np.crop), k=g.sw/CRD.cv.getBoundingClientRect().width, ox=NPIMG.width-g.sw, oy=NPIMG.height-g.sh, cl=v=>Math.max(0,Math.min(1,v));
+  if(ox>1) np.crop.x=cl(CRD.cx-(e.clientX-CRD.x)*k/ox); if(oy>1) np.crop.y=cl(CRD.cy-(e.clientY-CRD.y)*k/oy); npDraw(); });
 ['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,()=>{ CRD=null; }));
+document.addEventListener('input',e=>{ if(e.target.id==='np-zoom'&&S.np&&S.np.crop){ S.np.crop.z=+e.target.value; npDraw(); } });
 let ISW=null;
 document.addEventListener('touchstart',e=>{ const c=e.target.closest('#istep'); if(!c) return; ISW={x:e.touches[0].clientX,y:e.touches[0].clientY}; },{passive:true});
 document.addEventListener('touchend',e=>{ if(!ISW) return; const t=e.changedTouches[0], dx=t.clientX-ISW.x, dy=t.clientY-ISW.y; ISW=null; if(Math.abs(dx)<50||Math.abs(dx)<Math.abs(dy)*1.3) return; S.noClick=Date.now(); A[dx<0?'inst-next':'inst-back'](); },{passive:true});
@@ -2033,8 +2055,8 @@ function vSettings(){
       </div></div>
     <div class="stack" style="gap:8px"><span class="flabel">Sharing</span>
       <button class="li card" style="padding:12px 16px" data-a="show" data-v="status"><span class="grow"><span class="t">Gym status and streak</span><br><span class="s">Show if you’re at the gym, trained today, and your streak</span></span><span class="small muted" style="margin-right:6px">${Pf.show.status?'Public':'Private'}</span><span class="toggle ${Pf.show.status?'on':''}"></span></button>
-      <button class="li card" style="padding:12px 16px" data-a="share-split"><span class="grow"><span class="t">Make my split public</span><br><span class="s">People who visit your profile can view and copy your weekly split</span></span><span class="toggle ${Pf.shareSplit?'on':''}"></span></button>
-      <button class="li card" style="padding:12px 16px" data-a="autoshare"><span class="grow"><span class="t">Share workouts by default</span><br><span class="s">"Share to feed" starts switched on when you end a workout</span></span><span class="toggle ${Pf.autoShare!==false?'on':''}"></span></button></div>
+      <button class="li card" style="padding:12px 16px" data-a="autoshare"><span class="grow"><span class="t">Share workouts by default</span><br><span class="s">"Share to feed" starts switched on when you end a workout</span></span><span class="toggle ${Pf.autoShare!==false?'on':''}"></span></button>
+      <button class="li card" style="padding:12px 16px" data-a="share-split"><span class="grow"><span class="t">Make my split public</span><br><span class="s">People who visit your profile can view and copy your weekly split</span></span><span class="toggle ${Pf.shareSplit?'on':''}"></span></button></div>
     <div class="field"><span class="flabel">Goal</span>${seg('goal',Pf.goal,{bulk:'Bulk',maintain:'Maintain',cut:'Cut'})}</div>
     <div class="field"><span class="flabel">Experience</span>${levelPicker()}<span class="muted small">Sets the expected line on your Progress charts. Beginners gain fastest; pros progress slower.</span></div>
     ${bodyFields()}
@@ -2885,6 +2907,7 @@ const A = {
   'unf-ask'(v){ S.unfAsk=!S.unfAsk; render(); },
   friend(v,el,ok){ const i=Pf.friends.indexOf(v); if(i>=0&&!ok){ askConfirm('Unfollow '+Social.nameOf(v)+'?','Their workouts will leave your feed.','Unfollow',()=>A.friend(v,el,true)); return; } if(i>=0) Pf.friends.splice(i,1); else { Pf.friends.push(v); Pf.followedAt={...(Pf.followedAt||{}),[v]:Date.now()}; } Store.save(); Social.publish(); S.unfAsk=false; if(S.personId) render(); else renderSheet(); popCue(); },
   erase(){ S.confirmErase=true; render(); },
+  'mention-pick'(v){ const t=MT; if(!t) return; const pos=t.selectionStart, before=t.value.slice(0,pos).replace(/@([A-Za-z0-9._]{0,20})$/,'@'+v+' '), after=t.value.slice(pos); t.value=before+after; t.focus(); t.setSelectionRange(before.length,before.length); document.getElementById('msug')?.remove(); MT=null; },
   plist(v){ const [uid,tab]=v.split('|'); S.plist={uid,tab}; window.scrollTo(0,0); render(); },
   'plist-tab'(v){ S.plist.tab=v; render(); },
   'plist-back'(){ S.plist=null; window.scrollTo(0,0); render(); },
@@ -2909,26 +2932,21 @@ const A = {
     S.draft={username:Pf.username,town:Pf.town,bio:Pf.bio,link:Pf.link}; Store.save(true); Social.publish(); render(); popCue(); },
   'np-open'(){ S.np={photo:null,cap:''}; S.fview='newpost'; S.tab='friends'; S.route='app'; window.scrollTo(0,0); render(); },
   'np-close'(){ S.np=null; S.fview=null; render(); },
-  'np-trash'(){ npKeep(); Object.assign(S.np,{photo:null,orig:null,crop:null}); render(); },
-  'np-crop'(){ npKeep(); S.np.crop={ar:'4:5',x:.5,y:.5}; render(); },
-  'np-ar'(v){ S.np.crop.ar=v; render(); },
-  'np-crop-cancel'(){ S.np.crop=null; render(); },
-  async 'np-crop-done'(){ const np=S.np, cr=np.crop; if(cr.ar==='orig'){ np.photo=np.orig; np.crop=null; render(); return; }
-    const img=await loadImg(np.orig), iw=img.width, ih=img.height, r=cr.ar==='1:1'?1:4/5; let sw=iw, sh=iw/r; if(sh>ih){ sh=ih; sw=ih*r; }
-    const sx=(iw-sw)*cr.x, sy=(ih-sh)*cr.y, ow=Math.min(1080,Math.round(sw)), oh=Math.round(ow/r), c=document.createElement('canvas'); c.width=ow; c.height=oh;
-    c.getContext('2d').drawImage(img,sx,sy,sw,sh,0,0,ow,oh); np.photo=c.toDataURL('image/jpeg',.85); np.crop=null; render(); },
-  'np-song'(){ npKeep(); S.np.songOpen=true; render(); setTimeout(()=>document.getElementById('np-st')?.focus(),30); },
-  'np-song-cancel'(){ S.np.songOpen=false; render(); },
-  'np-song-clear'(){ S.np.song=null; S.np.songOpen=false; render(); },
-  'np-song-save'(){ const t=(document.getElementById('np-st')?.value||'').trim(), a=(document.getElementById('np-sa')?.value||'').trim(), l=(document.getElementById('np-sl')?.value||'').trim();
-    if(!t){ document.getElementById('np-st')?.classList.add('bad'); return; } const link=l?linkOf(l):''; if(l&&!link){ document.getElementById('np-sl')?.classList.add('bad'); return; }
-    S.np.song={title:t.slice(0,60),artist:a.slice(0,60),link}; S.np.songOpen=false; render(); },
+  'np-trash'(){ npKeep(); Object.assign(S.np,{photo:null,orig:null,crop:null,editing:false}); NPIMG=null; render(); },
+  'np-crop'(){ npKeep(); S.np.prevCrop={...S.np.crop}; S.np.editing=true; render(); setTimeout(npDraw,0); },
+  'np-crop-cancel'(){ S.np.crop=S.np.prevCrop||S.np.crop; S.np.editing=false; render(); },
+  'np-crop-done'(){ if(NPIMG) S.np.photo=npRender(NPIMG,S.np.crop,1080); S.np.editing=false; render(); },
   'np-pick'(){ const c=document.getElementById('np-cap'); if(c&&S.np) S.np.cap=c.value; S.photoFor='newpost'; document.getElementById('photo-in').click(); },
   async 'np-share'(){ const np=S.np; if(!np||!np.photo) return; if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit.'); return; } const cap=(document.getElementById('np-cap')?.value||'').trim().slice(0,300), id='u'+uid();
-    boatLoading(true,'Posting…'); try{ const small=await shrinkData(np.photo,480,.72); const hq=await savePhotoHq(id,np.photo); await Social.addPost({id,at:Date.now(),sharedAt:Date.now(),title:'',type:'',caption:cap,photo:small,hq,kind:'photo',...(np.song&&np.song.title?{song:np.song}:{})}); } finally{ boatLoading(false); }
-    S.np=null; S.fview=null; S.feedN=10; S.feedSeed=Date.now(); window.scrollTo(0,0); render(); popCue(); },
+    boatLoading(true,'Posting…'); try{ const small=await shrinkData(np.photo,480,.72); const hq=await savePhotoHq(id,np.photo); await Social.addPost({id,at:Date.now(),sharedAt:Date.now(),title:'',type:'',caption:cap,photo:small,hq,kind:'photo'}); } finally{ boatLoading(false); }
+    S.pinNow=id; Pf.pinReload=id; Store.save(); S.np=null; S.fview=null; S.feedN=10; S.feedSeed=Date.now(); window.scrollTo(0,0); render(); popCue(); },
   admin(){ if(!window.boatsAdmin) return; S.meView='admin'; S.adm=null; window.scrollTo(0,0); render(); window.boatsAdmin.load().then(d=>{ S.adm=d; },e=>{ S.adm={error:'Could not load data ('+((e&&e.code)||'error')+').'}; }).then(()=>{ if(S.meView==='admin') render(); }); },
   'adm-tab'(v){ S.admTab=v; render(); },
+  'fb-check'(v){ S.fbSel={...(S.fbSel||{})}; if(S.fbSel[v]) delete S.fbSel[v]; else S.fbSel[v]=1; render(); },
+  'fb-del'(v){ askConfirm('Delete this feedback?','It’s removed for good.','Delete',async()=>{ const [uid,at]=v.split('|'); try{ await window.boatsAdmin.editFeedback(uid,items=>items.filter(x=>String(x.at)!==at)); S.adm.feedback=S.adm.feedback.filter(f=>!(f.uid===uid&&String(f.at)===at)); if(S.fbSel) delete S.fbSel[v]; render(); popCue(); }catch(e){ toast('Could not delete that ('+((e&&e.code)||'error')+').'); } }); },
+  async 'fb-submit'(){ const keys=Object.keys(S.fbSel||{}); if(!keys.length) return; const by={}; keys.forEach(k=>{ const [u,at]=k.split('|'); (by[u]=by[u]||new Set()).add(at); });
+    boatLoading(true,'Sending…'); try{ for(const [u,ats] of Object.entries(by)) await window.boatsAdmin.editFeedback(u,items=>items.map(x=>ats.has(String(x.at))?{...x,forClaude:true}:x));
+      S.adm.feedback=S.adm.feedback.map(f=>by[f.uid]&&by[f.uid].has(String(f.at))?{...f,forClaude:true}:f); S.fbSel={}; if(window.boatsAdmin.syncNow) window.boatsAdmin.syncNow(); popCue(); }catch(e){ toast('Could not send ('+((e&&e.code)||'error')+').'); } finally{ boatLoading(false); } render(); },
   async 'adm-copy'(){ const t=((S.adm&&S.adm.accounts)||[]).map(a=>a.email).filter(Boolean).join(', '); try{ await navigator.clipboard.writeText(t); popCue(); }catch(e){ toast('Could not copy. Long-press to select instead.'); } },
   'sign-out'(){ if(!window.boatsSignOut) return A.splash(); askConfirm('Sign out?','Your workouts stay saved to your account.','Sign out',()=>window.boatsSignOut&&window.boatsSignOut()); },
   'targets-rec'(){ const r=recTargets(); Pf.targets={...Pf.targets,...r}; Store.save(); render(); },
@@ -2984,8 +3002,18 @@ function reportErr(where,e){
     sheet:S.sheet?JSON.stringify({kind:S.sheet.kind,step:S.sheet.step,ctx:S.sheet.ctx,draft:S.sheet.draft}).slice(0,1500):''}).catch(()=>{}); }catch(_){}
 }
 document.addEventListener('input',e=>{ try{ onInput(e); }catch(err){ reportErr('typing',err); } });
+// @mention suggestions: people you follow or who follow you first, matched letter by letter
+let MT=null;
+function mentionCands(q){ const me=Social.me(), mine=new Set(Pf.friends||[]), lc=q.toLowerCase();
+  return Object.entries(Social.people||{}).filter(([id,c])=>id!==me&&c&&c.username).map(([id,c])=>{ const u=c.username.toLowerCase(), fol=(c.following||[]).includes(me);
+    const m=!lc?1:u.startsWith(lc)?2:u.includes(lc)?1:0; return {id,u:c.username,m,s:(mine.has(id)?4:0)+(fol?2:0)+m}; }).filter(x=>x.m).sort((a,b)=>b.s-a.s||a.u.localeCompare(b.u)).slice(0,5); }
+function mentionSug(t){ const old=document.getElementById('msug'); const pos=t.selectionStart, before=t.value.slice(0,pos), m=/(^|\s)@([A-Za-z0-9._]{0,20})$/.exec(before);
+  if(!m){ if(old) old.remove(); MT=null; return; } const c=mentionCands(m[2]); if(!c.length){ if(old) old.remove(); MT=null; return; } MT=t;
+  const html=c.map(x=>`<button type="button" data-a="mention-pick" data-v="${esc(x.u)}">${avatar(x.u,Social.photoOf(x.id),null)}<span><b>@${esc(x.u)}</b>${(Pf.friends||[]).includes(x.id)?'<br><span class="muted small">You follow</span>':(((Social.people[x.id]||{}).following||[]).includes(Social.me())?'<br><span class="muted small">Follows you</span>':'')}</span></button>`).join('');
+  if(old) old.innerHTML=html; else t.insertAdjacentHTML('afterend',`<div class="msug" id="msug" role="listbox">${html}</div>`); }
 function onInput(e){
   const t=e.target;
+  if(t.id==='np-cap'||(t.closest&&t.closest('.cmbox'))) mentionSug(t);
   if(t.id==='q'){ S.sheet.q=t.value; document.getElementById('plist').innerHTML=pickerList(); return; }
   if(t.id==='adm-q'){ S.admQ=t.value; const pos=t.selectionStart; render(); const n=document.getElementById('adm-q'); if(n){ n.focus(); n.setSelectionRange(pos,pos); } return; }
   if(t.id==='fq'){ S.fq=t.value; document.getElementById('flist').innerHTML=friendsList(); return; }
@@ -3035,7 +3063,7 @@ function onChange(e){
     boatLoading(true,'Loading picture…'); readImage(f, target==='avatar'?{square:400,q:.86,minSide:200}:{max:1080,q:.82,minSide:600}).finally(()=>boatLoading(false)).then(url=>{
       if(target==='avatar'){ Pf.photo=url; Store.save(); render(); toast('Picture updated'); }
       else if(target==='active'){ if(Pf.active){ Pf.active.pump=url; Store.save(); render(); toast('Pump picture saved. It goes with this workout when you end it.'); } }
-      else if(target==='newpost'){ if(S.np){ const im=new Image(); im.onload=()=>{ S.np.orig=url; S.np.photo=url; S.np.w=im.width; S.np.h=im.height; S.np.crop=null; render(); }; im.src=url; } }
+      else if(target==='newpost'){ if(S.np){ const im=new Image(); im.onload=()=>{ NPIMG=im; S.np.orig=url; S.np.crop={x:.5,y:.5,z:1}; S.np.photo=npRender(im,S.np.crop,1080); S.np.editing=false; render(); }; im.src=url; } }
       else if(target==='finish'){ if(S.sheet&&S.sheet.kind==='finish'){ readTitle(); S.sheet.pump=url; renderSheet(); } }
       else { const w=Store.workouts.find(x=>x.id===target); if(w){ Store.updateWorkout(w,{pump:url}); render(); if(S.shareAfterPhoto===target){ S.shareAfterPhoto=null; A['wk-share'](target); } else toast('Pump picture added'); } }
     }).catch(e=>toast(e&&e.message==='small'?(target==='avatar'?'That picture is too small. Pick one that is at least 200 pixels wide.':'That photo is too low quality. Pick one that is at least 600 pixels on its shortest side.'):'That file is not an image Boats can read.'));
@@ -3116,6 +3144,7 @@ Store.init().catch(()=>{}).then(()=>{
   S.ready=true; S.bootMs=performance.now();
   try{ Social.start(); }catch(e){}
   if(S.route==='splash'){ const w=S.waiting; S.waiting=null; if(w) A.login(); else render(); }
+  if(Pf&&Pf.pinReload){ S.pinNow=Pf.pinReload; Pf.pinReload=null; Store.save(); }
   if(window.boatsClaimFounder&&Pf&&Pf.onboarded) window.boatsClaimFounder().then(n=>{ if(n&&!Social.founders[Social.me()]){ Social.founders={...Social.founders,[Social.me()]:n}; refreshSocial(); } });
   if(window.boatsClaimName&&Pf&&Pf.onboarded&&Pf.username&&Pf.nameClaimed!==Pf.username) window.boatsClaimName(Pf.username,Pf.nameClaimed).then(r=>{ if(r==='ok'){ Pf.nameClaimed=Pf.username; Store.save(); } else if(r==='taken'){ S.nameTaken=true; Pf.nameAt=0; render(); } });
 });

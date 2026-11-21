@@ -150,6 +150,11 @@ authReady.then(async u => {
         f.docs.forEach(d => { const x = unpack(d); ((x && x.items) || []).forEach(it => feedback.push({ ...it, uid: d.id })); });
         return { accounts, feedback };
       },
+      // Owner only (enforced by rules): change one person's feedback list, e.g. delete an item or mark it for Claude.
+      editFeedback: async (uid, fn) => {
+        const ref = doc(fs, "feedback", uid), g = await getDoc(ref), x = g.exists() ? (unpack(g) || {}) : {};
+        await setDoc(ref, pack({ ...x, items: fn(x.items || []) }));
+      },
     };
     if(window.render) try { window.render(); } catch(e) {}
   } catch(e) { window.boatsAdmin = null; }

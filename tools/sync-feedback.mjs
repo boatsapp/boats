@@ -12,11 +12,12 @@ const gh = (...a) => execFileSync("gh", a, { encoding: "utf8" });
 
 const accounts = Object.fromEntries((await db.collection("accounts").get()).docs.map(d => [d.id, d.data()]));
 const ownerUid = Object.keys(accounts).find(u => accounts[u].email === OWNER);
-if(!ALL && !ownerUid){ console.log("Owner has no account record yet (open the site once while signed in)."); process.exit(0); }
 
-const docs = ALL ? (await db.collection("feedback").get()).docs : [await db.collection("feedback").doc(ownerUid).get()];
+
+// Everything the owner sends, plus anyone's feedback the owner checked in the Data center ("forClaude").
+const docs = (await db.collection("feedback").get()).docs;
 const items = [];
-for(const d of docs){ if(!d.exists) continue; let x = {}; try { x = JSON.parse(d.data().j || "{}"); } catch(e) {} for(const it of (x.items || [])) items.push({ ...it, uid: d.id }); }
+for(const d of docs){ if(!d.exists) continue; let x = {}; try { x = JSON.parse(d.data().j || "{}"); } catch(e) {} for(const it of (x.items || [])) if(ALL || d.id === ownerUid || it.forClaude) items.push({ ...it, uid: d.id }); }
 
 try { gh("label", "create", "feedback", "--color", "2E9FD8", "--description", "From the in-app Feedback button", "--force"); } catch(e) {}
 const existing = gh("issue", "list", "--label", "feedback", "--state", "all", "--limit", "1000", "--json", "body", "-q", ".[].body");

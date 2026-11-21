@@ -47,7 +47,7 @@ head='''<!doctype html>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon-192.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<style>html,body{margin:0;background:#F5F4F0}@media (prefers-color-scheme:dark){html,body{background:#0E0E0D}}</style>
+<style>html,body{margin:0;background:#0E0E0D}</style>
 '''
 gate='''
 <script type="module" src="/shim.js"></script>

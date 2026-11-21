@@ -16,7 +16,7 @@ service cloud.firestore {
     match /posts/{uid}     { allow read: if signedIn(); allow delete: if isMe(uid); allow create, update: if isMe(uid) && small(); }
     match /reactions/{uid} { allow read: if signedIn(); allow delete: if isMe(uid); allow create, update: if isMe(uid) && small(); }
     // Feedback: only you (the app owner reads it in the Firebase console).
-    match /feedback/{uid}  { allow read: if isMe(uid) || isAdmin(); allow delete: if isMe(uid); allow create, update: if isMe(uid) && small(); }
+    match /feedback/{uid}  { allow read: if isMe(uid) || isAdmin(); allow delete: if isMe(uid); allow create: if isMe(uid) && small(); allow update: if (isMe(uid) || isAdmin()) && small(); }
     // Account list (email, name, join/last-seen dates): you write your own, only the owner reads all.
     match /accounts/{uid} {
       allow get: if isMe(uid) || isAdmin();
