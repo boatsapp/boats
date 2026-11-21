@@ -152,6 +152,7 @@ svg.i.xs{width:14px;height:14px}
 .askbtns .btn{flex:1}
 .fpill{display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-weight:600;font-size:13px;flex:none}
 .fpill.on{background:transparent;color:var(--fg);border-color:var(--line)}
+#app:has(.invitebar) .fbk.intab{bottom:calc(var(--tab-h) + var(--live-h,0px) + 72px + env(safe-area-inset-bottom,0px))}
 #app:has(.beginbar) .fbk.intab{bottom:calc(var(--tab-h) + 62px + env(safe-area-inset-bottom,0px))}
 .tagline1{display:flex;gap:6px;flex-wrap:nowrap;overflow:hidden;min-width:0}
 .tagline1 .tag{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
@@ -187,7 +188,7 @@ svg.i.xs{width:14px;height:14px}
 .copybig{}
 .input:focus::placeholder,textarea:focus::placeholder{color:transparent}
 .followsm{width:auto;min-width:110px;height:36px}
-.stats[hidden]{display:none!important}
+[hidden]{display:none!important}
 .daytag{margin-left:auto;flex:none}
 .pacts{align-items:center}
 .swrap{position:relative;overflow:hidden;border-radius:12px}
@@ -629,7 +630,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v87';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v88';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1740,11 +1741,10 @@ function vSettings(){
       <button class="li" data-a="pdf-export"><span class="ico">${ic('cloud')}</span><span class="grow"><span class="t">${Store.mode==='cloud'?'Synced to your Claude account':'Saved on this device only'}</span><br><span class="s">${Store.workouts.length} workout${Store.workouts.length===1?'':'s'} logged · app ${BUILD}</span></span><span class="tag">${ic('down','xs')}PDF</span></button>
     </div>
     <div class="stack" style="gap:8px">
-      <button class="btn" data-a="splash">Sign out</button>
+      <button class="btn" data-a="sign-out">Sign out</button>
       ${S.confirmErase===2?`<div class="card stack"><b>We’re sorry you’re walking the plank.</b><span class="muted small">Before you leave, would you like to download all your workouts and information?</span><button class="btn primary" data-a="data-dl">Download my data</button><div class="rowx"><button class="btn sm danger" data-a="erase-yes">Delete</button><button class="btn sm" data-a="erase-no">Keep</button></div></div>`
       :S.confirmErase?`<div class="card stack"><b>Delete ${esc(Pf.username||'this account')}?</b><span class="small" style="color:var(--bad);font-weight:600">${streak()?`Your ${streak()}-day streak will be lost.`:'Your streak will be lost.'}</span><span class="muted small">This deletes your profile, plan, posts and every workout. It can’t be undone.</span><div class="rowx"><button class="btn sm danger" data-a="erase-next">Delete account</button><button class="btn sm" data-a="erase-no">Keep it</button></div></div>`
       :`<button class="btn ghost danger" data-a="erase">Walk the plank</button>`}
-      ${window.boatsSignOut?`<button class="btn ghost" data-a="sign-out">Sign out</button>`:''}
     </div>
   </div>${tabbar()}`;
 }
@@ -2548,7 +2548,7 @@ const A = {
   'unf-ask'(v){ S.unfAsk=!S.unfAsk; render(); },
   friend(v,el,ok){ const i=Pf.friends.indexOf(v); if(i>=0&&!ok){ askConfirm('Unfollow '+Social.nameOf(v)+'?','Their workouts will leave your feed.','Unfollow',()=>A.friend(v,el,true)); return; } if(i>=0) Pf.friends.splice(i,1); else { Pf.friends.push(v); Pf.followedAt={...(Pf.followedAt||{}),[v]:Date.now()}; } Store.save(); Social.publish(); S.unfAsk=false; if(S.personId) render(); else renderSheet(); popCue(); },
   erase(){ S.confirmErase=true; render(); },
-  'sign-out'(){ askConfirm('Sign out?','Your workouts stay saved to your account.','Sign out',()=>window.boatsSignOut&&window.boatsSignOut()); },
+  'sign-out'(){ if(!window.boatsSignOut) return A.splash(); askConfirm('Sign out?','Your workouts stay saved to your account.','Sign out',()=>window.boatsSignOut&&window.boatsSignOut()); },
   'targets-rec'(){ const r=recTargets(); Pf.targets={...Pf.targets,...r}; Store.save(); render(); },
   'erase-next'(){ S.confirmErase=2; render(); },
   async 'data-dl'(){ const data=JSON.stringify({exportedAt:new Date().toISOString(),app:'Boats',profile:Pf,workouts:Store.workouts,posts:Social.myPosts()},null,2), name=`boats-data-${dateKey()}.json`, blob=new Blob([data],{type:'application/json'});
