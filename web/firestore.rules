@@ -32,7 +32,7 @@ service cloud.firestore {
     }
     // Founding Crew numbers 1-100. Each member can take exactly one number, only the next free one, in the same write that advances the counter.
     match /meta/founders {
-      allow read: if signedIn();
+      allow read: if true;   // the splash shows how many people are on BOATS before sign-in
       allow update: if signedIn() && resource.data.next <= 100
         && request.resource.data.next == resource.data.next + 1
         && request.resource.data.keys().hasOnly(['next'])

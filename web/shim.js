@@ -19,7 +19,7 @@ if(EMU){ connectAuthEmulator(auth, "http://127.0.0.1:9199", { disableWarnings: t
 
 // Data is stored as JSON text so any app shape fits Firestore; a few top-level fields stay queryable for rules.
 const pack = (data, extra={}) => ({ j: JSON.stringify(data), at: Date.now(), ...extra });
-const unpack = s => { const x = s.data(); if(!x) return null; try { return JSON.parse(x.j); } catch(e) { return null; } };
+const unpack = s => { const x = s.data(); if(!x) return null; if(typeof x.j !== "string") return x; try { return JSON.parse(x.j); } catch(e) { return null; } };   // docs written by admin tools (founders) are plain fields
 const snapOf = docs => ({ docs: docs.map(d => ({ id: d.id, data: () => unpack(d) })) });
 
 function mapPath(p){ const m = /^data\/users\/(.+)$/.exec(p); return m ? `users/${m[1]}/data` : p; }
@@ -89,6 +89,18 @@ const downloads = {
 window.claude = { use: async k => ({ db, user, downloads })[k] || null };
 window.boatsSignOut = async () => { await signOut(auth); localStorage.clear(); location.reload(); };
 
+// Public: how many people are on BOATS (the next Founding Crew number minus one). Works before sign-in.
+window.boatsUserCount = async () => { try { const g = await getDoc(doc(fs, "meta", "founders")); return g.exists() ? Math.max(0, (g.data().next || 1) - 1) : 0; } catch(e) { return 0; } };
+// Basic nudity check on a photo before it is shared. Runs on the phone; the model only downloads the first time.
+// Gym content is fine (shirtless, swimwear, tight clothes): only clear nudity is blocked.
+window.boatsNsfw = async url => {
+  try {
+    const { classify } = await import("/nsfw.js");
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+    const r = await classify(img);
+    return !((r.Porn || 0) > 0.6 || (r.Hentai || 0) > 0.7 || ((r.Porn || 0) + (r.Hentai || 0)) > 0.75);
+  } catch(e) { return true; }
+};
 // ---- sign-in ----
 window.boatsSignIn = async kind => {
   const p = kind === "apple" ? new OAuthProvider("apple.com") : new GoogleAuthProvider();
@@ -133,8 +145,9 @@ window.boatsClaimFounder = async () => {
 };
 // Record who has an account (email + dates) for the owner's Data center, then check owner access.
 // Who counts as the owner lives only in firestore.rules, so no email appears in this public code.
+let adminDone; window.boatsAdminReady = new Promise(r => { adminDone = r; });
 authReady.then(async u => {
-  if(!u) return;
+  if(!u){ adminDone(false); return; }
   const ref = doc(fs, "accounts", u.uid);
   try {
     const old = await getDoc(ref);
@@ -157,6 +170,7 @@ authReady.then(async u => {
       },
     };
     if(window.render) try { window.render(); } catch(e) {}
-  } catch(e) { window.boatsAdmin = null; }
+    adminDone(true);
+  } catch(e) { window.boatsAdmin = null; adminDone(false); }
 });
 const s = document.createElement("script"); s.textContent = document.getElementById("appsrc").textContent; document.body.appendChild(s);

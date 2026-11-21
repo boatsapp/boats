@@ -2,3 +2,4 @@ node_modules/
 *.log
 .firebase/
 BOATS-brand-kit.zip
+web/public/nsfw.js

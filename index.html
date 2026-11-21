@@ -149,6 +149,12 @@ svg.i.xs{width:14px;height:14px}
 .cmbox .input{height:42px;font-size:16px}
 .cmpost{font-weight:700;color:var(--accent)}
 .li.dimday{opacity:.45}
+.realname{font-size:13px;color:var(--muted);margin-top:-2px}
+.fbtn{width:auto!important;flex:none;height:34px;padding:0 16px;font-size:14px}
+.fbcount{flex:none;min-width:30px;height:24px;padding:0 7px;border-radius:999px;background:var(--streak);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center}
+.fbmore summary{cursor:pointer}
+.savednote{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:80;display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:var(--fg);color:var(--bg);font-weight:700;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:pop .22s ease;transition:opacity .4s,transform .4s}
+.savednote.out{opacity:0;transform:translate(-50%,-10px)}
 .post .cms{display:flex;flex-direction:column;gap:8px;margin-top:6px}
 .post .cap{margin-top:2px!important}
 .tabbar,.fbk,.fabpost{transition:transform .38s cubic-bezier(.2,.8,.2,1),opacity .3s ease}
@@ -731,7 +737,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v101';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v102';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1075,7 +1081,7 @@ const Social = {
   },
   card(){
     const sh=Pf.show, last=Store.workouts[0];
-    return { username:(Pf.username||'Lifter').slice(0,40), bio:(Pf.bio||'').slice(0,150), link:linkOf(Pf.link), photo: Pf.photo||'', town: sh.town&&placeValid(Pf.town)?Pf.town.trim():'', goal: sh.goal?Pf.goal:'', wcount: sh.status?Store.workouts.length:null, following:(Pf.friends||[]).slice(0,500), splitPub:Pf.shareSplit?splitPayload():null, followedAt:Object.fromEntries(Object.entries(Pf.followedAt||{}).filter(([k])=>(Pf.friends||[]).includes(k))),
+    return { username:(Pf.username||'Lifter').slice(0,40), bio:(Pf.bio||'').slice(0,150), link:linkOf(Pf.link), name:String(Pf.realName||'').trim().slice(0,40), photo: Pf.photo||'', town: sh.town&&placeValid(Pf.town)?Pf.town.trim():'', goal: sh.goal?Pf.goal:'', wcount: sh.status?Store.workouts.length:null, following:(Pf.friends||[]).slice(0,500), splitPub:Pf.shareSplit?splitPayload():null, followedAt:Object.fromEntries(Object.entries(Pf.followedAt||{}).filter(([k])=>(Pf.friends||[]).includes(k))),
       height: sh.height?heightStr():'', weight: sh.weight&&Pf.bodyweight?`${Pf.bodyweight} ${Pf.unit}`:'',
       status: sh.status?{ activeSince:Pf.active?Pf.active.startedAt:0, lastAt:last?last.startedAt:0, lastTitle:last?last.title:'', streak:streak() }:null };
   },
@@ -1167,6 +1173,8 @@ let Pf;
 const app = document.getElementById('app'), sheetEl = document.getElementById('sheet'), askEl = document.getElementById('ask');
 let ASKFN=null;
 function infoBox(title,html){ ASKFN=null; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="dialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${html}<div class="askbtns"><button class="btn primary" data-a="ask-no">Got it</button></div></div></div>`; }
+function blockedPhoto(){ infoBox('Photo not allowed','<span class="muted small">This photo looks like it contains nudity, which BOATS doesn’t allow. Gym photos, shirtless, swimwear and tight clothes are all fine.</span>'); }
+function savedNote(t){ const el=document.createElement('div'); el.className='savednote'; el.setAttribute('role','status'); el.innerHTML=`${ic('check','sm')}${esc(t)}`; document.body.appendChild(el); setTimeout(()=>el.classList.add('out'),1400); setTimeout(()=>el.remove(),1900); }
 function askConfirm(title,sub,yes,fn,no){ ASKFN=fn; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="alertdialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${sub?`<span class="muted small">${esc(sub)}</span>`:''}<div class="askbtns"><button class="btn" data-a="ask-no">${esc(no||'Cancel')}</button><button class="btn danger" data-a="ask-yes">${esc(yes)}</button></div></div></div>`; }
 let rootTheme = document.documentElement.getAttribute('data-theme');
 function applyTheme(){ const r=document.documentElement; if(Pf.theme!=='light') Pf.theme='dark'; if(Pf.theme==='system'){ if(rootTheme) r.setAttribute('data-theme',rootTheme); else r.removeAttribute('data-theme'); } else r.setAttribute('data-theme',Pf.theme); }
@@ -1259,14 +1267,14 @@ function nameRule(u){ const n=nameNorm(u), plain=String(u||'').toLowerCase().rep
   if([n,bare,plain,pbare].some(x=>NAME_RESERVED.includes(x))) return 'That name is reserved. Try another.';
   if(NAME_SUB.some(w=>n.includes(w)||plain.includes(w))||NAME_EXACT.some(w=>[n,bare,plain,pbare].includes(w))) return 'That username isn’t allowed. Try another.';
   return ''; }
-function usernameIssue(u){ u=String(u||'').trim(); if(!u) return 'Pick a username.'; if(!/^[A-Za-z0-9._]{3,20}$/.test(u)) return 'Use 3–20 letters, numbers, dots or underscores. No spaces.'; const nr=nameRule(u); if(nr) return nr;
+function usernameIssue(u){ u=String(u||'').trim(); if(!u) return 'Pick a username.'; if(!/^[A-Za-z0-9._]{3,20}$/.test(u)) return 'Use 3–20 letters, numbers, dots or underscores. No spaces.'; if(/[A-Z]/.test(u)&&!window.boatsAdmin) return 'Usernames are lowercase.'; const nr=nameRule(u); if(nr) return nr;
   const lc=u.toLowerCase(), me=Store.uid||'me';
   const taken=Object.entries(Social.people||{}).some(([id,p])=>id!==me&&String((p&&p.username)||'').toLowerCase()===lc)||Object.entries(Store.profiles||{}).some(([a,p])=>a!==Store.acct&&String((p&&p.username)||'').toLowerCase()===lc);
   return taken?`@${u} is already taken. Try another.`:''; }
 const NAME_WEEK=7*864e5, NAME_GRACE=10*60000;
-function nameLocked(){ const t=Pf.nameAt||0, d=Date.now()-t; return Pf.onboarded&&t&&d>NAME_GRACE&&d<NAME_WEEK; }
+function nameLocked(){ if(window.boatsAdmin) return false; const t=Pf.nameAt||0, d=Date.now()-t; return Pf.onboarded&&t&&d>NAME_GRACE&&d<NAME_WEEK; }
 function dv(f){ return S.draft&&S.meView==='settings'&&S.route==='app'?S.draft[f]:(Pf[f]||''); }
-function draftDirty(){ const d=S.draft; return !!d&&['username','town','bio','link'].some(f=>String(d[f]||'').trim()!==String(Pf[f]||'').trim()); }
+function draftDirty(){ const d=S.draft; return !!d&&['username','realName','town','bio','link'].some(f=>String(d[f]||'').trim()!==String(Pf[f]||'').trim()); }
 function userMsg(){ if(nameLocked()){ const days=Math.max(1,Math.ceil((NAME_WEEK-(Date.now()-Pf.nameAt))/864e5)); return `<span class="muted">You can change your username again in ${days} day${days===1?'':'s'}.</span>`; } const u=String(dv('username')||'').trim(); if(!u) return ''; if(S.draft&&S.meView==='settings'&&u.toLowerCase()===String(Pf.username||'').toLowerCase()) return ''; const x=usernameIssue(u); return x?`<span style="color:var(--bad)">${esc(x)}</span>`:`<span style="color:var(--good)">@${esc(u)} is available</span>`; }
 function townMsg(){ const t=String(dv('town')||'').trim(); if(!t) return '<span class="muted">Optional. US towns for now.</span>'; return placeValid(t)?`<span style="color:var(--good)">${ic('check','xs')} ${esc(t)}</span>`:'<span style="color:var(--bad)">Pick your town from the list so it\'s a real place.</span>'; }
 function showTownSug(){ const i=document.getElementById('f-town'), box=document.getElementById('town-sug'); if(!i||!box) return; const m=placeValid(i.value)?[]:placeMatches(i.value);
@@ -1277,6 +1285,7 @@ function idFields(){
       <button data-a="photo" aria-label="Choose profile picture" style="position:relative">${avatar(Pf.username||'?',Pf.photo,null,true)}<span class="ico" style="position:absolute;right:-4px;bottom:-4px;width:30px;height:30px;border-radius:50%;border:3px solid var(--bg)">${ic('camera','xs')}</span></button>
       <div class="field" style="flex:1;min-width:0"><label for="f-user">Create username</label><input class="input" id="f-user" maxlength="20" placeholder="e.g. jack.sparrow" autocapitalize="off" autocorrect="off" spellcheck="false" value="${esc(dv('username'))}" data-f="username" aria-describedby="u-msg" ${nameLocked()?'readonly':''}><div id="u-msg" class="small" aria-live="polite">${userMsg()}</div></div>
     </div>
+    <div class="field"><label for="f-name">Your name</label><input class="input" id="f-name" maxlength="40" placeholder="e.g. Jack Sparrow" autocomplete="name" value="${esc(dv('realName'))}" data-f="realName"><span class="muted small">Shown small under your username so friends can find you.</span></div>
     <div class="field"><label for="f-town">Town</label><div class="inwrap townwrap"><input class="input" id="f-town" maxlength="40" placeholder="Start typing" autocomplete="off" value="${esc(dv('town'))}" data-f="town" aria-describedby="t-msg" role="combobox" aria-autocomplete="list" aria-controls="town-sug" aria-expanded="false"><div class="sug" id="town-sug" role="listbox" hidden></div></div><div id="t-msg" class="small" aria-live="polite">${townMsg()}</div></div>`;
 }
 function goalCards(){
@@ -1308,6 +1317,7 @@ function vSplash(){
         <p class="fine">Free to use. Apple and Google sign-in arrive with the phone app. Until then you continue as a guest.</p>`}
       <div class="floatboat" aria-hidden="true"><span class="pboat">${ic('boat')}</span>${waveSvg()}</div>
       <p class="fine rowx" style="justify-content:center;gap:6px;margin:0"><i class="dotst ${!S.ready?'':Store.mode==='cloud'?'ok':'warn'}"></i>${esc(status)}${S.bootMs?` · ready in ${(S.bootMs/1000).toFixed(1)}s`:''} · ${BUILD}</p>
+      ${S.userCount?`<p class="fine" style="text-align:center;margin:0">${S.userCount} ${S.userCount===1?'person':'people'} on BOATS</p>`:''}
     </div></div>`;
 }
 function vOnboard(){
@@ -1374,6 +1384,7 @@ function weighCard(){ const last=Pf.bwLog[Pf.bwLog.length-1], today=last&&sameDa
     ${today&&!S.bwEdit?`<span style="color:var(--good);display:inline-flex">${ic('check','sm')}</span><div style="flex:1;min-width:0"><b>${fmtN(last.w)} ${Pf.unit}</b> <span class="muted small">logged today</span></div><button class="link small" data-a="bw-edit">Update</button>`
     :`<div style="flex:1;min-width:0"><div class="inwrap"><input class="input num" id="bw-today" inputmode="decimal" placeholder="Weigh-in${last?' (last '+fmtN(last.w)+')':''}" style="height:44px"><span class="suf">${Pf.unit}</span></div></div><button class="btn sm primary" style="width:auto;flex:none;height:44px" data-a="bw-today">Log</button>`}</section>`; }
 function nameAsk(){ return S.nameTaken?`<section class="card stack" style="gap:8px;border-color:var(--bad)"><b>@${esc(Pf.username)} belongs to someone else</b><span class="muted small">Two accounts ended up with the same username. Pick a new one so friends can find you.</span><button class="btn primary" data-a="settings">Change username</button></section>`:''; }
+function realNameAsk(){ return Pf.onboarded&&!String(Pf.realName||'').trim()?`<section class="card stack" style="gap:8px"><b>Add your name</b><span class="muted small">Your name shows small under your username so friends can search for you.</span><button class="btn" data-a="settings">Add my name</button></section>`:''; }
 function sexAsk(){ return Pf.onboarded&&!Pf.sex?`<section class="card stack" style="gap:10px"><b>One quick thing</b><span class="muted small">Boats now uses your sex to estimate calories more accurately. It’s never shown on your profile.</span>${seg('sex','',{male:'Male',female:'Female'})}</section>`:''; }
 function vChecklist(){
   const tk=dayKey(new Date()), items=Pf.checklist.filter(c=>!c.days||c.days.includes(tk)); const tags=targetTags();
@@ -1413,7 +1424,7 @@ function vToday(){
         ${plan.length?'':`<div class="muted small">${type==='rest'?'Recovery day. You can still log a session.':'No exercises yet.'} <button class="link" data-a="edit-day" data-v="${dk}">Add exercises</button></div>`}
         ${dk!==tk?`<button class="link" style="align-self:center" data-a="pick" data-v="${tk}">Back to today's plan (${esc(workoutLabel(tk))})</button>`:''}`}
     </section>
-    ${nameAsk()}${sexAsk()}${weighCard()}
+    ${nameAsk()}${realNameAsk()}${sexAsk()}${weighCard()}
     ${vProgramCard()}
     ${vChecklist()}
     ${a?'':`<div class="beginbar"><button class="btn primary" data-a="start-at" data-v="0">${ic('play','sm')}${plan.length?'Begin workout':'Begin empty workout'}</button></div>`}
@@ -1668,9 +1679,10 @@ function vProgress(){
 
 /* friends */
 const inviteText = () => `"${Pf.username||'Your friend'}" invited you to work out with them on Boats. After all, who else is going to carry them?`;
+const pm=(p,q)=>!q||String((p&&p.username)||'').toLowerCase().includes(q)||String((p&&p.name)||'').toLowerCase().includes(q);
 function personRow(id,p,isFriend){
   const s=statusOf(p.status);
-  return `<button class="li" data-a="person" data-v="${esc(id)}">${avatar(p.username,p.photo,p.status?s.cls:null)}<span class="grow"><span class="t">${esc(p.username)}</span><br><span class="s">${esc([p.town,s.label].filter(Boolean).join(' · '))}</span></span>${isFriend?'<span class="tag">Friend</span>':ic('right','sm')}</button>`;
+  return `<button class="li" data-a="person" data-v="${esc(id)}">${avatar(p.username,p.photo,p.status?s.cls:null)}<span class="grow"><span class="t">${esc(p.username)}</span><br><span class="s">${esc([p.name,p.town,s.label].filter(Boolean).join(' · '))}</span></span>${isFriend?'<span class="tag">Friend</span>':ic('right','sm')}</button>`;
 }
 function friendsList(){
   if(!Social.ok) return `<div class="card muted small">Friends need your Claude account. Open Boats from its link while signed in.</div>`;
@@ -1678,8 +1690,8 @@ function friendsList(){
   const q=S.fq.trim().toLowerCase();
   const others=Object.entries(Social.people).filter(([id])=>id!==Store.uid);
   const fr=others.filter(([id])=>Pf.friends.includes(id));
-  const rest=others.filter(([id,p])=>!Pf.friends.includes(id) && q && (p.username||'').toLowerCase().includes(q));
-  const frShown=fr.filter(([,p])=>!q||(p.username||'').toLowerCase().includes(q));
+  const rest=others.filter(([id,p])=>!Pf.friends.includes(id) && q && pm(p,q));
+  const frShown=fr.filter(([,p])=>pm(p,q));
   const order=([,a],[,b])=>{const r=x=>({gym:0,done:1,'':2})[statusOf(x.status).cls]; return r(a)-r(b);};
   return `${frShown.length?`<div class="stack" style="gap:8px"><div class="list">${frShown.sort(order).map(([id,p])=>personRow(id,p,true)).join('')}</div></div>`
       :!q?`<div class="card empty"><div class="h2" style="color:var(--fg);margin-bottom:6px">No friends yet</div>Search a username above, or send your link to a friend.</div>`:''}
@@ -1882,7 +1894,7 @@ function vFriendList(){
   </div>${tabbar()}`;
 }
 function crewList(){ const me=Social.me(), q=(S.fq||'').trim().toLowerCase();
-  const crew=Object.entries(Social.people||{}).filter(([id,c])=>id!==me&&c&&Array.isArray(c.following)&&c.following.includes(me)&&(!q||(c.username||'').toLowerCase().includes(q)));
+  const crew=Object.entries(Social.people||{}).filter(([id,c])=>id!==me&&c&&Array.isArray(c.following)&&c.following.includes(me)&&pm(c,q));
   return crew.length?`<div class="list">${crew.map(([id,p])=>personRow(id,p,Pf.friends.includes(id))).join('')}</div>`:`<div class="card empty">${q?'No one in your crew matches that.':'No one has joined your crew yet. Share a workout or invite friends.'}</div>`; }
 
 function lockRow(key,label,val){
@@ -1907,8 +1919,8 @@ function relInfo(id,tab){ const me=Social.me(), mine=new Set(Pf.friends||[]); if
   return {g:2,l:''}; }
 function vPeopleList(){ const {uid,tab}=S.plist, me=Social.me(), ok=id=>id===me||(Social.people||{})[id], q=(S.plq||'').trim().toLowerCase();
   let ids=(tab==='crew'?followerIds(uid):followingIds(uid)).filter(ok).map(id=>({id,r:relInfo(id,tab)})).sort((a,b)=>a.r.g-b.r.g||String(Social.nameOf(a.id)).localeCompare(String(Social.nameOf(b.id)))).map(x=>x.id);
-  const total=ids.length; if(q) ids=ids.filter(id=>String(Social.nameOf(id)).toLowerCase().includes(q));
-  const rowp=id=>{ const c=id===me?Social.card():Social.people[id], r=relInfo(id,tab); return `<div class="li"><button class="whobtn" style="flex:1;min-width:0" data-a="person" data-v="${esc(id)}">${avatar(c.username||'?',c.photo,null)}<span style="flex:1;min-width:0;text-align:left"><b>${esc(c.username||'Lifter')}${id===me?' (you)':''}</b>${r.l?`<br><span class="small" style="color:var(--accent)">${r.l}</span>`:c.town?`<br><span class="muted small">${esc(c.town)}</span>`:''}</span></button>${id===me?'':`<button class="btn sm ${Pf.friends.includes(id)?'':'primary'}" style="width:auto;flex:none" data-a="plist-follow" data-v="${esc(id)}">${Pf.friends.includes(id)?'Following':'Follow'}</button>`}</div>`; };
+  const total=ids.length; if(q) ids=ids.filter(id=>pm(cardOf(id),q));
+  const rowp=id=>{ const c=id===me?Social.card():Social.people[id], r=relInfo(id,tab); return `<div class="li"><button class="whobtn" style="flex:1;min-width:0" data-a="person" data-v="${esc(id)}">${avatar(c.username||'?',c.photo,null)}<span style="flex:1;min-width:0;text-align:left"><b>${esc(c.username||'Lifter')}${id===me?' (you)':''}</b>${c.name?`<br><span class="muted small">${esc(c.name)}</span>`:''}${r.l?`<br><span class="small" style="color:var(--accent)">${r.l}</span>`:c.town?`<br><span class="muted small">${esc(c.town)}</span>`:''}</span></button>${id===me?'':`<button class="btn sm ${Pf.friends.includes(id)?'':'primary'}" style="width:auto;flex:none" data-a="plist-follow" data-v="${esc(id)}">${Pf.friends.includes(id)?'Following':'Follow'}</button>`}</div>`; };
   return `<div class="screen">
     <div class="rowx" style="gap:6px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="plist-back" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">${tab==='crew'?'Crew':'Following'} <span class="muted" style="font-weight:600">· ${total}</span></span></div>
     <span class="muted small" style="margin-top:-6px">${tab==='crew'?`People who follow ${esc(Social.nameOf(uid))}`:`People ${esc(Social.nameOf(uid))} follows`}</span>
@@ -1929,6 +1941,7 @@ function profileBlock(uid,c,me){
     <div class="rowx" style="gap:18px"><button class="avbtn" data-a="av-view" data-v="${esc(uid)}" aria-label="View profile picture">${avatar(c.username||'?',c.photo,c.status?st.cls:null,true)}</button>
       <div class="pstats"><div><b class="num">${wk}</b><span>voyages</span></div>${stat(fol,'crew')}${stat(fing,'following')}</div></div>
     <div class="rowx" style="align-items:flex-start;gap:12px"><div class="stack" style="gap:4px;flex:1;min-width:0"><div class="rowx" style="gap:8px;flex-wrap:nowrap;min-width:0"><h2 class="h2" style="font-size:22px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.username||'Lifter')}</h2>${fn?`<button class="ftag" data-a="founder-info" data-v="${fn}" aria-label="Founding Crew member number ${fn}">#${String(fn).padStart(3,'0')}</button>`:''}</div>
+      ${c.name?`<span class="realname">${esc(c.name)}</span>`:''}
       ${c.status?`<span class="small muted">${st.label}</span>`:''}</div>
       <div class="stack" style="gap:6px;align-items:flex-end;flex:none">${me||c.status?`<button class="streakpill solid" data-a="streak-detail" data-v="${esc(uid)}" data-top="5" aria-label="${streakN} day streak${rl?', '+esc(rl):''}">${ic('flame','xs')}${rl?`<span>${esc(rl)}</span>`:`<span><span class="num">${streakN}</span>-day streak</span>`}</button>`:''}${!me&&c.splitPub?`<button class="tag copytag" data-a="split-view" data-v="${esc(uid)}">${ic('clip','xs')}Copy split</button>`:''}</div></div>
     ${!me&&S.unfAsk&&Pf.friends.includes(uid)?`<div class="card rowx" style="gap:8px;padding:10px 12px"><span style="flex:1;min-width:0">Unfollow ${esc(c.username||'')}?</span><button class="btn sm" style="width:auto" data-a="unf-ask">Cancel</button><button class="btn sm danger" style="width:auto" data-a="friend" data-v="${esc(uid)}">Unfollow</button></div>`:''}
@@ -1948,7 +1961,7 @@ function vPosts(){ const uid=S.postsOf, ps=(((Social.posts[uid]||{}).items)||[])
   </div>${tabbar()}`; }
 function vPerson(){ const id=S.personId, p=Social.people[id];
   return `<div class="screen">
-    <div class="rowx phead" style="margin:-4px -4px -10px -8px"><button class="iconbtn" data-a="person-back" aria-label="Back">${ic('back')}</button><span class="ptitle"></span>${p?`<button class="iconbtn" data-a="dm-open" data-v="${esc(id)}" aria-label="Message ${esc(p.username||'')}">${ic('send')}</button><button class="iconbtn followrot ${Pf.friends.includes(id)?'on':''}" data-a="follow-tog" data-v="${esc(id)}" aria-label="${Pf.friends.includes(id)?'Unfollow':'Follow'} ${esc(p.username||'')}" aria-pressed="${Pf.friends.includes(id)}">${ic('plus')}</button>`:''}</div>
+    <div class="rowx phead" style="margin:-4px -4px -10px -8px"><button class="iconbtn" data-a="person-back" aria-label="Back">${ic('back')}</button><span class="ptitle"></span>${p?`<button class="iconbtn" data-a="dm-open" data-v="${esc(id)}" aria-label="Message ${esc(p.username||'')}">${ic('send')}</button><button class="btn sm fbtn ${Pf.friends.includes(id)?'':'primary'}" data-a="follow-tog" data-v="${esc(id)}" aria-pressed="${Pf.friends.includes(id)}">${Pf.friends.includes(id)?'Unfollow':'Follow'}</button>`:''}</div>
     ${p?profileBlock(id,p,false):`<div class="card muted">This profile is no longer available.</div>`}
   </div>${tabbar()}`; }
 function vMe(){
@@ -1964,6 +1977,13 @@ function vMe(){
 function recTargets(){ const bw=num(Pf.bodyweight), lb=Pf.unit==='lb'?bw:bw*2.2046; if(!lb) return {steps:'8,000',cal:'2,400',protein:'150 g',sleep:'8 h'};
   const cal=Math.round(((Pf.sex?bmr()*1.55:lb*15)+({bulk:300,maintain:0,cut:-500}[Pf.goal]||0))/50)*50, pr=Math.round(lb*(Pf.goal==='cut'?1:0.8)/5)*5;
   return {steps:Pf.goal==='cut'?'10,000':'8,000',cal:cal.toLocaleString(),protein:pr+' g',sleep:'8 h'}; }
+// Group feedback that talks about the same thing (shared keywords), most-reported first.
+const FB_STOP=new Set('the a an and or but to of in on for with it is are was be this that i im it’s its my me you your we they he she at as so if not no do does did can just like really very more less get got have has had when what how why which there their them then than too also please app boats feature would should could make add need want think feel thing things way still'.split(' '));
+function fbWords(t){ return new Set(String(t||'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).map(w=>w.replace(/(ing|ed|es|s)$/,'')).filter(w=>w.length>2&&!FB_STOP.has(w))); }
+function fbGroups(list){ const groups=[]; for(const f of [...list].sort((a,b)=>b.at-a.at)){ const w=fbWords(f.text); let best=null, bs=0;
+    for(const g of groups){ let n=0; w.forEach(x=>{ if(g.w.has(x)) n++; }); const sc=n/Math.max(1,Math.min(w.size,g.w.size)); if(n>=2&&sc>=.5&&sc>bs){ best=g; bs=sc; } }
+    if(best){ best.items.push(f); w.forEach(x=>best.w.add(x)); } else groups.push({w,items:[f]}); }
+  return groups.sort((a,b)=>b.items.length-a.items.length||b.items[0].at-a.items[0].at); }
 function vAdmin(){
   const d=S.adm, tab=S.admTab||'users', now=Date.now(), day=864e5;
   const head=`<div><button class="link rowx" style="gap:4px" data-a="settings">${ic('back','sm')}Settings</button></div>
@@ -1975,7 +1995,7 @@ function vAdmin(){
   const extra=Object.keys(ppl).filter(u=>!have.has(u)&&ppl[u]&&ppl[u].username).map(u=>({uid:u,email:'',name:'',createdAt:ppl[u].createdAt||0,lastAt:(ppl[u].status&&ppl[u].status.lastAt)||0,noRecord:true}));
   const users=[...d.accounts,...extra].map(a=>({...a,card:ppl[a.uid]||null})).sort((x,y)=>(y.createdAt||0)-(x.createdAt||0));
   const fb=d.feedback.slice().sort((x,y)=>y.at-x.at);
-  const q=(S.admQ||'').trim().toLowerCase(), shown=q?users.filter(u=>[u.email,u.name,u.card&&u.card.username].some(x=>String(x||'').toLowerCase().includes(q))):users;
+  const q=(S.admQ||'').trim().toLowerCase(), shown=q?users.filter(u=>[u.email,u.name,u.card&&u.card.username,u.card&&u.card.name].some(x=>String(x||'').toLowerCase().includes(q))):users;
   const tile=(k,v)=>`<div class="card stat" style="padding:12px 14px;display:flex;flex-direction:column;gap:2px"><span class="k">${k}</span><span class="v">${v}</span></div>`;
   const dt=t=>t?new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}):'—';
   return `<div class="screen">${head}
@@ -1990,9 +2010,10 @@ function vAdmin(){
         <span class="s">${u.noRecord&&!u.createdAt?'Joined before v89':'Joined '+dt(u.createdAt)} · active ${u.lastAt?ago(u.lastAt):'—'}${u.card?` · ${fmtN(u.card.wcount||0)} workouts${(u.card.status&&u.card.status.streak)?` · ${u.card.status.streak} day streak`:''}`:''}</span></span></div>`).join('')||`<div class="li muted small">No users${q?' match':' yet'}.</div>`}</div>
       <button class="btn" data-a="adm-copy">Copy all emails</button>`
     :`<div class="stack" style="gap:10px">${(()=>{ const sel=S.fbSel||{}, n=Object.keys(sel).length; return n?`<button class="btn primary" data-a="fb-submit">${ic('send','sm')}Send ${n} to Claude</button><span class="muted small" style="text-align:center;margin-top:-4px">Checked items go to your Claude inbox (GitHub issues) when you tap Send.</span>`:''; })()}
-      ${fb.map(f=>{ const u=d.accounts.find(a=>a.uid===f.uid)||{}, k=f.uid+'|'+f.at, on=!!(S.fbSel||{})[k]; return `<div class="card stack fbitem ${on?'sel':''}" style="gap:6px"><div class="rowx" style="gap:8px;align-items:flex-start"><span style="flex:1;min-width:0;white-space:pre-wrap;overflow-wrap:anywhere">${esc(f.text)}</span>
+      ${fbGroups(fb).map(g=>{ const f=g.items[0], u=d.accounts.find(a=>a.uid===f.uid)||{}, k=f.uid+'|'+f.at, on=!!(S.fbSel||{})[k]; return `<div class="card stack fbitem ${on?'sel':''}" style="gap:6px"><div class="rowx" style="gap:8px;align-items:flex-start">${g.items.length>1?`<span class="fbcount" title="Reported ${g.items.length} times">×${g.items.length}</span>`:''}<span style="flex:1;min-width:0;white-space:pre-wrap;overflow-wrap:anywhere">${esc(f.text)}</span>
         ${f.forClaude?`<span class="tag accent">${ic('check','xs')}Sent to Claude</span>`:`<button class="iconbtn fbchk ${on?'on':''}" data-a="fb-check" data-v="${esc(k)}" aria-pressed="${on}" aria-label="${on?'Uncheck':'Check to send to Claude'}">${ic('check','sm')}</button>`}<button class="iconbtn" data-a="fb-del" data-v="${esc(k)}" aria-label="Delete feedback">${ic('x','sm')}</button></div>
-        <span class="muted small">${esc(f.user||(ppl[f.uid]&&ppl[f.uid].username)||u.name||'Someone')}${u.email?' · '+esc(u.email):''} · ${ago(f.at)}${f.where?' · on '+esc(f.where):''}${f.build?' · '+esc(f.build):''}</span></div>`; }).join('')||`<div class="card muted small">No feedback yet.</div>`}</div>`}
+        <span class="muted small">${esc(f.user||(ppl[f.uid]&&ppl[f.uid].username)||u.name||'Someone')}${u.email?' · '+esc(u.email):''} · ${ago(f.at)}${f.where?' · on '+esc(f.where):''}${f.build?' · '+esc(f.build):''}</span>
+        ${g.items.length>1?`<details class="fbmore"><summary class="muted small">${g.items.length-1} similar</summary>${g.items.slice(1).map(x=>`<div class="small" style="padding:6px 0;border-top:1px solid var(--line)">${esc(x.text)} <span class="muted">· ${esc(x.user||(ppl[x.uid]&&ppl[x.uid].username)||'Someone')} · ${ago(x.at)}</span></div>`).join('')}</details>`:''}</div>`; }).join('')||`<div class="card muted small">No feedback yet.</div>`}</div>`}
   </div>${tabbar()}`;
 }
 // Plain-English name of the screen (and open panel) for feedback, e.g. "Feed › Chat with mia_strong" or "Workout › Exercise library".
@@ -2024,12 +2045,10 @@ const onAppSite=()=>/(^|\.)carrytheboats\.app$|boats-40d0f\.(web|firebaseapp)\.(
 const uaIOS=()=>/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const inIOSSafari=()=>uaIOS()&&/Safari/.test(navigator.userAgent)&&!/CriOS|FxiOS|EdgiOS|OPiOS|GSA|Instagram|FBAN|FBAV|Line|Snapchat/.test(navigator.userAgent);
 const inAndroidChrome=()=>/Android/.test(navigator.userAgent)&&/Chrome\//.test(navigator.userAgent)&&!/SamsungBrowser|EdgA|OPR|wv\)|Instagram|FBAN|FBAV/.test(navigator.userAgent);
-// Drawn step illustrations (not real screenshots); the blue ring shows what to tap.
-const STEP_ILLO={"ios1": "<svg viewBox=\"0 0 280 160\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" font-family=\"Inter,system-ui,sans-serif\"><rect width=\"280\" height=\"160\" rx=\"16\" fill=\"#111110\"/><rect x=\"100\" y=\"44\" width=\"80\" height=\"32\" rx=\"9\" fill=\"#3A3A36\"/><path d=\"M134 76l6 7 6-7z\" fill=\"#3A3A36\"/><text x=\"140\" y=\"65\" fill=\"#F4F3EF\" font-size=\"13\" font-weight=\"600\" text-anchor=\"middle\">Paste</text><rect x=\"96\" y=\"40\" width=\"88\" height=\"40\" rx=\"12\" fill=\"none\" stroke=\"#5BC0EB\" stroke-width=\"2.5\"/><rect x=\"24\" y=\"96\" width=\"232\" height=\"34\" rx=\"10\" fill=\"#26261F\"/><text x=\"140\" y=\"118\" fill=\"#F4F3EF\" font-size=\"13\" text-anchor=\"middle\">carrytheboats.app</text><rect x=\"196\" y=\"105\" width=\"1.6\" height=\"16\" fill=\"#5BC0EB\"/></svg>", "ios2": "<svg viewBox=\"0 0 280 160\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" font-family=\"Inter,system-ui,sans-serif\"><rect width=\"280\" height=\"160\" rx=\"16\" fill=\"#111110\"/><rect x=\"24\" y=\"22\" width=\"232\" height=\"34\" rx=\"10\" fill=\"#26261F\"/><text x=\"140\" y=\"44\" fill=\"#A3A29C\" font-size=\"12\" text-anchor=\"middle\">carrytheboats.app</text><text x=\"240\" y=\"44\" fill=\"#A3A29C\" font-size=\"14\" text-anchor=\"middle\">\u2022\u2022\u2022</text><rect x=\"0\" y=\"108\" width=\"280\" height=\"52\" fill=\"#1A1A18\"/><rect x=\"0\" y=\"108\" width=\"280\" height=\"1\" fill=\"#2C2C29\"/><path d=\"M38 128l-7 7 7 7\" fill=\"none\" stroke=\"#A3A29C\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M84 128l7 7-7 7\" fill=\"none\" stroke=\"#A3A29C\" stroke-width=\"2\" stroke-linecap=\"round\"/><g transform=\"translate(0,40)\"><path d=\"M140 92v-18M133 80l7-7 7 7\" fill=\"none\" stroke=\"#5BC0EB\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"131\" y=\"84\" width=\"18\" height=\"16\" rx=\"3\" fill=\"none\" stroke=\"#5BC0EB\" stroke-width=\"2\"/></g><rect x=\"186\" y=\"127\" width=\"16\" height=\"16\" rx=\"3\" fill=\"none\" stroke=\"#A3A29C\" stroke-width=\"2\"/><rect x=\"232\" y=\"127\" width=\"14\" height=\"14\" rx=\"3\" fill=\"none\" stroke=\"#A3A29C\" stroke-width=\"2\"/><rect x=\"236\" y=\"123\" width=\"14\" height=\"14\" rx=\"3\" fill=\"none\" stroke=\"#A3A29C\" stroke-width=\"2\"/><rect x=\"120\" y=\"116\" width=\"40\" height=\"40\" rx=\"12\" fill=\"none\" stroke=\"#5BC0EB\" stroke-width=\"2.5\"/></svg>", "ios3": "<svg viewBox=\"0 0 280 160\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" font-family=\"Inter,system-ui,sans-serif\"><rect width=\"280\" height=\"160\" rx=\"16\" fill=\"#111110\"/><rect x=\"12\" y=\"14\" width=\"256\" height=\"140\" rx=\"14\" fill=\"#1A1A18\"/><rect x=\"20\" y=\"24\" width=\"240\" height=\"30\" rx=\"8\" fill=\"#26261F\"/><text x=\"34\" y=\"44\" fill=\"#F4F3EF\" font-size=\"12.5\" font-weight=\"400\">Copy</text><rect x=\"20\" y=\"60\" width=\"240\" height=\"30\" rx=\"8\" fill=\"#26261F\"/><text x=\"34\" y=\"80\" fill=\"#F4F3EF\" font-size=\"12.5\" font-weight=\"400\">Add to Reading List</text><rect x=\"20\" y=\"96\" width=\"240\" height=\"30\" rx=\"8\" fill=\"#2B3338\"/><text x=\"34\" y=\"116\" fill=\"#F4F3EF\" font-size=\"12.5\" font-weight=\"600\">Add to Home Screen</text><rect x=\"232\" y=\"103\" width=\"16\" height=\"16\" rx=\"4\" fill=\"none\" stroke=\"#F4F3EF\" stroke-width=\"1.6\"/><path d=\"M240 107v8M236 111h8\" stroke=\"#F4F3EF\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><rect x=\"18\" y=\"94\" width=\"244\" height=\"34\" rx=\"10\" fill=\"none\" stroke=\"#5BC0EB\" stroke-width=\"2.5\"/><text x=\"140\" y=\"146\" fill=\"#A3A29C\" font-size=\"10\" text-anchor=\"middle\">Scroll down if you don\u2019t see it</text></svg>", "ios4": "<svg viewBox=\"0 0 280 160\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" font-family=\"Inter,system-ui,sans-serif\"><rect width=\"280\" height=\"160\" rx=\"16\" fill=\"#111110\"/><rect x=\"12\" y=\"12\" width=\"256\" height=\"140\" rx=\"14\" fill=\"#1A1A18\"/><text x=\"30\" y=\"34\" fill=\"#A3A29C\" font-size=\"12\">Cancel</text><text x=\"140\" y=\"34\" fill=\"#F4F3EF\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\">Add to Home Screen</text><text x=\"248\" y=\"34\" fill=\"#5BC0EB\" font-size=\"13\" font-weight=\"700\" text-anchor=\"end\">Add</text><rect x=\"216\" y=\"18\" width=\"40\" height=\"24\" rx=\"8\" fill=\"none\" stroke=\"#5BC0EB\" stroke-width=\"2.5\"/><rect x=\"28\" y=\"50\" width=\"40\" height=\"40\" rx=\"9.200000000000001\" fill=\"#0E0E0D\" stroke=\"#333\" stroke-width=\"1\"/><text x=\"48.0\" y=\"74.0\" fill=\"#F4F3EF\" font-size=\"9.6\" font-weight=\"900\" text-anchor=\"middle\" letter-spacing=\"-0.5\">BOATS</text><rect x=\"80\" y=\"56\" width=\"168\" height=\"28\" rx=\"7\" fill=\"#26261F\"/><text x=\"92\" y=\"74\" fill=\"#F4F3EF\" font-size=\"12.5\">BOATS Beta</text><rect x=\"28\" y=\"104\" width=\"224\" height=\"34\" rx=\"8\" fill=\"#26261F\"/><text x=\"40\" y=\"125\" fill=\"#F4F3EF\" font-size=\"12.5\">Open as Web App</text><rect x=\"208\" y=\"111\" width=\"34\" height=\"20\" rx=\"10\" fill=\"#34C759\"/><circle cx=\"232\" cy=\"121\" r=\"8\" fill=\"#fff\"/><rect x=\"202\" y=\"107\" width=\"46\" height=\"28\" rx=\"14\" fill=\"none\" stroke=\"#5BC0EB\" stroke-width=\"2.5\"/></svg>", "ios5": "<svg viewBox=\"0 0 280 160\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" font-family=\"Inter,system-ui,sans-serif\"><rect width=\"280\" height=\"160\" rx=\"16\" fill=\"#111110\"/><rect x=\"30\" y=\"24\" width=\"42\" height=\"42\" rx=\"10\" fill=\"#26261F\"/><rect x=\"146\" y=\"24\" width=\"42\" height=\"42\" rx=\"10\" fill=\"#26261F\"/><rect x=\"204\" y=\"24\" width=\"42\" height=\"42\" rx=\"10\" fill=\"#26261F\"/><rect x=\"30\" y=\"86\" width=\"42\" height=\"42\" rx=\"10\" fill=\"#26261F\"/><rect x=\"88\" y=\"86\" width=\"42\" height=\"42\" rx=\"10\" fill=\"#26261F\"/><rect x=\"146\" y=\"86\" width=\"42\" height=\"42\" rx=\"10\" fill=\"#26261F\"/><rect x=\"204\" y=\"86\" width=\"42\" height=\"42\" rx=\"10\" fill=\"#26261F\"/><rect x=\"88\" y=\"24\" width=\"42\" height=\"42\" rx=\"9.66\" fill=\"#0E0E0D\" stroke=\"#333\" stroke-width=\"1\"/><text x=\"109.0\" y=\"49.2\" fill=\"#F4F3EF\" font-size=\"10.08\" font-weight=\"900\" text-anchor=\"middle\" letter-spacing=\"-0.5\">BOATS</text><text x=\"109\" y=\"80\" fill=\"#F4F3EF\" font-size=\"9.5\" text-anchor=\"middle\">BOATS Beta</text><rect x=\"82\" y=\"18\" width=\"54\" height=\"68\" rx=\"14\" fill=\"none\" stroke=\"#5BC0EB\" stroke-width=\"2.5\"/></svg>", "and1": "<svg viewBox=\"0 0 280 160\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" font-family=\"Inter,system-ui,sans-serif\"><rect width=\"280\" height=\"160\" rx=\"16\" fill=\"#111110\"/><rect x=\"100\" y=\"44\" width=\"80\" height=\"32\" rx=\"9\" fill=\"#3A3A36\"/><path d=\"M134 76l6 7 6-7z\" fill=\"#3A3A36\"/><text x=\"140\" y=\"65\" fill=\"#F4F3EF\" font-size=\"13\" font-weight=\"600\" text-anchor=\"middle\">Paste</text><rect x=\"96\" y=\"40\" width=\"88\" height=\"40\" rx=\"12\" fill=\"none\" stroke=\"#5BC0EB\" stroke-width=\"2.5\"/><rect x=\"24\" y=\"96\" width=\"232\" height=\"34\" rx=\"10\" fill=\"#26261F\"/><text x=\"140\" y=\"118\" fill=\"#F4F3EF\" font-size=\"13\" text-anchor=\"middle\">carrytheboats.app</text><rect x=\"196\" y=\"105\" width=\"1.6\" height=\"16\" fill=\"#5BC0EB\"/></svg>", "and2": "<svg viewBox=\"0 0 280 160\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" font-family=\"Inter,system-ui,sans-serif\"><rect width=\"280\" height=\"160\" rx=\"16\" fill=\"#111110\"/><rect x=\"0\" y=\"14\" width=\"280\" height=\"52\" fill=\"#1A1A18\"/><rect x=\"16\" y=\"24\" width=\"200\" height=\"32\" rx=\"16\" fill=\"#26261F\"/><text x=\"40\" y=\"45\" fill=\"#F4F3EF\" font-size=\"12\">carrytheboats.app</text><circle cx=\"250\" cy=\"32\" r=\"2.6\" fill=\"#F4F3EF\"/><circle cx=\"250\" cy=\"40\" r=\"2.6\" fill=\"#F4F3EF\"/><circle cx=\"250\" cy=\"48\" r=\"2.6\" fill=\"#F4F3EF\"/><rect x=\"232\" y=\"22\" width=\"36\" height=\"36\" rx=\"18\" fill=\"none\" stroke=\"#5BC0EB\" stroke-width=\"2.5\"/><rect x=\"24\" y=\"84\" width=\"232\" height=\"60\" rx=\"12\" fill=\"#26261F\" opacity=\".5\"/></svg>", "and3": "<svg viewBox=\"0 0 280 160\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" font-family=\"Inter,system-ui,sans-serif\"><rect width=\"280\" height=\"160\" rx=\"16\" fill=\"#111110\"/><rect x=\"100\" y=\"10\" width=\"168\" height=\"142\" rx=\"12\" fill=\"#1A1A18\" stroke=\"#2C2C29\"/><text x=\"116\" y=\"36\" fill=\"#F4F3EF\" font-size=\"12.5\" font-weight=\"400\">New tab</text><text x=\"116\" y=\"66\" fill=\"#F4F3EF\" font-size=\"12.5\" font-weight=\"400\">History</text><text x=\"116\" y=\"96\" fill=\"#F4F3EF\" font-size=\"12.5\" font-weight=\"700\">Install app</text><text x=\"116\" y=\"126\" fill=\"#F4F3EF\" font-size=\"12.5\" font-weight=\"400\">Settings</text><rect x=\"106\" y=\"76\" width=\"156\" height=\"28\" rx=\"8\" fill=\"none\" stroke=\"#5BC0EB\" stroke-width=\"2.5\"/><rect x=\"16\" y=\"20\" width=\"70\" height=\"120\" rx=\"10\" fill=\"#26261F\" opacity=\".45\"/></svg>", "and4": "<svg viewBox=\"0 0 280 160\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" font-family=\"Inter,system-ui,sans-serif\"><rect width=\"280\" height=\"160\" rx=\"16\" fill=\"#111110\"/><rect x=\"30\" y=\"24\" width=\"42\" height=\"42\" rx=\"10\" fill=\"#26261F\"/><rect x=\"146\" y=\"24\" width=\"42\" height=\"42\" rx=\"10\" fill=\"#26261F\"/><rect x=\"204\" y=\"24\" width=\"42\" height=\"42\" rx=\"10\" fill=\"#26261F\"/><rect x=\"30\" y=\"86\" width=\"42\" height=\"42\" rx=\"10\" fill=\"#26261F\"/><rect x=\"88\" y=\"86\" width=\"42\" height=\"42\" rx=\"10\" fill=\"#26261F\"/><rect x=\"146\" y=\"86\" width=\"42\" height=\"42\" rx=\"10\" fill=\"#26261F\"/><rect x=\"204\" y=\"86\" width=\"42\" height=\"42\" rx=\"10\" fill=\"#26261F\"/><rect x=\"88\" y=\"24\" width=\"42\" height=\"42\" rx=\"9.66\" fill=\"#0E0E0D\" stroke=\"#333\" stroke-width=\"1\"/><text x=\"109.0\" y=\"49.2\" fill=\"#F4F3EF\" font-size=\"10.08\" font-weight=\"900\" text-anchor=\"middle\" letter-spacing=\"-0.5\">BOATS</text><text x=\"109\" y=\"80\" fill=\"#F4F3EF\" font-size=\"9.5\" text-anchor=\"middle\">BOATS Beta</text><rect x=\"82\" y=\"18\" width=\"54\" height=\"68\" rx=\"14\" fill=\"none\" stroke=\"#5BC0EB\" stroke-width=\"2.5\"/></svg>"};
 const INSTALL_STEPS={
   ios:[
     {t:'Copy the BOATS link',b:'Open <b>Safari</b> and paste it into the address bar.',copy:true,skip:()=>inIOSSafari()&&onAppSite(),skipMsg:'You’re already in Safari on BOATS, so you can skip this step.'},
-    {t:'Tap Share',b:'Tap the <b>Share</b> button. If you don’t see it, open the page menu (<b>…</b>) first.'},
+    {t:'Open the menu, then Share',b:'Look for the <b>3 bars</b> (☰) or the <b>•••</b> button at the bottom of Safari and tap it, then tap <b>Share</b>.',note:'Safari just updated, so this can look a little different from phone to phone.'},
     {t:'Add to Home Screen',b:'Scroll down and tap <b>Add to Home Screen</b>. If it’s missing, look under <b>Edit Actions</b>.'},
     {t:'Turn on Open as Web App',b:'If you see an <b>Open as Web App</b> switch, turn it on. Then tap <b>Add</b>.'},
     {t:'Launch BOATS',b:'Find <b>BOATS Beta</b> on your Home Screen and tap it to launch.',last:true}],
@@ -2051,8 +2070,7 @@ function vInstall(){ const pl=S.instTab||'ios', steps=INSTALL_STEPS[pl], i=Math.
     ${vid?`<details class="card instvid"><summary>${ic('play','sm')} Watch the walkthrough</summary><video src="${esc(vid)}" controls playsinline preload="none"></video></details>`:''}
     <div class="card stack istep" id="istep" style="gap:12px">
       <span class="eyebrow">Step ${i+1} of ${steps.length}</span>
-      ${STEP_ILLO[(pl==='ios'?'ios':'and')+(i+1)]?`<div class="illo" aria-hidden="true">${STEP_ILLO[(pl==='ios'?'ios':'and')+(i+1)]}</div>`:''}
-      <b class="h2">${st.t}</b><span>${st.b}</span>
+      <b class="h2">${st.t}</b><span>${st.b}</span>${st.note?`<span class="muted small">${st.note}</span>`:''}
       ${st.copy?(skipNow?`<span class="tag accent" style="align-self:flex-start">${ic('check','xs')}${st.skipMsg}</span>`:`<button class="btn" data-a="inst-copy">${ic('link','sm')}<span id="instcopy">Copy App Link</span></button><span class="muted small">${esc(APP_URL)}</span>`):''}
       <div class="dots" aria-hidden="true">${steps.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div>
       <div class="rowx" style="gap:8px"><button class="btn" style="flex:1" data-a="inst-back" ${i?'':'disabled'}>Back</button>${st.last?`<button class="btn primary" style="flex:1.4" data-a="inst-added">I added BOATS</button>`:`<button class="btn primary" style="flex:1.4" data-a="inst-next">Continue</button>`}</div>
@@ -2240,12 +2258,15 @@ function vSheet(){
         <div class="card stack" style="gap:6px"><div class="rowx"><span class="h2" style="font-size:16px">Overview</span><span class="spacer"></span><span class="tag accent num">~${workoutKcal(a,Date.now())} kcal</span></div>
           ${a.items.filter(it=>it.sets.some(s=>s.st)).map(it=>{ const d=it.sets.filter(s=>s.st), ok=d.filter(s=>s.st==='ok').length; return `<div class="exline" style="padding:6px 0"><span>${esc(exOf(it.exId).n)}${it.hurt?` <span style="color:var(--bad)">${ic('bandage','xs')}</span>`:''}</span><span class="r num">${it.cardio?`${esc(d[0].w)} min · ~${it.kcal||0} kcal`:setDots(d)}</span></div>`; }).join('')||'<span class="muted small">Nothing logged yet.</span>'}
           <span class="muted small">Calories are an estimate from your body weight, lifting time and cardio settings.</span></div>
-        ${sh.pump?`<div class="pumpwrap"><img class="pump" src="${esc(sh.pump)}" alt="Your pump picture"><button class="iconbtn pumpx" data-a="pump-clear" aria-label="Remove picture">${ic('x','sm')}</button></div>`
+        ${sh.pump?`<div class="stack" style="gap:10px"><div class="rowx"><span class="h2" style="font-size:18px;flex:1">Share workout</span><button class="link small" data-a="pump-clear">Remove picture</button></div>
+          <div class="ovstage photo"><canvas id="ovc" width="1080" height="1920" aria-label="Story preview"></canvas></div>
+          <div class="field"><span class="flabel">Style</span>${chipRow('ov-style',String(sh.style||0),{0:'Weight',1:'Time',2:'Carried',3:'Rowboats'})}</div></div>`
           :`<button class="btn" data-a="pump-finish">${ic('camera','sm')}Add pump picture</button>`}
         <div class="field"><label for="f-cap">Comment</label><input class="input" id="f-cap" maxlength="200" placeholder="How did it go? (optional)" value="${esc(sh.caption||'')}"></div>
-        ${Social.postedToday()?`<div class="muted small">You’ve shared 3 workouts today, the daily limit.</div>`:!sh.pump?`<div class="muted small">${ic('camera','xs')} Add a pump picture to share this to the feed. Without one it’s saved privately to your profile.</div>`
+        ${sh.pump?`${Social.postedToday()?`<div class="muted small">You’ve shared 3 posts today, so this one is saved privately.</div>`:''}<button class="btn primary" data-a="fin-share">${ic('share','sm')}Share workout</button><button class="btn" data-a="fin-dl">Download story</button><button class="btn" data-a="save-workout">End workout without the story</button><span class="muted small" style="text-align:center;margin-top:-4px">Your post on BOATS is the photo in portrait, without the overlay.</span>`:''}
+        ${sh.pump?'':Social.postedToday()?`<div class="muted small">You’ve shared 3 workouts today, the daily limit.</div>`:!sh.pump?`<div class="muted small">${ic('camera','xs')} Add a pump picture to share this to the feed. Without one it’s saved privately to your profile.</div>`
           :`<button class="li" style="padding:6px 0" data-a="share-tog"><span class="grow"><span class="t">Post voyage</span><br><span class="s">${sh.share?'Public: friends see it in their feed':'Private: saved to your profile, only you see it'}</span></span><span class="toggle ${sh.share?'on':''}"></span></button>`}
-        ${marked.length?`<button class="btn primary" data-a="save-workout">End workout</button>`:`<div class="card muted small">No sets are logged yet. Tap ✓ or ✕ on a set to log it.</div>`}
+        ${sh.pump?'':`<button class="btn primary" data-a="save-workout">End workout</button>`}${marked.length?'':`<span class="muted small" style="text-align:center;margin-top:-6px">No sets logged. You can still end it.</span>`}
         <button class="btn" data-a="close-sheet">Not done</button>
         <button class="btn ghost danger" data-a="discard">Discard workout</button>`);
   }
@@ -2576,7 +2597,7 @@ document.addEventListener('touchend',()=>{ if(!SW) return; const {sh,dy,on,t0}=S
 function revealCards(){ if(!('IntersectionObserver' in window)) return; if(RIO) RIO.disconnect();
   RIO=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); RIO.unobserve(e.target); } }),{rootMargin:'0px 0px -6% 0px'});
   document.querySelectorAll('#feed > *, .pgrid3 > button, .prof .post').forEach((n,i)=>{ n.classList.add('rv'); n.style.transitionDelay=Math.min(i,6)*40+'ms'; RIO.observe(n); }); }
-function renderSheet(){ const b=document.getElementById('sbody'), st=b?b.scrollTop:0, same=S.sheet&&renderSheet._k===S.sheet.kind; renderSheet._k=S.sheet&&S.sheet.kind; sheetEl.innerHTML=vSheet()+(PREVIEW&&S.sheet&&S.sheet.kind!=='dev'?devPanel():''); const nb=document.getElementById('sbody'); if(nb) nb.scrollTop=st; if(same){ sheetEl.querySelectorAll('.scrim,.sheet').forEach(n=>n.style.animation='none'); } if(S.sheet&&S.sheet.kind==='export') drawOverlayInto(document.getElementById('ovc')); }
+function renderSheet(){ const b=document.getElementById('sbody'), st=b?b.scrollTop:0, same=S.sheet&&renderSheet._k===S.sheet.kind; renderSheet._k=S.sheet&&S.sheet.kind; sheetEl.innerHTML=vSheet()+(PREVIEW&&S.sheet&&S.sheet.kind!=='dev'?devPanel():''); const nb=document.getElementById('sbody'); if(nb) nb.scrollTop=st; if(same){ sheetEl.querySelectorAll('.scrim,.sheet').forEach(n=>n.style.animation='none'); } if(S.sheet&&(S.sheet.kind==='export'||(S.sheet.kind==='finish'&&S.sheet.pump))) drawOverlayInto(document.getElementById('ovc')); }
 function go(route,opts={}){ document.body.classList.remove('barhid'); Object.assign(S,opts); S.route=route; if(route==='session'&&Pf.active){ try{ reconcileWorkout(); Store.save(); }catch(e){} } window.scrollTo(0,0); render(); }
 function cardW(){ const c=document.getElementById('car'); return c?c.querySelector('.ex-card').offsetWidth+10:1; }
 function onCarScroll(e){
@@ -2654,6 +2675,9 @@ function checkIdle(){ const a=Pf&&Pf.active; if(!a||!a.startedAt||a.pausedAt) re
 function workoutKcal(a,end){ const mins=(a.activeMs!=null?a.activeMs:elapsed(a,end))/60000; let cardioMin=0, ck=0;
   for(const it of a.items) if(it.cardio&&it.sets[0]&&it.sets[0].st==='ok'){ const m=num(it.sets[0].w); cardioMin+=m; ck+=it.kcal||cardioKcal(it,m); }
   const lift=Math.max(0,mins-cardioMin); return Math.round(ck+5*3.5*bodyKg()/200*lift*metCorr()); }
+function workoutFrom(a,{title,pump}={}){ const w={id:'w_'+a.id,kind:'workout',startedAt:a.startedAt||Date.now(),endedAt:Date.now(),day:a.day,type:a.type,title:title||'Workout',unit:Pf.unit,pump:pump||'',
+    items:a.items.map(it=>{ const o={exId:it.exId,equip:it.equip,cardio:!!it.cardio,repMin:it.repMin,repMax:it.repMax,sets:it.sets.filter(s=>s.st).map(s=>({w:String(s.w),r:String(s.r),st:s.st}))}; if(it.hurt) o.hurt=true; if(it.swapped) o.swapped=true; if(it.cardio){ o.cset={...(it.cset||{})}; o.kcal=it.kcal||0; } return o; }).filter(it=>it.sets.length)};
+  w.activeMs=elapsed(a); w.kcal=workoutKcal(a,w.endedAt); w.streak=streakCheck(w,w.activeMs).ok; return w; }
 function suggestionsFor(w){
   const out=[];
   for(const it of w.items){
@@ -2694,7 +2718,7 @@ const A = {
   'pump-view'(v){ S.sheet={kind:'pump',id:v}; renderSheet(); },
   'ob-back'(){ S.ob--; render(); },
   async 'ob-next'(){ if(S.ob===0){ const bad=[]; if(usernameIssue(Pf.username)) bad.push('f-user'); if(String(Pf.town||'').trim()&&!placeValid(Pf.town)) bad.push('f-town');
-      if(Pf.unit==='lb'){ if(!num(Pf.ft)) bad.push('f-ft'); } else if(!num(Pf.cm)) bad.push('f-cm'); if(!num(Pf.bodyweight)) bad.push('f-bw'); if(!Pf.sex) bad.push('f-sex');
+      if(Pf.unit==='lb'){ if(!num(Pf.ft)) bad.push('f-ft'); } else if(!num(Pf.cm)) bad.push('f-cm'); if(!num(Pf.bodyweight)) bad.push('f-bw'); if(!Pf.sex) bad.push('f-sex'); if(!String(Pf.realName||'').trim()) bad.push('f-name');
       document.querySelectorAll('.input.bad,.field.bad').forEach(n=>n.classList.remove('bad')); if(bad.length){ bad.forEach(id=>document.getElementById(id)?.classList.add('bad')); const f=document.getElementById(bad[0]); if(f){ f.scrollIntoView({block:'center',behavior:'smooth'}); f.focus({preventScroll:true}); } return; }
       if(window.boatsClaimName){ const r=await window.boatsClaimName(Pf.username,Pf.nameClaimed); if(r==='taken'){ const i=document.getElementById('f-user'), m=document.getElementById('u-msg'); i?.classList.add('bad'); if(m) m.innerHTML=`<span style="color:var(--bad)">@${esc(Pf.username)} is already taken. Try another.</span>`; i?.focus(); return; } if(r==='ok') Pf.nameClaimed=Pf.username; } }
     if(S.ob===1) applyRecDefaults();
@@ -2790,19 +2814,20 @@ const A = {
   's-add'(){ openPicker({mode:'session'},Pf.active.type); },
   'rest-add'(){ if(S.rest){ S.rest.until+=15000; S.rest.total+=15; tick(); } },
   'rest-skip'(){ S.rest=null; render(); },
-  finish(){ const a=Pf.active; S.sheet={kind:'finish',pump:a.pump||'',title:`${DAYN[a.day]} ${a.type==='rest'?'Session':TYPES[a.type]}`,share:Pf.autoShare!==false&&!Social.postedToday()}; renderSheet(); },
+  finish(){ const a=Pf.active; S.sheet={kind:'finish',style:0,tone:'light',bg:'photo',pump:a.pump||'',title:`${DAYN[a.day]} ${a.type==='rest'?'Session':TYPES[a.type]}`,share:Pf.autoShare!==false&&!Social.postedToday()}; renderSheet(); },
   'share-tog'(){ readTitle(); S.sheet.share=!S.sheet.share; renderSheet(); },
+  async 'fin-share'(){ const sh=S.sheet; readTitle(); const b=await overlayBlob(); if(b){ try{ const f=new File([b],`boats-story-${dateKey()}.png`,{type:'image/png'}); if(navigator.canShare&&navigator.canShare({files:[f]})) await navigator.share({files:[f]}); else await shareOrSave(b,false); }catch(e){ if(e&&e.name==='AbortError') return; } } sh.share=true; sh.storyDone=true; return A['save-workout'](); },
+  async 'fin-dl'(){ const sh=S.sheet; readTitle(); const b=await overlayBlob(); if(b) await shareOrSave(b,false); sh.share=true; sh.storyDone=true; return A['save-workout'](); },
   async 'save-workout'(){
+    const storyDone=!!(S.sheet&&S.sheet.storyDone); if(S.sheet&&S.sheet.pump&&S.sheet.share&&window.boatsNsfw&&!(await window.boatsNsfw(S.sheet.pump))){ blockedPhoto(); return; }
     const a=Pf.active, title=((S.sheet&&S.sheet.title)||'Workout').trim(), pump=(S.sheet&&S.sheet.pump)||'', caption=((document.getElementById('f-cap')||{}).value||'').trim(), share=S.sheet&&S.sheet.share&&!Social.postedToday()&&!!((S.sheet&&S.sheet.pump)||'');
-    const w={id:'w_'+a.id,kind:'workout',startedAt:a.startedAt||Date.now(),endedAt:Date.now(),day:a.day,type:a.type,title,unit:Pf.unit,pump,
-      items:a.items.map(it=>{ const o={exId:it.exId,equip:it.equip,cardio:!!it.cardio,repMin:it.repMin,repMax:it.repMax,sets:it.sets.filter(s=>s.st).map(s=>({w:String(s.w),r:String(s.r),st:s.st}))}; if(it.hurt) o.hurt=true; if(it.swapped) o.swapped=true; if(it.cardio){ o.cset={...(it.cset||{})}; o.kcal=it.kcal||0; } return o; }).filter(it=>it.sets.length)};
-    w.activeMs=elapsed(a); w.kcal=workoutKcal(a,w.endedAt); if(caption) w.caption=caption; w.streak=streakCheck(w,w.activeMs).ok;
+    const w=workoutFrom(a,{title,pump}); if(caption) w.caption=caption;
     for(const it of w.items){ if(it.cardio) continue; const used=num(it.sets[0].w); if(used) for(const [d] of DAYS) for(const p of Pf.plans[d]) if(p.exId===it.exId&&p.equip===it.equip) p.weight=String(used); }
     Pf.active=null; S.rest=null; S.sheet=null; Store.save(); await Store.addWorkout(w); Social.publish();
     if(share) await shareWorkout(w);
     const sug=suggestionsFor(w);
     go('app',{tab:'me',meView:null,pview:'list'}); toast(share?'Voyage logged and posted':'Voyage logged');
-    if(sug.length){ S.sheet={kind:'suggest',items:sug}; renderSheet(); } else { S.sheet={kind:'export',id:w.id,style:0,tone:'light',bg:'clear'}; renderSheet(); }
+    if(sug.length){ S.sheet={kind:'suggest',items:sug}; renderSheet(); } else if(!storyDone&&!w.pump){ S.sheet={kind:'export',id:w.id,style:0,tone:'light',bg:'clear'}; renderSheet(); }
   },
   adj(v){ const [i,n]=v.split('.').length===3?[v.split('.')[0],v.split('.').slice(1).join('.')]:v.split('.'); const g=S.sheet.items[+i];
     const nw=adjNew(g,parseFloat(n)); const c=applyWeight(g.exId,g.equip,nw);
@@ -2812,7 +2837,7 @@ const A = {
   discard(){ Pf.active=null; S.rest=null; S.sheet=null; Store.save(); go('app',{tab:homeTab()}); toast('Workout discarded'); },
   pstep(_,el){ if(/rep(Min|Max)/.test(el.dataset.f)) Pf.defaultsTouched=true; setTimeout(()=>{ if(/rep(Min|Max)/.test(el.dataset.f)) render(); },0); const f=el.dataset.f; let v=(+Pf[f]||0)+(+el.dataset.d); if(f==='repMin') v=Math.max(1,Math.min(Pf.repMax,v)); if(f==='repMax') v=Math.max(Pf.repMin,Math.min(50,v)); Pf[f]=v; document.getElementById('f-'+f).value=v; Store.save(); },
   export(v){ S.menu=null; S.sheet={kind:'export',id:v,style:0,tone:'light',bg:'clear'}; renderSheet(); },
-  'ov-style'(v){ S.sheet.style=+v; renderSheet(); },
+  'ov-style'(v){ readTitle(); S.sheet.style=+v; renderSheet(); },
   'ov-tone'(v){ S.sheet.tone=v; renderSheet(); },
   'ov-bg'(v){ S.sheet.bg=v; renderSheet(); },
   async 'ov-share'(){ const b=await overlayBlob(); if(b) shareOrSave(b,true); },
@@ -2865,7 +2890,7 @@ const A = {
   'cl-add'(){ const i=document.getElementById('cl-new'), t=i.value.trim(); if(!t) return; Pf.checklist.push({id:'c'+uid(),t:t.slice(0,60),days:null}); Store.save(); render(); },
   dev(){ S.sheet={kind:'dev'}; renderSheet(); },
   'dev-go'(v){ previewLoad(v); },
-  settings(){ S.nameOpen=Pf.username; S.draft={username:Pf.username||'',town:Pf.town||'',bio:Pf.bio||'',link:Pf.link||''}; S.meView='settings'; S.tab='me'; S.route='app'; S.sheet=null; window.scrollTo(0,0); render(); },
+  settings(){ S.nameOpen=Pf.username; S.draft={username:Pf.username||'',realName:Pf.realName||'',town:Pf.town||'',bio:Pf.bio||'',link:Pf.link||''}; S.meView='settings'; S.tab='me'; S.route='app'; S.sheet=null; window.scrollTo(0,0); render(); },
   'my-friends'(v){ S.flTab=v||'following'; S.fq=''; S.meView='friends'; S.tab='me'; S.route='app'; window.scrollTo(0,0); render(); },
   profile(){ S.meView=null; window.scrollTo(0,0); render(); },
   'chart-open'(v){ S.sheetFull=true; S.sheet={kind:'chart',which:v,range:'3m'}; renderSheet(); },
@@ -2944,7 +2969,7 @@ const A = {
     if(re){ const parent=Social.comments(v).find(c=>c.at===re); if(parent) S.repOpen={...(S.repOpen||{}),[ckOf(v,parent)]:true}; S.replyTo=null; } else { S.cmShow={...(S.cmShow||{}),[v]:Math.max(((S.cmShow||{})[v]||0),3)}; }
     patchPost(v); popCue(); },
   'follow-tog'(v,el,ok){ const i=Pf.friends.indexOf(v); if(i>=0&&!ok){ askConfirm('Unfollow '+Social.nameOf(v)+'?','Their workouts will leave your feed.','Unfollow',()=>A['follow-tog'](v,el,true)); return; } if(i>=0) Pf.friends.splice(i,1); else { Pf.friends.push(v); Pf.followedAt={...(Pf.followedAt||{}),[v]:Date.now()}; }
-    Store.save(); Social.publish(); const on=i<0; if(el){ el.classList.toggle('on',on); el.setAttribute('aria-pressed',on); el.setAttribute('aria-label',(on?'Unfollow ':'Follow ')+Social.nameOf(v)); } if(S.route==='chat'||S.chatWith||S.plist) render(); popCue(); },
+    Store.save(); Social.publish(); const on=i<0; if(el){ el.classList.toggle('on',on); el.setAttribute('aria-pressed',on); el.setAttribute('aria-label',(on?'Unfollow ':'Follow ')+Social.nameOf(v)); } if(S.route==='chat'||S.chatWith||S.plist||S.personId) render(); popCue(); },
   'unf-ask'(v){ S.unfAsk=!S.unfAsk; render(); },
   friend(v,el,ok){ const i=Pf.friends.indexOf(v); if(i>=0&&!ok){ askConfirm('Unfollow '+Social.nameOf(v)+'?','Their workouts will leave your feed.','Unfollow',()=>A.friend(v,el,true)); return; } if(i>=0) Pf.friends.splice(i,1); else { Pf.friends.push(v); Pf.followedAt={...(Pf.followedAt||{}),[v]:Date.now()}; } Store.save(); Social.publish(); S.unfAsk=false; if(S.personId) render(); else renderSheet(); popCue(); },
   erase(){ S.confirmErase=true; render(); },
@@ -2970,8 +2995,9 @@ const A = {
     const town=String(d.town||'').trim(); if(town&&!placeValid(town)){ const tm=document.getElementById('t-msg'); if(tm) tm.innerHTML=townMsg(); document.getElementById('f-town')?.focus(); return; }
     if(String(d.link||'').trim()&&!linkOf(d.link)){ toast('That link doesn’t look right. Check it and try again.'); document.getElementById('f-link')?.focus(); return; }
     if(changedName){ Pf.nameAt=Date.now(); S.nameTaken=false; }
-    Pf.username=u; Pf.town=town; Pf.bio=String(d.bio||'').slice(0,130); Pf.link=String(d.link||'').trim();
-    S.draft={username:Pf.username,town:Pf.town,bio:Pf.bio,link:Pf.link}; Store.save(true); Social.publish(); render(); popCue(); },
+    if(!String(d.realName||'').trim()){ toast('Add your name so friends can find you.'); document.getElementById('f-name')?.focus(); return; }
+    Pf.realName=String(d.realName).trim().slice(0,40); Pf.username=u; Pf.town=town; Pf.bio=String(d.bio||'').slice(0,130); Pf.link=String(d.link||'').trim();
+    S.draft=null; Store.save(true); Social.publish(); S.meView=null; window.scrollTo(0,0); render(); popCue(); savedNote('Profile saved'); },
   'np-open'(){ if(Social.postedToday()) return A['np-limit'](); S.np={photo:null,cap:''}; NPIMG=null; S.fview='newpost'; S.tab='friends'; S.route='app'; window.scrollTo(0,0); render(); S.photoFor='newpost'; document.getElementById('photo-in').click(); },
   'np-limit'(){ infoBox('Limit reached','<span class="muted small">You can share 3 posts a day. Come back tomorrow for more.</span>'); },
   'np-close'(){ S.np=null; S.fview=null; render(); },
@@ -2980,7 +3006,7 @@ const A = {
   'np-crop-cancel'(){ S.np.crop=S.np.prevCrop||S.np.crop; S.np.editing=false; render(); },
   'np-crop-done'(){ if(NPIMG) S.np.photo=npRender(NPIMG,S.np.crop,1080); S.np.editing=false; render(); },
   'np-pick'(){ const c=document.getElementById('np-cap'); if(c&&S.np) S.np.cap=c.value; S.photoFor='newpost'; document.getElementById('photo-in').click(); },
-  async 'np-share'(){ const np=S.np; if(!np||!np.photo) return; if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit.'); return; } const cap=(document.getElementById('np-cap')?.value||'').trim().slice(0,300), id='u'+uid();
+  async 'np-share'(){ const np=S.np; if(!np||!np.photo) return; if(window.boatsNsfw){ boatLoading(true,'Checking photo…'); const ok=await window.boatsNsfw(np.photo); boatLoading(false); if(!ok){ blockedPhoto(); return; } } if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit.'); return; } const cap=(document.getElementById('np-cap')?.value||'').trim().slice(0,300), id='u'+uid();
     boatLoading(true,'Posting…'); try{ const small=await shrinkData(np.photo,480,.72); const hq=await savePhotoHq(id,np.photo); await Social.addPost({id,at:Date.now(),sharedAt:Date.now(),title:'',type:'',caption:cap,photo:small,hq,kind:'photo'}); } finally{ boatLoading(false); }
     S.pinNow=id; Pf.pinReload=id; Store.save(); S.np=null; S.fview=null; S.feedN=10; S.feedSeed=Date.now(); window.scrollTo(0,0); render(); popCue(); },
   admin(){ if(!window.boatsAdmin) return; S.meView='admin'; S.adm=null; window.scrollTo(0,0); render(); window.boatsAdmin.load().then(d=>{ S.adm=d; },e=>{ S.adm={error:'Could not load data ('+((e&&e.code)||'error')+').'}; }).then(()=>{ if(S.meView==='admin') render(); }); },
@@ -3049,7 +3075,7 @@ document.addEventListener('input',e=>{ try{ onInput(e); }catch(err){ reportErr('
 let MT=null;
 function mentionCands(q){ const me=Social.me(), mine=new Set(Pf.friends||[]), lc=q.toLowerCase();
   return Object.entries(Social.people||{}).filter(([id,c])=>id!==me&&c&&c.username).map(([id,c])=>{ const u=c.username.toLowerCase(), fol=(c.following||[]).includes(me);
-    const m=!lc?1:u.startsWith(lc)?2:u.includes(lc)?1:0; return {id,u:c.username,m,s:(mine.has(id)?4:0)+(fol?2:0)+m}; }).filter(x=>x.m).sort((a,b)=>b.s-a.s||a.u.localeCompare(b.u)).slice(0,5); }
+    const nm=String(c.name||'').toLowerCase(), m=!lc?1:u.startsWith(lc)?2:(u.includes(lc)||nm.split(/\s+/).some(w=>w.startsWith(lc)))?1:0; return {id,u:c.username,m,s:(mine.has(id)?4:0)+(fol?2:0)+m}; }).filter(x=>x.m).sort((a,b)=>b.s-a.s||a.u.localeCompare(b.u)).slice(0,5); }
 function mentionSug(t){ const old=document.getElementById('msug'); const pos=t.selectionStart, before=t.value.slice(0,pos), m=/(^|\s)@([A-Za-z0-9._]{0,20})$/.exec(before);
   if(!m){ if(old) old.remove(); MT=null; return; } const c=mentionCands(m[2]); if(!c.length){ if(old) old.remove(); MT=null; return; } MT=t;
   const html=c.map(x=>`<button type="button" data-a="mention-pick" data-v="${esc(x.u)}">${avatar(x.u,Social.photoOf(x.id),null)}<span><b>@${esc(x.u)}</b>${(Pf.friends||[]).includes(x.id)?'<br><span class="muted small">You follow</span>':(((Social.people[x.id]||{}).following||[]).includes(Social.me())?'<br><span class="muted small">Follows you</span>':'')}</span></button>`).join('');
@@ -3072,6 +3098,7 @@ function onInput(e){
     if(k==='w'&&!it.cardio){ s0.wEdited=true;
       it.sets.forEach((s,n)=>{ if(n>+j&&!s.st&&!s.wEdited){ s.w=t.value; const f=document.querySelector(`[data-set="${i}.${n}.w"]`); if(f) f.value=t.value; } }); }
     Store.save(); return; }
+  if(t.id==='f-user'&&!window.boatsAdmin&&/[A-Z]/.test(t.value)){ const p=t.selectionStart; t.value=t.value.toLowerCase(); t.setSelectionRange(p,p); }
   if(t.id==='f-bio'){ let n=0; const v=t.value.replace(/\n/g,()=>++n<=2?'\n':' '); if(v!==t.value) t.value=v; }
   if(t.dataset.f&&S.draft&&S.meView==='settings'&&S.route==='app'&&(t.dataset.f in S.draft)){ S.draft[t.dataset.f]=t.value; if(t.id==='f-town'){ showTownSug(); const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); } if(t.id==='f-user'){ const m=document.getElementById('u-msg'); if(m) m.innerHTML=userMsg(); } const b=document.getElementById('idsave'); if(b) b.disabled=!draftDirty(); return; }
   if(t.dataset.f && !t.closest('.stepper')){ Pf[t.dataset.f]=t.value; if(t.id==='f-town'){ showTownSug(); const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); } if(t.id==='f-user'){ const m=document.getElementById('u-msg'); if(m) m.innerHTML=userMsg(); } Store.save(); return; }
@@ -3105,7 +3132,7 @@ function onChange(e){
   if((t.id==='photo-in'||t.id==='cam-in') && t.files[0]){
     const f=t.files[0], target=S.photoFor||'avatar'; S.photoFor=null; t.value='';
     boatLoading(true,'Loading picture…'); readImage(f, target==='avatar'?{square:400,q:.86,minSide:200}:{max:1600,q:.86,minSide:600}).then(url=>target==='avatar'||target==='newpost'?url:loadImg(url).then(im=>npRender(im,{x:.5,y:.5,z:1},1080))).finally(()=>boatLoading(false)).then(url=>{
-      if(target==='avatar'){ Pf.photo=url; Store.save(); render(); toast('Picture updated'); }
+      if(target==='avatar'){ (window.boatsNsfw?window.boatsNsfw(url):Promise.resolve(true)).then(ok=>{ if(!ok){ blockedPhoto(); return; } Pf.photo=url; Store.save(); render(); popCue(); }); }
       else if(target==='active'){ if(Pf.active){ Pf.active.pump=url; Store.save(); render(); toast('Pump picture saved. It goes with this workout when you end it.'); } }
       else if(target==='newpost'){ if(S.np){ const im=new Image(); im.onload=()=>{ NPIMG=im; S.np.orig=url; S.np.crop={x:.5,y:.5,z:1}; S.np.photo=npRender(im,S.np.crop,1080); S.np.editing=false; render(); }; im.src=url; } }
       else if(target==='finish'){ if(S.sheet&&S.sheet.kind==='finish'){ readTitle(); S.sheet.pump=url; renderSheet(); } }
@@ -3118,7 +3145,7 @@ function onChange(e){
 function loadImg(src){ return new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=src; }); }
 const ROWBOAT={lb:150,kg:68};
 async function drawOverlayInto(c){
-  if(!c||!S.sheet||S.sheet.kind!=='export') return; const sh=S.sheet, w=Store.workouts.find(x=>x.id===sh.id); if(!w) return;
+  if(!c||!S.sheet||(S.sheet.kind!=='export'&&S.sheet.kind!=='finish')) return; const sh=S.sheet, w=sh.kind==='finish'?{...workoutFrom(Pf.active,sh),pump:sh.pump}:Store.workouts.find(x=>x.id===sh.id); if(!w) return;
   try{ await Promise.all([document.fonts.load('900 100px "Inter Tight"'),document.fonts.load('700 40px "Inter Tight"'),document.fonts.load('600 30px "Inter"')]); }catch(e){}
   const x=c.getContext('2d'), W=1080, H=1920; x.clearRect(0,0,W,H);
   if(sh.bg==='photo'&&w.pump){ try{ const im=await loadImg(w.pump); const sc=Math.max(W/im.width,H/im.height), iw=im.width*sc, ih=im.height*sc; x.drawImage(im,Math.floor((W-iw)/2)-1,Math.floor((H-ih)/2)-1,Math.ceil(iw)+2,Math.ceil(ih)+2); }catch(e){} }
@@ -3184,10 +3211,14 @@ setInterval(tick,1000);
 /* ---------- boot ---------- */
 Pf = Store.profile = defaultProfile();
 rebuildEx(); render();
+if(window.boatsUserCount) window.boatsUserCount().then(n=>{ if(n){ S.userCount=n; if(S.route==='splash') render(); } }).catch(()=>{});
 Store.init().catch(()=>{}).then(()=>{
   S.ready=true; S.bootMs=performance.now();
   try{ Social.start(); }catch(e){}
   if(S.route==='splash'){ const w=S.waiting; S.waiting=null; if(w) A.login(); else render(); }
+  if(window.boatsAdminReady&&Pf&&Pf.onboarded&&Pf.username) window.boatsAdminReady.then(isOwner=>{ const u=Pf.username;
+    if(isOwner){ if(u.toLowerCase()==='swaizy'&&u!=='SWAIZY'){ Pf.username='SWAIZY'; Store.save(); Social.publish(); render(); } }
+    else if(/[A-Z]/.test(u)){ Pf.username=u.toLowerCase(); Store.save(); Social.publish(); render(); } });
   if(Pf&&Pf.pinReload){ S.pinNow=Pf.pinReload; Pf.pinReload=null; Store.save(); }
   if(window.boatsClaimFounder&&Pf&&Pf.onboarded) window.boatsClaimFounder().then(n=>{ if(n&&!Social.founders[Social.me()]){ Social.founders={...Social.founders,[Social.me()]:n}; refreshSocial(); } });
   if(window.boatsClaimName&&Pf&&Pf.onboarded&&Pf.username&&Pf.nameClaimed!==Pf.username) window.boatsClaimName(Pf.username,Pf.nameClaimed).then(r=>{ if(r==='ok'){ Pf.nameClaimed=Pf.username; Store.save(); } else if(r==='taken'){ S.nameTaken=true; Pf.nameAt=0; render(); } });
