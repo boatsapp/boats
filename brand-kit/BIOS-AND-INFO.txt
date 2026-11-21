@@ -1,0 +1,91 @@
+BOATS — BRAND KIT
+=================
+
+NAME
+  BOATS  (display: "BOATS" or "BOATS Beta" while in beta)
+  Full name / acronym: The Best Overload Application for Training Stimulus
+  Tagline: because who else is going to carry them
+
+LINKS
+  App:          https://carrytheboats.app
+  Beta invite:  https://carrytheboats.app/beta   <- use this in bios (has the install walkthrough)
+
+SUGGESTED HANDLE
+  @carrytheboats   (matches the domain; fallbacks: @boatsapp, @boats.beta, @carryboats)
+
+
+BIOS (copy and paste; each fits that platform's limit)
+-----------------------------------------------------
+
+INSTAGRAM  (name max 30, bio max 150)
+  Name:  BOATS | Workout Tracker
+  Bio:
+    Because who else is going to carry them 🚣
+    Log lifts. Track progress. Train with your crew.
+    Beta is open ⬇️
+
+THREADS  (bio max 150)
+  The workout tracker you use with your friends. Log lifts, chase streaks, carry the boat together. Beta open now.
+
+TIKTOK  (bio max 80)
+  Workout tracker for you and your crew 🚣 Beta open ⬇️
+
+X / TWITTER  (name max 50, bio max 160)
+  Name:  BOATS
+  Bio:   Because who else is going to carry them. A workout tracker you use with your friends: log lifts, see progress, keep your streak. Beta is open.
+
+YOUTUBE  (channel description)
+  BOATS is a workout tracker you can use with your friends. Log your lifts, see your progress, and share workouts with your crew. Streaks, rep PRs, and a feed that keeps you accountable.
+  We're in beta — join at carrytheboats.app/beta
+
+LINKEDIN  (tagline max 120)
+  Tagline:  A social workout tracker: log lifts, track progress, and train with your crew.
+  About:    BOATS (The Best Overload Application for Training Stimulus) helps lifters log workouts, see real progress like rep PRs and strength trends, and stay consistent with friends through streaks and a shared feed. Currently in beta.
+
+FACEBOOK  (intro max 101)
+  Workout tracker you use with friends. Log lifts, track progress, keep the streak. Beta open.
+
+SHORT ONE-LINERS (for anything else)
+  • Because who else is going to carry them.
+  • Log lifts. Track progress. Train with your crew.
+  • The workout tracker built for your crew.
+  • Will you help me carry the boat?
+
+
+WHICH FILE GOES WHERE
+---------------------
+  profile-pictures/boats-profile-instagram-tiktok-threads-1080.png  -> Instagram, TikTok, Threads
+  profile-pictures/boats-profile-x-twitter-400.png                  -> X / Twitter
+  profile-pictures/boats-profile-facebook-linkedin-720.png          -> Facebook, LinkedIn
+  profile-pictures/boats-profile-youtube-800.png                    -> YouTube
+  profile-pictures/boats-profile-boat-1080.png                      -> alternate profile pic (boat on the water)
+    (All profile pictures keep the logo inside the circle crop.)
+
+  banners/x-twitter-header-1500x500.png      -> X header
+  banners/linkedin-banner-1584x396.png       -> LinkedIn banner
+  banners/youtube-banner-2560x1440.png       -> YouTube channel art (logo sits in the safe area)
+  banners/instagram-story-1080x1920.png      -> Story / Reel cover / highlight cover
+  banners/link-preview-1200x630.png          -> link previews, Facebook cover, press
+
+  logos/ (transparent PNGs)
+    boats-wordmark-white.png / -black.png          -> "BOATS" on dark / light backgrounds
+    boats-beta-wordmark-white.png / -black.png     -> "BOATS BETA" while in beta
+    boat-icon-white.png / -black.png               -> the boat mark on its own
+    boat-icon.svg                                  -> boat mark as a vector (takes any color)
+    app-icon-rounded-transparent.png               -> the app icon with rounded corners
+
+
+BRAND BASICS
+------------
+  Colors
+    Black (background)   #0E0E0D
+    Off-white (text)     #F4F3EF
+    Ocean blue (accent)  #5BC0EB   (light-mode accent #2E9FD8)
+    Streak orange        #FF6A2E
+    Muted grey           #A3A29C
+  Fonts (free, Google Fonts)
+    Inter Tight Black (900) — the BOATS wordmark and headlines
+    Inter — body text
+  Voice
+    Nautical, friendly, a little cheeky. You "carry the boat" together; workouts are "voyages";
+    your followers are your "crew".
