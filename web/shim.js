@@ -5,6 +5,10 @@ import { getAuth, connectAuthEmulator, onAuthStateChanged, GoogleAuthProvider, O
 import { initializeFirestore, connectFirestoreEmulator, persistentLocalCache, memoryLocalCache, collection, doc, getDoc, getDocs, setDoc, deleteDoc, onSnapshot, query, where, limit, runTransaction } from "firebase/firestore";
 import { firebaseConfig } from "./firebase-config.js";
 
+// Install support: keep Chrome's install prompt for the in-app "Install BOATS" button, and register a tiny service worker.
+window.__bip = null;
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); window.__bip = e; try { if(window.S && S.meView === "install") window.render(); } catch(_) {} });
+if("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("/sw.js").catch(() => {});
 const app = initializeApp(firebaseConfig);
 const EMU = location.hostname === "localhost" && new URLSearchParams(location.search).has("emu");
 const auth = getAuth(app);

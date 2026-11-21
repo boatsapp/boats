@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BOATS Beta</title>
+<meta name="description" content="A workout tracker you can use with your friends. Help me carry the boat.">
+<meta name="theme-color" content="#0E0E0D">
+<meta property="og:type" content="website">
+<meta property="og:title" content="BOATS Beta">
+<meta property="og:description" content="A workout tracker you can use with your friends. Will you help me carry the boat?">
+<meta property="og:image" content="https://carrytheboats.app/og.png">
+<meta property="og:url" content="https://carrytheboats.app/beta/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@700;800;900&display=swap">
+<style>
+:root{--bg:#0E0E0D;--surface:#1A1A18;--line:#2C2C29;--fg:#F4F3EF;--muted:#A3A29C;--accent:#5BC0EB;--display:"Inter Tight",Inter,system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:520px;margin:0 auto;padding:calc(28px + env(safe-area-inset-top,0px)) 20px calc(40px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:26px}
+.mark{font:900 clamp(64px,22vw,104px)/.88 var(--display);letter-spacing:-.05em;margin:0;display:flex;align-items:flex-start;gap:6px}
+.beta{font:800 13px/1 var(--display);letter-spacing:.08em;background:var(--surface);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 9px;margin-top:6px}
+.acro{margin:0 0 8px;color:var(--muted);font-size:13px;font-weight:500}
+.sub{margin:10px 0 0;font:700 20px/1.25 var(--display);letter-spacing:-.01em}
+.video{border-radius:20px;overflow:hidden;background:#000;border:1px solid var(--line);box-shadow:0 18px 40px -12px rgba(0,0,0,.6)}
+.video video{display:block;width:100%;max-height:70vh;background:#000}
+.video[hidden]{display:none}
+section h2{font:800 22px/1.2 var(--display);letter-spacing:-.02em;margin:0 0 8px}
+section p{margin:0;color:#D9D8D2}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;height:58px;border-radius:999px;font:700 17px Inter,system-ui,sans-serif;color:#0E0E0D;text-decoration:none;
+  background:linear-gradient(180deg,#ffffff 0%,#F1F0EC 55%,#DFDDD6 100%);border:1px solid rgba(255,255,255,.6);
+  box-shadow:0 18px 38px -10px rgba(0,0,0,.6),0 6px 14px rgba(0,0,0,.25),0 0 28px rgba(91,192,235,.22),inset 0 2px 3px rgba(255,255,255,.8),inset 0 -6px 12px rgba(0,0,0,.08)}
+.btn:active{transform:translateY(1px)}
+.fine{color:var(--muted);font-size:13px;text-align:center;margin:-12px 0 0}
+.sea{display:flex;flex-direction:column;align-items:center;margin:4px 0 -6px;color:var(--muted)}
+.boat{animation:bob 2.6s ease-in-out infinite;line-height:0}
+.boat svg{width:40px;height:40px}
+.wave{width:84px;overflow:hidden}
+.wave svg{display:block;width:168px;animation:slide 2.4s linear infinite;color:var(--accent)}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-4px) rotate(3deg)}}
+@keyframes slide{to{transform:translateX(-30px)}}
+@media (prefers-reduced-motion:reduce){.boat,.wave svg{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="acro">The Best Overload Application for Training Stimulus</p>
+    <h1 class="mark">BOATS<span class="beta">BETA</span></h1>
+    <p class="sub">because who else is going to carry them</p>
+  </header>
+
+  <!-- Welcome video: drop welcome.mp4 (and optionally welcome-poster.jpg) into this folder. Hidden until it loads. -->
+  <div class="video" id="video" hidden></div>
+
+  <section>
+    <h2>What is BOATS?</h2>
+    <p>BOATS is a workout tracker you can use with your friends. Log your lifts, see your progress, and share workouts with your crew.</p>
+  </section>
+
+  <section>
+    <h2>Will you help me carry the boat?</h2>
+    <p>I’m inviting a few friends to try the beta. Log a real workout and tell me what felt easy, what confused you, or what broke. Your feedback will help shape what I build next.</p>
+  </section>
+
+  <div class="sea" aria-hidden="true">
+    <span class="boat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15.5h18l-2.2 4H5.2z"/><path d="M12 3.5v12M12 4.5l6 9H12"/><path d="M12 7l-4.5 6.5H12"/></svg></span>
+    <span class="wave"><svg viewBox="0 0 120 10" height="10"><path d="M0 5 Q7.5 0 15 5 T30 5 T45 5 T60 5 T75 5 T90 5 T105 5 T120 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+  </div>
+
+  <a class="btn" id="open" href="https://carrytheboats.app/">Open BOATS Beta</a>
+  <p class="fine">Free. Sign in with Google. Use the Feedback button in the app to tell me anything.</p>
+</main>
+<script>
+// ---- Settings: change these to point somewhere else or swap the video ----
+const CONFIG = {
+  appUrl: "https://carrytheboats.app/",        // where "Open BOATS Beta" goes
+  video: { src: "/beta/welcome.mp4", poster: "/beta/welcome-poster.jpg" }
+};
+document.getElementById("open").href = CONFIG.appUrl;
+(function(){
+  const box = document.getElementById("video"); if(!CONFIG.video || !CONFIG.video.src) return;
+  const v = document.createElement("video");
+  v.controls = true; v.playsInline = true; v.preload = "metadata";
+  v.setAttribute("aria-label", "Welcome video from the founder");
+  const poster = new Image(); poster.onload = () => { v.poster = CONFIG.video.poster; }; poster.src = CONFIG.video.poster;
+  v.addEventListener("loadedmetadata", () => { box.hidden = false; }, { once: true });
+  v.addEventListener("error", () => { box.remove(); }, { once: true });
+  v.src = CONFIG.video.src; box.appendChild(v);
+})();
+</script>
+</body>
+</html>

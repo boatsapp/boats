@@ -8,6 +8,7 @@ def rep(a,b):
     assert a in s, a[:80]; s=s.replace(a,b)
 rep("const ARTIFACT_URL = 'https://claude.ai/artifact/XT3jUXgKFiYGwmpihToXXv';","const ARTIFACT_URL = location.origin;")
 rep("'Connected to your Claude account'","'Synced to your account'")
+rep('<title>Boats</title>','<title>BOATS Beta</title>')
 rep("'Synced to your Claude account'","'Synced to your account'")
 rep("Friends need your Claude account. Open Boats from its link while signed in.","Couldn’t connect. Check your internet and reopen Boats.")
 rep("The feed needs your Claude account. Open Boats from its link while signed in.","Couldn’t connect. Check your internet and reopen Boats.")
@@ -37,6 +38,12 @@ head='''<!doctype html>
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="BOATS Beta">
 <meta name="description" content="Because who else is going to carry them. A simple lifting tracker with friends.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="BOATS Beta">
+<meta property="og:description" content="A workout tracker you can use with your friends. Log your lifts, see your progress, and share workouts with your crew.">
+<meta property="og:image" content="https://carrytheboats.app/og.png">
+<meta property="og:url" content="https://carrytheboats.app/">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon-192.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -54,7 +61,9 @@ open(os.path.join(pub,'manifest.webmanifest'),'w').write('''{
   "name": "BOATS Beta",
   "short_name": "BOATS Beta",
   "description": "Because who else is going to carry them.",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0E0E0D",
   "theme_color": "#F5F4F0",

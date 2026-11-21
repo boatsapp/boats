@@ -146,6 +146,15 @@ svg.i.xs{width:14px;height:14px}
 .cmbox .input{height:40px;font-size:14px}
 .cmpost{font-weight:700;color:var(--accent)}
 .li.dimday{opacity:.45}
+.insttabs button{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.istep .h2{font-size:20px}
+.istep .dots{display:flex;gap:6px;justify-content:center}
+.istep .dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.istep .dots i.on{background:var(--accent);width:18px;border-radius:999px}
+.instvid summary{cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:600}
+.instvid video{width:100%;margin-top:10px;border-radius:12px;background:#000}
+.instdone .sea{display:flex;flex-direction:column;align-items:center;color:var(--muted)}
+.instdone .pboat svg{width:36px;height:36px}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
 .cal>b{font-size:11px;color:var(--muted);font-weight:600;padding-bottom:2px}
 .cday{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;border-radius:10px;border:0;background:none;color:var(--fg);font-size:12px}
@@ -668,7 +677,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v95';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v96';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -805,6 +814,8 @@ const P = {
   plan:'<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
   feed:'<path d="M3 12h4l3-7 4 14 3-7h4"/>',
   clip:'<path d="M21 11.5l-8.5 8.5a5 5 0 0 1-7-7L14 4.5a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7.5"/>',
+  android:'<path d="M6.5 9.5h11v7.5a1.5 1.5 0 0 1-1.5 1.5H8a1.5 1.5 0 0 1-1.5-1.5z"/><path d="M6.8 8.5a5.2 5.2 0 0 1 10.4 0z"/><path d="M8 4.2l1.2 1.8M16 4.2l-1.2 1.8M9.5 18.5V21M14.5 18.5V21M4 10.5v4.5M20 10.5v4.5"/>',
+  dl:'<path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/>',
   chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
   progress:'<path d="M4 19.5h16"/><path d="M5 15l4.5-4.5 3.5 3L19 7"/><path d="M15 7h4v4"/>',
   scale:'<rect x="3.5" y="4" width="17" height="16" rx="4"/><path d="M8.5 9.5a4.5 4.5 0 0 1 7 0L12 12"/>',
@@ -1852,6 +1863,7 @@ function vMe(){
   if(S.meView==='settings') return vSettings();
   if(S.meView==='friends') return vFriendList();
   if(S.meView==='admin') return vAdmin();
+  if(S.meView==='install') return vInstall();
   return `<div class="screen">
     <div class="rowx"><span class="eyebrow">Your profile</span><span class="spacer"></span><button class="iconbtn" data-a="settings" aria-label="Settings">${ic('gear')}</button></div>
     ${profileBlock(Social.me(),Social.card(),true)}
@@ -1866,7 +1878,10 @@ function vAdmin(){
     <div class="rowx"><div class="stack" style="gap:4px"><span class="eyebrow">Only you</span><h1 class="h1">Data center</h1></div><span class="spacer"></span><button class="iconbtn" data-a="admin" aria-label="Refresh">${ic('reset')}</button></div>`;
   if(!d) return `<div class="screen">${head}<div class="card muted small">Loading…</div></div>${tabbar()}`;
   if(d.error) return `<div class="screen">${head}<div class="card small" style="color:var(--bad)">${esc(d.error)}</div></div>${tabbar()}`;
-  const ppl=Social.people||{}, users=d.accounts.map(a=>({...a,card:ppl[a.uid]||null})).sort((x,y)=>(y.createdAt||0)-(x.createdAt||0));
+  const ppl=Social.people||{}, have=new Set(d.accounts.map(a=>a.uid));
+  // People with a public profile but no account record yet (signed up before v89 and haven't opened the app since)
+  const extra=Object.keys(ppl).filter(u=>!have.has(u)&&ppl[u]&&ppl[u].username).map(u=>({uid:u,email:'',name:'',createdAt:ppl[u].createdAt||0,lastAt:(ppl[u].status&&ppl[u].status.lastAt)||0,noRecord:true}));
+  const users=[...d.accounts,...extra].map(a=>({...a,card:ppl[a.uid]||null})).sort((x,y)=>(y.createdAt||0)-(x.createdAt||0));
   const fb=d.feedback.slice().sort((x,y)=>y.at-x.at);
   const q=(S.admQ||'').trim().toLowerCase(), shown=q?users.filter(u=>[u.email,u.name,u.card&&u.card.username].some(x=>String(x||'').toLowerCase().includes(q))):users;
   const tile=(k,v)=>`<div class="card stat" style="padding:12px 14px;display:flex;flex-direction:column;gap:2px"><span class="k">${k}</span><span class="v">${v}</span></div>`;
@@ -1879,8 +1894,8 @@ function vAdmin(){
     <div class="itabs" role="tablist">${[['users','Users ('+users.length+')'],['fb','Feedback ('+fb.length+')']].map(([k,l])=>`<button class="${tab===k?'on':''}" data-a="adm-tab" data-v="${k}" role="tab" aria-selected="${tab===k}">${l}</button>`).join('')}</div>
     ${tab==='users'?`<div class="search">${ic('search','sm')}<input class="input" id="adm-q" placeholder="Search name or email" value="${esc(S.admQ||'')}" autocomplete="off"></div>
       <div class="list">${shown.map(u=>`<div class="li" style="align-items:flex-start">${avatar((u.card&&u.card.username)||u.name||u.email||'?',u.card&&u.card.photo,null)}<span class="grow" style="min-width:0"><span class="t">${esc((u.card&&u.card.username)||u.name||'No profile yet')}</span><br>
-        <span class="s" style="overflow-wrap:anywhere">${esc(u.email||'')}</span><br>
-        <span class="s">Joined ${dt(u.createdAt)} · active ${u.lastAt?ago(u.lastAt):'—'}${u.card?` · ${fmtN(u.card.wcount||0)} workouts${(u.card.status&&u.card.status.streak)?` · ${u.card.status.streak} day streak`:''}`:''}</span></span></div>`).join('')||`<div class="li muted small">No users${q?' match':' yet'}.</div>`}</div>
+        <span class="s" style="overflow-wrap:anywhere">${u.noRecord?'<i>Email not recorded yet. Appears after their next visit or an account sync.</i>':esc(u.email||'')}</span><br>
+        <span class="s">${u.noRecord&&!u.createdAt?'Joined before v89':'Joined '+dt(u.createdAt)} · active ${u.lastAt?ago(u.lastAt):'—'}${u.card?` · ${fmtN(u.card.wcount||0)} workouts${(u.card.status&&u.card.status.streak)?` · ${u.card.status.streak} day streak`:''}`:''}</span></span></div>`).join('')||`<div class="li muted small">No users${q?' match':' yet'}.</div>`}</div>
       <button class="btn" data-a="adm-copy">Copy all emails</button>`
     :`<div class="stack" style="gap:10px">${fb.map(f=>{ const u=d.accounts.find(a=>a.uid===f.uid)||{}; return `<div class="card stack" style="gap:6px"><span style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(f.text)}</span><span class="muted small">${esc(f.user||(ppl[f.uid]&&ppl[f.uid].username)||u.name||'Someone')}${u.email?' · '+esc(u.email):''} · ${ago(f.at)}${f.where?' · on '+esc(f.where):''}${f.build?' · '+esc(f.build):''}</span></div>`; }).join('')||`<div class="card muted small">No feedback yet.</div>`}</div>`}
   </div>${tabbar()}`;
@@ -1906,10 +1921,55 @@ function screenWhere(){
 function linkOf(v){ v=String(v||'').trim(); if(!v) return ''; if(!/^https?:\/\//i.test(v)) v='https://'+v; try{ const u=new URL(v); return /^https?:$/.test(u.protocol)&&u.hostname.includes('.')?u.href.slice(0,200):''; }catch(e){ return ''; } }
 function linkHtml(l){ if(!/^https?:\/\//i.test(String(l||''))) return ''; let host=''; try{ host=new URL(l).hostname.replace(/^www\./,''); }catch(e){ return ''; } return `<a class="plink" href="${esc(l)}" target="_blank" rel="noopener nofollow ugc">${ic('link','xs')}${esc(host)}</a>`; }
 function bioHtml(b){ let done=false; return esc(b).replace(/@([A-Za-z0-9._]{3,20})/g,(m,u)=>{ if(done) return m; const id=Object.keys(Social.people||{}).find(k=>String((Social.people[k]||{}).username||'').toLowerCase()===u.toLowerCase()); if(!id) return m; done=true; return id===Social.me()?`<button class="link mention" data-a="tab" data-v="me">@${u}</button>`:`<button class="link mention" data-a="person" data-v="${esc(id)}">@${u}</button>`; }); }
+// ---------- Install BOATS on your phone ----------
+const APP_URL='https://carrytheboats.app/';
+const INSTALL_VIDEO={ios:'',android:''};   // optional walkthrough video URLs per platform
+const isStandalone=()=>!!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+const onAppSite=()=>/(^|\.)carrytheboats\.app$|boats-40d0f\.(web|firebaseapp)\.(app|com)$/.test(location.hostname);
+const uaIOS=()=>/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const inIOSSafari=()=>uaIOS()&&/Safari/.test(navigator.userAgent)&&!/CriOS|FxiOS|EdgiOS|OPiOS|GSA|Instagram|FBAN|FBAV|Line|Snapchat/.test(navigator.userAgent);
+const inAndroidChrome=()=>/Android/.test(navigator.userAgent)&&/Chrome\//.test(navigator.userAgent)&&!/SamsungBrowser|EdgA|OPR|wv\)|Instagram|FBAN|FBAV/.test(navigator.userAgent);
+const INSTALL_STEPS={
+  ios:[
+    {t:'Copy the BOATS link',b:'Open <b>Safari</b> and paste it into the address bar.',copy:true,skip:()=>inIOSSafari()&&onAppSite(),skipMsg:'You’re already in Safari on BOATS, so you can skip this step.'},
+    {t:'Tap Share',b:'Tap the <b>Share</b> button. If you don’t see it, open the page menu (<b>…</b>) first.'},
+    {t:'Add to Home Screen',b:'Scroll down and tap <b>Add to Home Screen</b>. If it’s missing, look under <b>Edit Actions</b>.'},
+    {t:'Turn on Open as Web App',b:'If you see an <b>Open as Web App</b> switch, turn it on. Then tap <b>Add</b>.'},
+    {t:'Launch BOATS',b:'Find <b>BOATS Beta</b> on your Home Screen and tap it to launch.',last:true}],
+  android:[
+    {t:'Copy the BOATS link',b:'Open <b>Chrome</b> and paste it into the address bar.',copy:true,skip:()=>inAndroidChrome()&&onAppSite(),skipMsg:'You’re already in Chrome on BOATS, so you can skip this step.'},
+    {t:'Open the menu',b:'Tap the <b>three-dot menu</b> next to the address bar.'},
+    {t:'Install',b:'Choose <b>Install and create shortcut</b>, then <b>Install</b>. If your Chrome shows <b>Install app</b> or <b>Add to Home screen</b> instead, choose that and confirm.'},
+    {t:'Open BOATS',b:'Find <b>BOATS Beta</b> on your Home Screen or in your app drawer and open it.',last:true}]};
+function vInstall(){ const pl=S.instTab||'ios', steps=INSTALL_STEPS[pl], i=Math.min(S.instStep||0,steps.length-1), st=steps[i], done=S.instDone;
+  const head=`<div class="rowx" style="gap:8px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="settings" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">Download App to Phone</span></div>`;
+  if(done||isStandalone()){ const installed=done==='installed'||isStandalone();
+    return `<div class="screen">${head}<div class="card stack instdone" style="gap:10px;text-align:center;align-items:center">${installed?`<span class="tag accent">${ic('check','xs')}BOATS Beta is installed</span>`:''}
+      <div class="sea">${'<span class="pboat">'+ic('boat')+'</span>'+waveSvg()}</div><b class="h1" style="font-size:28px">Ahoy, you’re aboard!</b><span>Thanks for being part of BOATS from the beginning.</span><span class="muted">Open BOATS from your Home Screen to get started.</span>
+      ${installed?'':`<button class="link small" data-a="inst-again">Show the steps again</button>`}</div></div>${tabbar()}`; }
+  const skipNow=st.skip&&st.skip(), vid=INSTALL_VIDEO[pl];
+  return `<div class="screen">${head}
+    <div class="seg insttabs" role="tablist">${[['ios','apple','iPhone'],['android','android','Android']].map(([k,icn,l])=>`<button class="${pl===k?'on':''}" role="tab" aria-selected="${pl===k}" data-a="inst-tab" data-v="${k}">${ic(icn,'sm')}${l}</button>`).join('')}</div>
+    ${pl==='android'&&window.__bip?`<button class="btn primary" data-a="inst-prompt">${ic('android','sm')}Install BOATS</button><span class="muted small" style="margin-top:-8px;text-align:center">Or follow the steps below.</span>`:''}
+    ${vid?`<details class="card instvid"><summary>${ic('play','sm')} Watch the walkthrough</summary><video src="${esc(vid)}" controls playsinline preload="none"></video></details>`:''}
+    <div class="card stack istep" id="istep" style="gap:12px">
+      <span class="eyebrow">Step ${i+1} of ${steps.length}</span>
+      <b class="h2">${st.t}</b><span>${st.b}</span>
+      ${st.copy?(skipNow?`<span class="tag accent" style="align-self:flex-start">${ic('check','xs')}${st.skipMsg}</span>`:`<button class="btn" data-a="inst-copy">${ic('link','sm')}<span id="instcopy">Copy App Link</span></button><span class="muted small">${esc(APP_URL)}</span>`):''}
+      <div class="dots" aria-hidden="true">${steps.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div>
+      <div class="rowx" style="gap:8px"><button class="btn" style="flex:1" data-a="inst-back" ${i?'':'disabled'}>Back</button>${st.last?`<button class="btn primary" style="flex:1.4" data-a="inst-added">I added BOATS</button>`:`<button class="btn primary" style="flex:1.4" data-a="inst-next">Continue</button>`}</div>
+    </div>
+    <span class="muted small" style="text-align:center">Swipe the card to move between steps.</span>
+  </div>${tabbar()}`; }
+let ISW=null;
+document.addEventListener('touchstart',e=>{ const c=e.target.closest('#istep'); if(!c) return; ISW={x:e.touches[0].clientX,y:e.touches[0].clientY}; },{passive:true});
+document.addEventListener('touchend',e=>{ if(!ISW) return; const t=e.changedTouches[0], dx=t.clientX-ISW.x, dy=t.clientY-ISW.y; ISW=null; if(Math.abs(dx)<50||Math.abs(dx)<Math.abs(dy)*1.3) return; S.noClick=Date.now(); A[dx<0?'inst-next':'inst-back'](); },{passive:true});
+window.addEventListener('appinstalled',()=>{ window.__bip=null; S.instDone='installed'; if(S.meView==='install') render(); });
 function vSettings(){
   return `<div class="screen">
     <div><button class="link rowx" style="gap:4px" data-a="profile">${ic('back','sm')}Profile</button></div>
     <div class="rowx"><div class="stack" style="gap:4px"><span class="eyebrow">Profile</span><h1 class="h1">Settings</h1></div><span class="spacer"></span>${window.boatsAdmin?`<button class="iconbtn admbtn" data-a="admin" aria-label="Data center">${ic('chart')}</button>`:''}</div>
+    ${isStandalone()?`<div class="card rowx" style="gap:10px;padding:12px 14px"><span class="ico" style="color:var(--good)">${ic('check','sm')}</span><span style="flex:1">BOATS Beta is installed on this phone</span></div>`:`<button class="btn primary instbtn" data-a="install">${ic('dl','sm')}Download App to Phone</button>`}
     ${privacyNote()}
     ${idFields()}
     <div class="field"><label for="f-bio">About the Captain</label><textarea class="input" id="f-bio" maxlength="130" rows="3" placeholder="In fewer than 3 lines" data-f="bio" style="height:auto;padding:12px 14px;resize:none">${esc(dv('bio'))}</textarea></div>
@@ -2775,6 +2835,15 @@ const A = {
   'unf-ask'(v){ S.unfAsk=!S.unfAsk; render(); },
   friend(v,el,ok){ const i=Pf.friends.indexOf(v); if(i>=0&&!ok){ askConfirm('Unfollow '+Social.nameOf(v)+'?','Their workouts will leave your feed.','Unfollow',()=>A.friend(v,el,true)); return; } if(i>=0) Pf.friends.splice(i,1); else { Pf.friends.push(v); Pf.followedAt={...(Pf.followedAt||{}),[v]:Date.now()}; } Store.save(); Social.publish(); S.unfAsk=false; if(S.personId) render(); else renderSheet(); popCue(); },
   erase(){ S.confirmErase=true; render(); },
+  install(){ S.meView='install'; S.tab='me'; S.route='app'; S.instDone=null; const pl=S.instTab||'ios'; S.instStep=INSTALL_STEPS[pl][0].skip()?1:0; window.scrollTo(0,0); render(); },
+  'inst-tab'(v){ S.instTab=v; S.instStep=INSTALL_STEPS[v][0].skip()?1:0; render(); },
+  'inst-next'(){ const n=INSTALL_STEPS[S.instTab||'ios'].length; if((S.instStep||0)<n-1){ S.instStep=(S.instStep||0)+1; render(); } },
+  'inst-back'(){ if((S.instStep||0)>0){ S.instStep--; render(); } },
+  'inst-added'(){ S.instDone='manual'; render(); popCue(); },
+  'inst-again'(){ S.instDone=null; S.instStep=0; render(); },
+  async 'inst-copy'(){ let ok=false; try{ await navigator.clipboard.writeText(APP_URL); ok=true; }catch(e){ try{ const t=document.createElement('textarea'); t.value=APP_URL; document.body.appendChild(t); t.select(); ok=document.execCommand('copy'); t.remove(); }catch(_){} }
+    const el=document.getElementById('instcopy'); if(el) el.textContent=ok?'Copied!':'Copy failed. Long-press the link below.'; if(ok) popCue(); },
+  async 'inst-prompt'(){ const p=window.__bip; if(!p) return; try{ p.prompt(); const r=await p.userChoice; if(r&&r.outcome==='accepted'){ window.__bip=null; S.instDone='installed'; } }catch(e){} render(); },
   async 'id-save'(){ const d=S.draft; if(!d) return; const u=String(d.username||'').trim(), changedName=u.toLowerCase()!==String(Pf.username||'').toLowerCase()||u!==Pf.username;
     const um=document.getElementById('u-msg'), say=(m)=>{ if(um) um.innerHTML=`<span style="color:var(--bad)">${esc(m)}</span>`; document.getElementById('f-user')?.focus(); };
     if(changedName){ if(nameLocked()){ say('You can only change your username once a week.'); return; } const x=usernameIssue(u); if(x){ say(x); return; }
