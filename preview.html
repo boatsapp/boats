@@ -283,7 +283,9 @@ textarea.input{font-family:inherit;font-size:16px;line-height:1.4}
 .input:focus::placeholder,textarea:focus::placeholder{color:transparent}
 .followsm{width:auto;min-width:110px;height:36px}
 [hidden]{display:none!important}
-html{touch-action:manipulation;background:var(--bg)}
+html{touch-action:manipulation;background:var(--bg);overscroll-behavior:none}
+body{overscroll-behavior:none}
+body.chatopen{position:fixed;inset:0;width:100%;overflow:hidden}
 .daytag{margin-left:auto;flex:none}
 .pacts{align-items:center}
 .swrap{position:relative;overflow:hidden;border-radius:12px}
@@ -323,7 +325,8 @@ html{touch-action:manipulation;background:var(--bg)}
 .bub.me{align-self:flex-end;background:var(--accent);border-color:var(--accent);color:#fff}
 .chatwrap{position:fixed;left:0;right:0;top:var(--vvt,0px);height:var(--vvh,100dvh);z-index:15;background:var(--bg);display:flex;justify-content:center}
 .chatwrap .chatpage{display:flex;flex-direction:column;width:100%;max-width:520px;height:100%;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 0!important;min-height:0}
-.chatwrap .chat{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.chatwrap .chat{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:none}
+.chatwrap{touch-action:pan-y;overscroll-behavior:none}
 .chatbar{flex:none;display:flex;gap:8px;padding:8px 0 max(10px,env(safe-area-inset-bottom,0px));background:var(--bg)}
 
 .chatpage .whobtn{gap:8px}
@@ -747,7 +750,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v105';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v106';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1864,7 +1867,7 @@ function chatMsgs(u){ const msgs=chatWith(u); if(!msgs.length) return `<div clas
     if(m.me&&!(prev&&prev.me&&m.at-prev.at<=5*60000)) gStart=m.at;
     const editing=m.me&&S.msgEdit===gStart, liked=m.lkMe||m.lkThem;
     out+=`<div class="brow ${m.me?'me':''}">${editing?`<button class="bdel" data-a="msg-del" data-v="${m.at}" aria-label="Delete this message">${ic('x','xs')}</button>`:''}<div class="bub ${m.me?'me':''} ${liked?'liked':''}" data-a="msg-tap" data-dbl="msg-like" data-v="${m.me?1:0}|${m.at}">${mentionHtml(m.text)}${liked?`<span class="blike" aria-label="Liked">${ic('heart','xs')}</span>`:''}</div><span class="bt">${tm(m.at)}</span></div>`;
-    if(m.me&&!(next&&next.me&&next.at-m.at<=5*60000)) out+=`<div class="bfoot">${tm(m.at)} · <button class="link" data-a="msg-edit" data-v="${gStart}">${editing?'Done':'Delete'}</button></div>`; });
+    if(m.me&&!(next&&next.me&&next.at-m.at<=5*60000)) out+=`<div class="bfoot"><button class="link" data-a="msg-edit" data-v="${gStart}">${editing?'Done':'Delete'}</button></div>`; });
   return out; }
 function vChat(){ const u=S.chatWith, msgs=chatWith(u), req=dmThreads().find(t=>t.u===u&&t.req);
   return `<div class="chatwrap"><div class="screen actpage chatpage">
@@ -2501,7 +2504,7 @@ function devPanel(){
 }
 
 /* ---------- render ---------- */
-function render(){
+function render(){ document.body.classList.toggle('chatopen',S.route==='app'&&S.tab==='friends'&&S.fview==='chat');
   syncTypes();
   const car=document.getElementById('car'), sl=car?car.scrollLeft:null, wy=window.scrollY;
   if(S.route==='splash') app.innerHTML=vSplash();
@@ -2526,6 +2529,8 @@ let RIO=null, DBL=null;
 document.addEventListener('dragstart',e=>{ if(e.target.closest&&e.target.closest('img,a,button')) e.preventDefault(); });
 document.addEventListener('contextmenu',e=>{ if(e.target.tagName==='IMG') e.preventDefault(); });
 if(window.visualViewport){ const kb=()=>{ const v=visualViewport, r=document.documentElement.style; r.setProperty('--vvh',Math.round(v.height)+'px'); r.setProperty('--vvt',Math.round(v.offsetTop)+'px'); const c=document.getElementById('chat'); if(c&&S.fview==='chat'&&c.dataset.end!=='0') c.scrollTop=c.scrollHeight; }; visualViewport.addEventListener('resize',kb); visualViewport.addEventListener('scroll',kb); kb(); }
+// In a chat the page itself never moves: only a message list that's long enough to scroll can be dragged.
+document.addEventListener('touchmove',e=>{ if(!document.body.classList.contains('chatopen')) return; const c=e.target.closest&&e.target.closest('#chat'); if(!c||c.scrollHeight<=c.clientHeight+1){ if(e.cancelable) e.preventDefault(); } },{passive:false});
 let TSW=null;
 document.addEventListener('touchstart',e=>{ const c=e.target.closest('#chat'); if(!c) return; TSW={c,x:e.touches[0].clientX,y:e.touches[0].clientY,on:false}; },{passive:true});
 document.addEventListener('touchmove',e=>{ if(!TSW) return; const dx=TSW.x-e.touches[0].clientX, dy=e.touches[0].clientY-TSW.y; if(!TSW.on){ if(Math.abs(dx)<10) return; if(Math.abs(dy)>Math.abs(dx)){ TSW=null; return; } TSW.on=true; TSW.c.classList.add('dragging'); } TSW.c.style.setProperty('--tx',Math.max(0,Math.min(72,dx))+'px'); },{passive:true});
