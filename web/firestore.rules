@@ -24,6 +24,12 @@ service cloud.firestore {
       allow create, update: if isMe(uid) && request.resource.data.email == request.auth.token.email
         && request.resource.data.keys().hasOnly(['email','name','createdAt','lastAt']);
     }
+    // Full-quality photos for posts: photos/{uid}_{postId}. Signed-in users read, only the owner writes.
+    match /photos/{id} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && id.matches(request.auth.uid + '_.+') && small();
+      allow delete: if signedIn() && id.matches(request.auth.uid + '_.+');
+    }
     // Usernames: first come, first served; only the holder can release one.
     match /usernames/{name} {
       allow get: if signedIn();

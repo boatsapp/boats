@@ -161,11 +161,22 @@ svg.i.xs{width:14px;height:14px}
 .cmbox .input{height:40px;font-size:14px}
 .cmpost{font-weight:700;color:var(--accent)}
 .li.dimday{opacity:.45}
+textarea::placeholder,input::placeholder{transition:color .15s}
+textarea:focus::placeholder,input:focus::placeholder{color:transparent}
+.phwrap{position:relative}
+.pacts.ov{position:absolute;left:8px;right:8px;bottom:6px;margin:0;color:#fff;pointer-events:none}
+.pacts.ov .pact{color:#fff;pointer-events:auto;filter:drop-shadow(0 1px 3px rgba(0,0,0,.55)) drop-shadow(0 0 8px rgba(0,0,0,.35))}
+.pacts.ov .pact.liked{color:#ff4d5e}
+.pacts.ov .tag{pointer-events:none;background:rgba(0,0,0,.45);color:#fff;border-color:transparent;backdrop-filter:blur(6px)}
+.fabpost{position:fixed;z-index:21;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(var(--tab-h) + var(--live-h,0px) + 14px + env(safe-area-inset-bottom,0px));width:48px;height:48px;border-radius:50%;border:1px solid rgba(0,0,0,.08);background:#fff;color:#111;display:grid;place-items:center;box-shadow:0 8px 22px rgba(0,0,0,.28)}
+.fabpost svg{width:22px;height:22px;stroke-width:2.4}
+.npage .npick{height:200px}
+.copytag{white-space:nowrap}
 textarea.input{font-family:inherit;font-size:16px;line-height:1.4}
 .plink{display:inline-flex;align-items:center;gap:5px;color:var(--accent);font-weight:600;font-size:14px;text-decoration:none;overflow-wrap:anywhere}
 .bub.me .link.mention{color:#fff;text-decoration:underline}
 .field.bad .seg{box-shadow:0 0 0 2px var(--bad);border-radius:12px}
-.btn.npick{height:120px;border-style:dashed;flex-direction:column;gap:8px}
+.btn.npick{height:120px;border-style:dashed;flex-direction:column;gap:6px}
 .bio2{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .link.mention{color:var(--accent);font-weight:600;padding:0;display:inline}
 #ask .scrim{z-index:60}
@@ -630,7 +641,7 @@ html{touch-action:manipulation}
 .sug button+button{border-top:1px solid var(--line)}
 .sug button svg{color:var(--muted)}
 .quote{background:var(--surface-2);border-radius:12px;padding:12px 14px;font-size:15px;line-height:1.5}
-.devbtn{position:fixed;z-index:50;right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(var(--tab-h) + var(--live-h,0px) + 14px + env(safe-area-inset-bottom,0px));height:32px;padding:0 12px;border-radius:999px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;letter-spacing:.04em;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.devbtn{position:fixed;z-index:50;right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(var(--tab-h) + var(--live-h,0px) + 74px + env(safe-area-inset-bottom,0px));height:32px;padding:0 12px;border-radius:999px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;letter-spacing:.04em;box-shadow:0 4px 14px rgba(0,0,0,.18)}
 .toast{position:fixed;left:50%;top:45%;z-index:60;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;background:color-mix(in srgb,var(--fg) 94%,transparent);color:var(--bg);padding:20px 22px;border-radius:22px;font-size:15px;font-weight:600;line-height:1.35;width:min(300px,calc(100% - 64px));box-shadow:0 20px 50px rgba(0,0,0,.3);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);pointer-events:none;opacity:0;transform:translate(-50%,-50%) scale(.92);transition:opacity .2s ease,transform .3s cubic-bezier(.2,1.3,.4,1)}
 .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 .toast .tico{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--bg);color:var(--fg)}
@@ -656,7 +667,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v93';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v94';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -792,6 +803,7 @@ const P = {
   today:'<rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
   plan:'<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
   feed:'<path d="M3 12h4l3-7 4 14 3-7h4"/>',
+  clip:'<path d="M21 11.5l-8.5 8.5a5 5 0 0 1-7-7L14 4.5a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7.5"/>',
   chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
   progress:'<path d="M4 19.5h16"/><path d="M5 15l4.5-4.5 3.5 3L19 7"/><path d="M15 7h4v4"/>',
   scale:'<rect x="3.5" y="4" width="17" height="16" rx="4"/><path d="M8.5 9.5a4.5 4.5 0 0 1 7 0L12 12"/>',
@@ -1011,8 +1023,8 @@ const Social = {
   postedToday(){ return this.postsToday()>=3; },
   async savePosts(items){ const doc={items:clone(items)}; this.posts={...this.posts,[this.me()]:doc}; refreshSocial();
     if(this.ok&&Store.db){ try{ await retry(()=>Store.db.collection('posts').doc(Store.uid).set(doc)); }catch(e){ toast(`Couldn't share your post (${errText(e)}).`); } } },
-  async addPost(p){ const items=[p,...this.myPosts()].slice(0,12); let size=0; items.forEach(x=>{ size+=(x.photo||'').length; if(size>200000) delete x.photo; }); await this.savePosts(items); },
-  async delPost(id){ await this.savePosts(this.myPosts().filter(p=>p.id!==id)); },
+  async addPost(p){ const items=[p,...this.myPosts()].slice(0,12); let size=0; items.forEach(x=>{ size+=(x.photo||'').length; if(size>650000) delete x.photo; }); await this.savePosts(items); },
+  async delPost(id){ await this.savePosts(this.myPosts().filter(p=>p.id!==id)); if(Store.db&&Store.uid) try{ await Store.db.collection('photos').doc(Store.uid+'_'+id).delete(); }catch(e){} },
   myDms(){ const d=this.dms[this.me()]||{}; return {out:clone(d.out||{})}; },
   saveDms(d){ this.dms={...this.dms,[this.me()]:d}; if(!this.ok||!Store.db) return; this.rq=this.rq.then(()=>retry(()=>Store.db.collection('dms').doc(Store.uid).set(clone(d)))).catch(e=>toast(`Couldn't send that (${errText(e)}).`)); },
   myReacts(){ const r=this.reacts[this.me()]||{}; return {likes:{...(r.likes||{})},comments:clone(r.comments||{})}; },
@@ -1030,7 +1042,7 @@ function patchLikes(key){ const n=Social.likes(key), on=Social.liked(key);
   document.querySelectorAll(`article[data-key="${CSS.escape(key)}"] .likedline`).forEach(el=>{ el.outerHTML=likedLine(key)||'<div class="likedline"></div>'; }); }
 function morphFeed(f,html){ const t=document.createElement('div'); t.innerHTML=html;
   t.querySelectorAll('article[data-key]').forEach(a=>{ const old=f.querySelector(`article[data-key="${CSS.escape(a.dataset.key)}"] .ovwrap`), nw=a.querySelector('.ovwrap'); if(old&&nw) nw.replaceWith(old); });
-  f.replaceChildren(...t.childNodes); }
+  f.replaceChildren(...t.childNodes); hqScan(); }
 function refreshSocial(){
   if(S.route==='app'&&S.tab==='friends'&&S.fview==='chat'&&document.getElementById('chat')){ const c=document.getElementById('chat'), html=chatMsgs(S.chatWith); if(c.innerHTML!==html){ const atEnd=c.getBoundingClientRect().bottom<=innerHeight+80; c.innerHTML=html; if(atEnd) window.scrollTo(0,document.body.scrollHeight); } return; }
   if(S.route==='app'&&S.tab==='friends'&&S.fview){ render(); return; }
@@ -1081,6 +1093,7 @@ const S = { ptab:'charts', pex:null, route:'splash', tab:'today', ob:0, planDay:
 let Pf;
 const app = document.getElementById('app'), sheetEl = document.getElementById('sheet'), askEl = document.getElementById('ask');
 let ASKFN=null;
+function infoBox(title,html){ ASKFN=null; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="dialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${html}<div class="askbtns"><button class="btn primary" data-a="ask-no">Got it</button></div></div></div>`; }
 function askConfirm(title,sub,yes,fn){ ASKFN=fn; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="alertdialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${sub?`<span class="muted small">${esc(sub)}</span>`:''}<div class="askbtns"><button class="btn" data-a="ask-no">Cancel</button><button class="btn danger" data-a="ask-yes">${esc(yes)}</button></div></div></div>`; }
 let rootTheme = document.documentElement.getAttribute('data-theme');
 function applyTheme(){ const r=document.documentElement; if(Pf.theme!=='light') Pf.theme='dark'; if(Pf.theme==='system'){ if(rootTheme) r.setAttribute('data-theme',rootTheme); else r.removeAttribute('data-theme'); } else r.setAttribute('data-theme',Pf.theme); }
@@ -1161,23 +1174,37 @@ function bodyFields(){
   </div>
   <div class="field"><span class="flabel">Body weight</span><div class="inwrap"><input class="input num" id="f-bw" inputmode="decimal" placeholder="0" value="${esc(Pf.bodyweight)}" data-f="bodyweight"><span class="suf">${u}</span></div></div>`;
 }
-function usernameIssue(u){ u=String(u||'').trim(); if(!u) return 'Pick a username.'; if(!/^[A-Za-z0-9._]{3,20}$/.test(u)) return 'Use 3–20 letters, numbers, dots or underscores. No spaces.';
+// Username rules: like Instagram, no slurs, sexual terms, hate words or impersonating staff. Fun replies for a few names.
+const NAME_FUN=[[/^(god|jesus|jesuschrist|christ|yahweh|allah)$/,'Shoutout God, but you’re not him.'],[/^swaizy$/,'You’re not the founder smh.'],[/^(santa|santaclaus)$/,'Ho ho ho! Nice try.'],[/^(satan|devil|demon|lucifer)$/,'Hell nah.']];
+const NAME_SUB=['nigg','fuck','cunt','faggot','retard','tranny','whore','slut','rapist','pedophile','molest','hitler','porn','pussy','penis','vagina','jizz','horny','bitch','bastard','asshole','shithead','killyourself','suicide','wetback','raghead','towelhead'], NAME_EXACT=['fag','kike','spic','chink','gook','beaner','coon','dyke','rape','pedo','nazi','kkk','isis','dick','cock','boob','boobs','tits','anal','cum','sex','shit','fuk','kys','hoe'];
+const NAME_RESERVED=['admin','administrator','boats','boatsapp','official','support','moderator','mod','staff','help','team','security','root','system'];
+function nameNorm(u){ return String(u||'').toLowerCase().replace(/[0@4]/g,m=>({'0':'o','@':'a','4':'a'})[m]).replace(/[1!|]/g,'i').replace(/3/g,'e').replace(/[5$]/g,'s').replace(/7/g,'t').replace(/8/g,'b').replace(/[^a-z]/g,''); }
+function nameStrip(x){ let p; do{ p=x; x=x.replace(/^(the|real|im|iam|its|official|not)/,'').replace(/(official|real|irl|xo|og)$/,''); }while(x!==p&&x.length>2); return x; }
+function nameRule(u){ const n=nameNorm(u), plain=String(u||'').toLowerCase().replace(/[^a-z]/g,''), bare=nameStrip(n), pbare=nameStrip(plain);
+  if(window.boatsAdmin&&/swaizy/.test(n)) return '';
+  for(const [re,msg] of NAME_FUN) if([n,bare,plain,pbare].some(x=>re.test(x))) return msg;
+  if([n,bare,plain,pbare].some(x=>NAME_RESERVED.includes(x))) return 'That name is reserved. Try another.';
+  if(NAME_SUB.some(w=>n.includes(w)||plain.includes(w))||NAME_EXACT.some(w=>[n,bare,plain,pbare].includes(w))) return 'That username isn’t allowed. Try another.';
+  return ''; }
+function usernameIssue(u){ u=String(u||'').trim(); if(!u) return 'Pick a username.'; if(!/^[A-Za-z0-9._]{3,20}$/.test(u)) return 'Use 3–20 letters, numbers, dots or underscores. No spaces.'; const nr=nameRule(u); if(nr) return nr;
   const lc=u.toLowerCase(), me=Store.uid||'me';
   const taken=Object.entries(Social.people||{}).some(([id,p])=>id!==me&&String((p&&p.username)||'').toLowerCase()===lc)||Object.entries(Store.profiles||{}).some(([a,p])=>a!==Store.acct&&String((p&&p.username)||'').toLowerCase()===lc);
   return taken?`@${u} is already taken. Try another.`:''; }
 const NAME_WEEK=7*864e5, NAME_GRACE=10*60000;
 function nameLocked(){ const t=Pf.nameAt||0, d=Date.now()-t; return Pf.onboarded&&t&&d>NAME_GRACE&&d<NAME_WEEK; }
-function userMsg(){ if(nameLocked()){ const days=Math.max(1,Math.ceil((NAME_WEEK-(Date.now()-Pf.nameAt))/864e5)); return `<span class="muted">You can change your username again in ${days} day${days===1?'':'s'}.</span>`; } const u=String(Pf.username||'').trim(); if(!u) return ''; const x=usernameIssue(u); return x?`<span style="color:var(--bad)">${esc(x)}</span>`:`<span style="color:var(--good)">@${esc(u)} is available</span>`; }
-function townMsg(){ const t=String(Pf.town||'').trim(); if(!t) return '<span class="muted">Optional. US towns for now.</span>'; return placeValid(t)?`<span style="color:var(--good)">${ic('check','xs')} ${esc(t)}</span>`:'<span style="color:var(--bad)">Pick your town from the list so it\'s a real place.</span>'; }
+function dv(f){ return S.draft&&S.meView==='settings'&&S.route==='app'?S.draft[f]:(Pf[f]||''); }
+function draftDirty(){ const d=S.draft; return !!d&&['username','town','bio','link'].some(f=>String(d[f]||'').trim()!==String(Pf[f]||'').trim()); }
+function userMsg(){ if(nameLocked()){ const days=Math.max(1,Math.ceil((NAME_WEEK-(Date.now()-Pf.nameAt))/864e5)); return `<span class="muted">You can change your username again in ${days} day${days===1?'':'s'}.</span>`; } const u=String(dv('username')||'').trim(); if(!u) return ''; if(S.draft&&S.meView==='settings'&&u.toLowerCase()===String(Pf.username||'').toLowerCase()) return ''; const x=usernameIssue(u); return x?`<span style="color:var(--bad)">${esc(x)}</span>`:`<span style="color:var(--good)">@${esc(u)} is available</span>`; }
+function townMsg(){ const t=String(dv('town')||'').trim(); if(!t) return '<span class="muted">Optional. US towns for now.</span>'; return placeValid(t)?`<span style="color:var(--good)">${ic('check','xs')} ${esc(t)}</span>`:'<span style="color:var(--bad)">Pick your town from the list so it\'s a real place.</span>'; }
 function showTownSug(){ const i=document.getElementById('f-town'), box=document.getElementById('town-sug'); if(!i||!box) return; const m=placeValid(i.value)?[]:placeMatches(i.value);
   box.innerHTML=m.map(n=>`<button type="button" role="option" data-a="town-pick" data-v="${esc(n)}">${ic('pin','xs')}${esc(n)}</button>`).join(''); box.hidden=!m.length; i.setAttribute('aria-expanded',String(!!m.length)); }
 function privacyNote(){ return `<div class="card small" style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px">${ic('lock','sm')}<span>Everything here stays <b>private</b> until you make it public.</span></div>`; }
 function idFields(){
   return `<div class="rowx" style="gap:16px">
       <button data-a="photo" aria-label="Choose profile picture" style="position:relative">${avatar(Pf.username||'?',Pf.photo,null,true)}<span class="ico" style="position:absolute;right:-4px;bottom:-4px;width:30px;height:30px;border-radius:50%;border:3px solid var(--bg)">${ic('camera','xs')}</span></button>
-      <div class="field" style="flex:1;min-width:0"><label for="f-user">Create username</label><input class="input" id="f-user" maxlength="20" placeholder="e.g. jack.sparrow" autocapitalize="off" autocorrect="off" spellcheck="false" value="${esc(Pf.username)}" data-f="username" aria-describedby="u-msg" ${nameLocked()?'readonly':''}><div id="u-msg" class="small" aria-live="polite">${userMsg()}</div></div>
+      <div class="field" style="flex:1;min-width:0"><label for="f-user">Create username</label><input class="input" id="f-user" maxlength="20" placeholder="e.g. jack.sparrow" autocapitalize="off" autocorrect="off" spellcheck="false" value="${esc(dv('username'))}" data-f="username" aria-describedby="u-msg" ${nameLocked()?'readonly':''}><div id="u-msg" class="small" aria-live="polite">${userMsg()}</div></div>
     </div>
-    <div class="field"><label for="f-town">Town</label><div class="inwrap townwrap"><input class="input" id="f-town" maxlength="40" placeholder="Start typing" autocomplete="off" value="${esc(Pf.town)}" data-f="town" aria-describedby="t-msg" role="combobox" aria-autocomplete="list" aria-controls="town-sug" aria-expanded="false"><div class="sug" id="town-sug" role="listbox" hidden></div></div><div id="t-msg" class="small" aria-live="polite">${townMsg()}</div></div>`;
+    <div class="field"><label for="f-town">Town</label><div class="inwrap townwrap"><input class="input" id="f-town" maxlength="40" placeholder="Start typing" autocomplete="off" value="${esc(dv('town'))}" data-f="town" aria-describedby="t-msg" role="combobox" aria-autocomplete="list" aria-controls="town-sug" aria-expanded="false"><div class="sug" id="town-sug" role="listbox" hidden></div></div><div id="t-msg" class="small" aria-live="polite">${townMsg()}</div></div>`;
 }
 function goalCards(){
   return Object.entries(GOALS).map(([k,g])=>`<button class="goal ${Pf.goal===k?'on':''}" data-a="goal" data-v="${k}"><span class="radio"></span><span style="flex:1;min-width:0"><span class="h2" style="font-size:17px">${g.l}</span><br><span class="muted small">${g.d}</span></span></button>`).join('');
@@ -1361,8 +1388,8 @@ function prsFor(w){
 
 const isShared = id => Social.myPosts().some(p=>p.id===id);
 async function shareWorkout(w){ boatLoading(true,'Posting…'); try{ return await shareWorkout0(w); } finally{ boatLoading(false); } }
-async function shareWorkout0(w){ const {v,n}=volume(w); const small=w.pump?await shrinkData(w.pump,380,.6):'';
-  await Social.addPost({id:w.id,at:w.endedAt,sharedAt:Date.now(),title:w.title,type:w.type||'',caption:w.caption||'',photo:small,time:fmtDur(durOf(w)),sets:n,vol:Math.round(v),kcal:w.kcal||0}); }
+async function shareWorkout0(w){ const {v,n}=volume(w); const small=w.pump?await shrinkData(w.pump,480,.72):''; const hq=w.pump?await savePhotoHq(w.id,w.pump):false;
+  await Social.addPost({id:w.id,at:w.endedAt,sharedAt:Date.now(),title:w.title,type:w.type||'',caption:w.caption||'',photo:small,hq,time:fmtDur(durOf(w)),sets:n,vol:Math.round(v),kcal:w.kcal||0}); }
 const DAYWORD={push:'Push day',pull:'Pull day',legs:'Leg day',arms:'Arm day',full:'Full body day',cardio:'Cardio',rest:'Recovery'};
 const dayWord = t => DAYWORD[t] || (TYPES[t]?TYPES[t]+' day':'Workout');
 const dayTag = t => t&&TYPES[t]?`<span class="tag daytag">${ic(typeIcon(t),'xs')}${esc(TYPES[t])}</span>`:'';
@@ -1578,14 +1605,19 @@ function feedComments(key,owner){ const all=Social.comments(key), top=all.filter
     ${S.cmCompose===key?box(null,'Add a comment…'):''}`; }
 function patchPost(key){ document.querySelectorAll(`article[data-key="${CSS.escape(key)}"]`).forEach(a=>{ const [uid,id]=key.split(':'); const p=((Social.posts[uid]||{}).items||[]).find(x=>x.id===id); if(!p) return;
   const t=document.createElement('div'); t.innerHTML=postCard(uid,p,uid===Social.me(),a.dataset.sug==='1'); const n=t.firstElementChild, old=a.querySelector('.ovwrap'), nw=n.querySelector('.ovwrap'); if(old&&nw) nw.replaceWith(old); a.replaceWith(n); }); }
+const HQ={}, HQ_ASK={};
+function hqSrc(uid,p){ return HQ[uid+'_'+p.id]||p.photo; }
+function hqScan(){ if(!Store.db) return; document.querySelectorAll('img[data-hq]').forEach(img=>{ const id=img.dataset.hq; if(HQ[id]){ img.src=HQ[id]; img.removeAttribute('data-hq'); return; } if(HQ_ASK[id]) return; HQ_ASK[id]=1;
+  Store.db.collection('photos').doc(id).get().then(g=>{ const d=g&&g.data&&g.data(); if(d&&d.d){ HQ[id]=d.d; document.querySelectorAll(`img[data-hq="${CSS.escape(id)}"]`).forEach(x=>{ x.src=d.d; x.removeAttribute('data-hq'); }); } }).catch(()=>{}); }); }
+async function savePhotoHq(postId,dataUrl){ if(!Store.db||!Store.uid||!dataUrl) return false; try{ await Store.db.collection('photos').doc(Store.uid+'_'+postId).set({d:dataUrl}); HQ[Store.uid+'_'+postId]=dataUrl; return true; }catch(e){ return false; } }
 function postCard(uid,p,mine,suggest){
   const key=uid+':'+p.id, likes=Social.likes(key), liked=Social.liked(key), cm=Social.comments(key), d=new Date(p.at), go=uid===Social.me()?'data-a="tab" data-v="me"':`data-a="person" data-v="${esc(uid)}"`;
   return `<article class="card post igpost ${p.photo?'hasphoto':''}" data-key="${esc(key)}" ${suggest?'data-sug="1"':''}>
     <div class="who"><button class="whobtn" ${go} aria-label="Open ${esc(Social.nameOf(uid))}'s profile">${avatar(Social.nameOf(uid),Social.photoOf(uid),null)}<span style="flex:1;min-width:0;text-align:left"><b>${esc(Social.nameOf(uid))}</b></span></button>
       ${mine?`<button class="iconbtn" data-a="post-del" data-v="${esc(p.id)}" aria-label="Delete post">${ic('trash','sm')}</button>`:''}${suggest&&!Pf.friends.includes(uid)?`<button class="btn sm primary" style="width:auto;flex:none" data-a="follow-sug" data-v="${esc(uid)}">Follow</button>`:''}</div>
-    ${p.photo?`<div class="ovwrap" data-pk="${esc(key)}"><img class="pump" src="${esc(p.photo)}" alt="${esc(Social.nameOf(uid))}'s workout photo. Double tap to like, hold to see stats" loading="lazy" draggable="false"><div class="holdstats"><div><b class="num">${fmtN(p.vol||0)}</b><span>${Pf.unit} lifted</span></div><div><b class="num">${esc(p.time||'')}</b><span>time</span></div><div><b class="num">${esc(String(p.sets??''))}</b><span>sets</span></div>${p.kcal?`<div><b class="num">~${p.kcal}</b><span>kcal</span></div>`:''}</div><i class="burst">${ic('heart')}</i></div>`:''}
+    ${p.photo?`<div class="phwrap"><div class="ovwrap" data-pk="${esc(key)}"><img class="pump" src="${esc(hqSrc(uid,p))}" ${p.hq&&!HQ[uid+'_'+p.id]?`data-hq="${esc(uid+'_'+p.id)}"`:''} alt="${esc(Social.nameOf(uid))}'s photo. Double tap to like, hold to see stats" loading="lazy" draggable="false"><div class="holdstats">${p.kind==='photo'?`<div><b class="num">${fmtK(likes)}</b><span>like${likes===1?'':'s'}</span></div><div><b class="num">${fmtK(cm.length)}</b><span>comment${cm.length===1?'':'s'}</span></div>`:`<div><b class="num">${fmtN(p.vol||0)}</b><span>${Pf.unit} lifted</span></div><div><b class="num">${esc(p.time||'')}</b><span>time</span></div><div><b class="num">${esc(String(p.sets??''))}</b><span>sets</span></div>${p.kcal?`<div><b class="num">~${p.kcal}</b><span>kcal</span></div>`:''}`}</div><i class="burst">${ic('heart')}</i></div><div class="pacts ov"><button class="pact ${liked?'liked':''}" data-a="post-like" data-v="${esc(key)}" aria-pressed="${liked}" aria-label="${liked?'Unlike':'Like'}">${ic('heart')}${likes?`<span class="num">${fmtK(likes)}</span>`:''}</button><button class="pact" data-a="cm-open" data-v="${esc(key)}" aria-label="Comment">${ic('chat')}${cm.length?`<span class="num">${fmtK(cm.length)}</span>`:''}</button><span class="spacer"></span>${dayTag(p.type)}</div></div>`:''}
     <div class="stats" ${p.photo?'hidden':''}><div class="stat"><div class="k">Time</div><div class="v num">${esc(p.time||'')}</div></div><div class="stat"><div class="k">Sets</div><div class="v num">${esc(String(p.sets??''))}</div></div><div class="stat"><div class="k">${p.kcal?'Calories':'Volume'}</div><div class="v num">${p.kcal?'~'+p.kcal:fmtN(p.vol||0)}</div></div></div>
-    <div class="pacts"><button class="pact ${liked?'liked':''}" data-a="post-like" data-v="${esc(key)}" aria-pressed="${liked}" aria-label="${liked?'Unlike':'Like'}">${ic('heart')}${likes?`<span class="num">${fmtK(likes)}</span>`:''}</button><button class="pact" data-a="cm-open" data-v="${esc(key)}" aria-label="Comment">${ic('chat')}${cm.length?`<span class="num">${fmtK(cm.length)}</span>`:''}</button><span class="spacer"></span>${dayTag(p.type)}</div>
+    ${p.photo?'':`<div class="pacts "><button class="pact ${liked?'liked':''}" data-a="post-like" data-v="${esc(key)}" aria-pressed="${liked}" aria-label="${liked?'Unlike':'Like'}">${ic('heart')}${likes?`<span class="num">${fmtK(likes)}</span>`:''}</button><button class="pact" data-a="cm-open" data-v="${esc(key)}" aria-label="Comment">${ic('chat')}${cm.length?`<span class="num">${fmtK(cm.length)}</span>`:''}</button><span class="spacer"></span>${dayTag(p.type)}</div>`}
     ${likedLine(key)}
     ${p.caption?`<p class="cap"><button class="link" ${go}><b>${esc(Social.nameOf(uid))}</b></button> ${esc(p.caption)}</p>`:''}
     ${cm.length||S.cmCompose===key?`<div class="cms">${feedComments(key,uid)}</div>`:''}
@@ -1681,15 +1713,24 @@ function vChat(){ const u=S.chatWith, msgs=chatWith(u), req=dmThreads().find(t=>
     ${req?`<div class="card stack" style="gap:8px"><span class="small"><b>${esc(Social.nameOf(u))}</b> wants to message you.</span><div class="rowx" style="gap:8px"><button class="btn sm" style="flex:1" data-a="dm-hide" data-v="${esc(u)}">Delete</button><button class="btn sm fbbtn" style="flex:1" data-a="dm-accept" data-v="${esc(u)}">Accept</button></div></div>`
       :`<div class="chatbar"><input class="input" id="dm-in" maxlength="500" placeholder="Message…" autocomplete="off" enterkeyhint="send"><button class="btn primary" style="width:auto;flex:none" data-a="dm-send">${ic('send','sm')}</button></div>`}
   </div>`; }
+function vNewPost(){ const np=S.np||{};
+  return `<div class="screen npage">
+    <div class="rowx" style="gap:8px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="np-close" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">New post</span>${Social.postedToday()?'':`<button class="btn sm primary" style="width:auto;flex:none" data-a="np-share" ${np.photo?'':'disabled'}>Share</button>`}</div>
+    ${np.photo?`<div class="pumpwrap"><img class="pump" style="aspect-ratio:auto" src="${esc(np.photo)}" alt="Your photo"><button class="iconbtn pumpx" data-a="np-pick" aria-label="Change photo">${ic('swap','sm')}</button></div>`
+      :`<button class="btn npick" data-a="np-pick">${ic('grid','sm')}Choose a photo<span class="muted small" style="font-weight:500">From your library, in good quality</span></button>`}
+    <div class="field"><label for="np-cap">Caption</label><textarea class="input" id="np-cap" maxlength="300" rows="3" placeholder="Say something about it">${esc(np.cap||'')}</textarea></div>
+    ${Social.postedToday()?`<div class="card muted small">You’ve shared 3 posts today, the daily limit.</div>`:`<span class="muted small">It shows in the feed and on your profile. Up to 3 posts a day.</span>`}
+  </div>`; }
 function vFriends(){
   if(S.fview==='activity') return vActivity();
   if(S.fview==='dms') return vDms();
   if(S.fview==='chat') return vChat();
+  if(S.fview==='newpost') return vNewPost();
   return `<div class="screen">
-    <div class="rowx fhead"><span class="wordmark">BOATS<sup class="betatag sm">BETA</sup></span><span class="spacer"></span><button class="iconbtn" data-a="np-open" aria-label="New post">${ic('plus')}</button><button class="iconbtn ${dmUnread()?'dot':''}" data-a="dms" aria-label="Messages">${ic('send')}</button><button class="iconbtn ${actUnread()?'dot':''}" data-a="activity" aria-label="Activity: new followers and comments">${ic('heart')}</button></div>
+    <div class="rowx fhead"><span class="wordmark">BOATS<sup class="betatag sm">BETA</sup></span><span class="spacer"></span><button class="iconbtn ${dmUnread()?'dot':''}" data-a="dms" aria-label="Messages">${ic('send')}</button><button class="iconbtn ${actUnread()?'dot':''}" data-a="activity" aria-label="Activity: new followers and comments">${ic('heart')}</button></div>
     ${gymBubbles()}
     <div class="stack" id="feed" style="gap:14px">${feedList()}</div></div>
-    ${(Pf.friends||[]).some(f=>((Social.posts[f]||{}).items||[]).some(p=>p.photo))?'':`<div class="invitebar"><button class="btn primary" data-a="text-invite">${ic('plus','sm')}Invite friends to Boats</button></div>`}${tabbar()}`;
+    <button class="fabpost" data-a="np-open" aria-label="Share a photo to the feed">${ic('plus')}</button>${tabbar()}`;
 }
 function vFriendList(){
   const crew=(S.flTab||'following')==='crew';
@@ -1728,10 +1769,11 @@ function profileBlock(uid,c,me){
     <div class="rowx" style="gap:18px">${avatar(c.username||'?',c.photo,c.status?st.cls:null,true)}
       <div class="pstats"><div><b class="num">${wk}</b><span>voyages</span></div>${stat(fol,'crew')}${stat(fing,'following')}</div></div>
     <div class="rowx" style="align-items:flex-start;gap:12px"><div class="stack" style="gap:4px;flex:1;min-width:0"><div class="rowx" style="gap:8px;flex-wrap:nowrap;min-width:0">${me?`<h2 class="h2" style="font-size:22px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.username||'Lifter')}</h2>`:''}${gtag}</div>
-      ${c.status?`<span class="small muted">${st.label}</span>`:''}${!me&&c.splitPub?`<button class="tag copytag" style="align-self:flex-start;margin-top:4px" data-a="split-view" data-v="${esc(uid)}">${ic('swap','xs')}Copy split</button>`:''}</div>
-      ${me||c.status?`<button class="streakpill" data-a="ranks" aria-label="${streakN} day streak. See the rankings">${ic('flame','xs')}<span class="num">${streakN}</span> Day Streak</button>`:''}</div>
+      ${c.status?`<span class="small muted">${st.label}</span>`:''}</div>
+      <div class="stack" style="gap:6px;align-items:flex-end;flex:none">${me||c.status?`<button class="streakpill" data-a="ranks" aria-label="${streakN} day streak. See the rankings">${ic('flame','xs')}<span class="num">${streakN}</span> Day Streak</button>`:''}${!me&&c.splitPub?`<button class="tag copytag" data-a="split-view" data-v="${esc(uid)}">${ic('clip','xs')}Copy split</button>`:''}</div></div>
     ${!me&&S.unfAsk&&Pf.friends.includes(uid)?`<div class="card rowx" style="gap:8px;padding:10px 12px"><span style="flex:1;min-width:0">Unfollow ${esc(c.username||'')}?</span><button class="btn sm" style="width:auto" data-a="unf-ask">Cancel</button><button class="btn sm danger" style="width:auto" data-a="friend" data-v="${esc(uid)}">Unfollow</button></div>`:''}
-    ${c.link&&linkHtml(c.link)?`<div style="margin:-8px 0 0">${linkHtml(c.link)}</div>`:''}${c.bio?`<p class="bio2" style="margin:-6px 0 0;white-space:pre-line">${bioHtml(c.bio)}</p>`:me?`<button class="link" style="text-align:left;margin-top:-6px" data-a="settings">Add a bio</button>`:''}
+    ${c.bio?`<p class="bio2" style="margin:-6px 0 0;white-space:pre-line">${bioHtml(c.bio)}</p>`:me?`<button class="link" style="text-align:left;margin-top:-6px" data-a="settings">Add a bio</button>`:''}
+    ${c.link&&linkHtml(c.link)?`<div style="margin:-8px 0 0">${linkHtml(c.link)}</div>`:''}
     ${tags?`<div class="tagline1">${tags}</div>`:''}
     ${me?ownGrid():pics.length?`<div class="pgrid3">${pics.map(p=>`<button data-a="posts-open" data-v="${esc(uid+':'+p.id)}" aria-label="${esc(dayWord(p.type))}, ${shortDate(p.at)}"><img src="${esc(p.photo)}" alt="" loading="lazy"></button>`).join('')}</div>`
       :`<div class="card empty" style="padding:28px 16px">${ic('camera')}<div style="margin-top:6px">No posts yet.</div></div>`}
@@ -1813,8 +1855,9 @@ function vSettings(){
     <div class="rowx"><div class="stack" style="gap:4px"><span class="eyebrow">Profile</span><h1 class="h1">Settings</h1></div><span class="spacer"></span>${window.boatsAdmin?`<button class="iconbtn admbtn" data-a="admin" aria-label="Data center">${ic('chart')}</button>`:''}</div>
     ${privacyNote()}
     ${idFields()}
-    <div class="field"><label for="f-bio">About the Captain</label><textarea class="input" id="f-bio" maxlength="130" rows="3" placeholder="A line about you and your training. You can @ one person." data-f="bio" style="height:auto;padding:12px 14px;resize:none">${esc(Pf.bio||'')}</textarea></div>
-    <div class="field"><label for="f-link">Link</label><input class="input" id="f-link" type="url" inputmode="url" maxlength="120" placeholder="yourwebsite.com" autocapitalize="off" autocorrect="off" spellcheck="false" value="${esc(Pf.link||'')}" data-f="link"><span class="muted small">One link, shown on your profile.</span></div>
+    <div class="field"><label for="f-bio">About the Captain</label><textarea class="input" id="f-bio" maxlength="130" rows="3" placeholder="In fewer than 3 lines" data-f="bio" style="height:auto;padding:12px 14px;resize:none">${esc(dv('bio'))}</textarea></div>
+    <div class="field"><label for="f-link">Link</label><input class="input" id="f-link" type="url" inputmode="url" maxlength="120" placeholder="yourwebsite.com" autocapitalize="off" autocorrect="off" spellcheck="false" value="${esc(dv('link'))}" data-f="link"><span class="muted small">One link, shown on your profile.</span></div>
+    <button class="btn primary" id="idsave" data-a="id-save" ${draftDirty()?'':'disabled'}>Save profile</button>
     <div class="stack" style="gap:8px"><span class="flabel">What others can see</span>
       <div class="list">
         ${lockRow('town','Town',Pf.town)}
@@ -1937,14 +1980,6 @@ function stepper(f,val,mini){ return `<div class="stepper ${mini?'mini':''}"><bu
 function vSheet(){
   const sh=S.sheet; if(!sh) return '';
   const wrap=(head,body)=>`<div class="scrim ${S.sheetFull?'fullscrim':''}" data-a="close-sheet"><div class="sheet ${S.sheetFull?'full':''}" data-stop><div class="sheet-head"><span class="grab"></span>${head}${head.includes('data-a="close-sheet"')?'':`<button class="iconbtn sheetx" data-a="close-sheet" aria-label="Close">${ic('x')}</button>`}</div><div class="sheet-body" id="sbody">${body}</div></div></div>`;
-  if(sh.kind==='newpost'){
-    return wrap(`<span class="h2">New post</span>`,`<div class="stack" style="gap:14px">
-      ${sh.photo?`<div class="pumpwrap"><img class="pump" src="${esc(sh.photo)}" alt="Your photo"><button class="iconbtn pumpx" data-a="np-clear" aria-label="Remove photo">${ic('x','sm')}</button></div>`
-        :`<button class="btn npick" data-a="np-pick">${ic('grid','sm')}Choose a photo</button>`}
-      <div class="field"><label for="np-cap">Caption</label><textarea class="input" id="np-cap" maxlength="300" rows="3" placeholder="Say something about it" style="height:auto;padding:12px 14px;resize:none">${esc(sh.cap||'')}</textarea></div>
-      ${Social.postedToday()?`<div class="muted small">You’ve shared 3 posts today, the daily limit.</div>`:`<button class="btn primary" data-a="np-share" ${sh.photo?'':'disabled'}>Share to feed</button>`}
-      <span class="muted small">Pick any photo from your library. It shows in the feed and on your profile.</span></div>`);
-  }
   if(sh.kind==='picker' && sh.step==='list'){
     return wrap(`<div class="rowx"><span class="h2">${sh.ctx.swap?'Swap '+esc(exOf(sh.ctx.swapFrom).n)+' for…':'Exercise library'}</span><span class="spacer"></span><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>
         <div class="search">${ic('search','sm')}<input class="input" id="q" placeholder="Search exercises" value="${esc(sh.q)}" autocomplete="off"></div>${chipRow('cat',sh.cat,(Pf.custom||[]).length?{...CATS,mine:'Yours'}:CATS)}`, `<div class="stack" id="plist" style="gap:18px">${pickerList()}</div>`);
@@ -1976,7 +2011,7 @@ function vSheet(){
     const a=Pf.active, marked=a.items.flatMap(it=>it.sets.filter(s=>s.st));
     const v=a.items.reduce((t,it)=>it.cardio?t:t+it.sets.filter(s=>s.st).reduce((x,s)=>x+num(s.w)*num(s.r),0),0);
     const sc=streakCheck(a,elapsed(a)), lv=(LEVELS[Pf.level]||'Beginner')+' minimum';
-    return wrap(`<div class="rowx"><span class="h2" style="flex:1">End workout</span><button class="sbadge ${sc.ok?'on':''}" data-a="streak-info" aria-label="${sc.ok?'Counts toward your streak':'Does not count toward your streak yet'}">${ic('flame','sm')}${sc.ok?'Counts':'Not yet'}</button></div>`,
+    return wrap(`<div class="rowx"><span class="h2" style="flex:1">End workout</span><button class="sbadge ${sc.ok?'on':''}" data-a="streak-info" aria-label="${sc.ok?'Counts toward your streak':'Does not count toward your streak yet'}">${ic('flame','sm')}${sc.ok?'Counts':'Not yet'}</button><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>`,
       `<div class="small ${sc.ok?'':'muted'}" style="margin-top:-6px">${sc.ok?`${ic('check','xs')} Counts toward your Voyage Streak.`:sc.cardioOnly?'Log a set or cardio to count toward your streak.':`${sc.missing.join(' · ')} needed for streak credit.`} <span class="muted">${sc.cardioOnly?'':`${lv} · ${sc.R.min} min + ${sc.R.sets} working sets across 2 exercises, or ${sc.R.sets+1} in one.`}</span></div>
       <div class="stats"><div class="stat"><div class="k">Time</div><div class="v num">${fmtDur(elapsed(a))}</div></div><div class="stat"><div class="k">Sets</div><div class="v num">${marked.filter((_,k)=>true).length}</div></div><div class="stat"><div class="k">Volume</div><div class="v num" style="white-space:nowrap">${fmtBig(v)}</div></div></div>
         <div class="card stack" style="gap:6px"><div class="rowx"><span class="h2" style="font-size:16px">Overview</span><span class="spacer"></span><span class="tag accent num">~${workoutKcal(a,Date.now())} kcal</span></div>
@@ -2219,6 +2254,7 @@ function render(){
   { const lb=document.querySelector('.livebar'); document.documentElement.style.setProperty('--live-h',(lb?lb.offsetHeight+14:0)+'px'); }
   const vk=S.route+'|'+S.tab+'|'+(S.meView||'')+'|'+(S.pview||'');
   if(vk!==render._vk){ render._vk=vk; revealCards(); }
+  hqScan();
 }
 let RIO=null;
 if(window.visualViewport){ const kb=()=>{ const v=visualViewport, h=Math.max(0,Math.round(innerHeight-v.height-v.offsetTop)); document.documentElement.style.setProperty('--kb',(h>40?h:0)+'px'); }; visualViewport.addEventListener('resize',kb); visualViewport.addEventListener('scroll',kb); }
@@ -2456,7 +2492,7 @@ const A = {
   'cfg-remove'(){ const sh=S.sheet, day=sh.ctx.day, old=Pf.plans[day][sh.ctx.index]; Pf.plans[day].splice(sh.ctx.index,1);
     const a=Pf.active; let note=''; if(a&&a.day===day&&old){ const i=findLinked(a,day,old.pid,sh.ctx.index,old.exId); if(i>=0&&!a.items[i].sets.some(x=>x.st)){ a.items.splice(i,1); a.idx=Math.min(a.idx,a.items.length); note=' · removed from workout'; } }
     Store.save(); S.sheet=null; render(); toast('Removed'+note); },
-  'close-sheet'(){ S.sheet=null; S.sheetFull=false; renderSheet(); },
+  'close-sheet'(){ if(S.prevSheet){ S.sheet=S.prevSheet; S.prevSheet=null; renderSheet(); return; } S.sheet=null; S.sheetFull=false; renderSheet(); },
   'start-at'(v){ const dk=S.pick||dayKey(new Date()); if(Pf.active){ Pf.active.idx=+v; Store.save(); go('session'); return; } ac(); startWorkout(dk,+v); },
   resume(){ go('session'); },
   minimize(){ go('app',{tab:'friends'}); },
@@ -2558,7 +2594,14 @@ const A = {
   'block-save'(){ readBlock(); Pf.program={name:`${GOALS[Pf.goal].l} block · ${S.sheet.weeks.length} weeks`,start:weekStart().getTime(),weeks:S.sheet.weeks.map(t=>t.trim()||'Train as planned.')}; Store.save(); S.sheet=null; render(); toast('Training block started'); },
   'block-end'(){ Pf.program=null; Store.save(); S.sheet=null; render(); toast('Training block ended'); },
   'follow-sug'(v,el){ if(!Pf.friends.includes(v)){ Pf.friends.push(v); Pf.followedAt={...(Pf.followedAt||{}),[v]:Date.now()}; } Store.save(); Social.publish(); document.querySelectorAll(`[data-a="follow-sug"][data-v="${CSS.escape(v)}"]`).forEach(b=>{ b.outerHTML=`<span class="muted small" style="flex:none">Following</span>`; }); popCue(); },
-  'streak-info'(){ const R=STREAK_RULE[Pf.level]||STREAK_RULE.beginner; toast(`${LEVELS[Pf.level]||'Beginner'} minimum: ${R.min}+ minutes and ${R.sets} working sets across 2 exercises, or ${R.sets+1} in one`); },
+  'streak-info'(){ const a=Pf.active, sc=a?streakCheck(a,elapsed(a)):{ok:false};
+    if(sc.ok){ S.prevSheet=S.sheet; S.sheet={kind:'ranks'}; renderSheet(); return; }
+    const R=STREAK_RULE[Pf.level]||STREAK_RULE.beginner, L=LEVELS[Pf.level]||'Beginner';
+    infoBox('What counts as a workout',`<div class="stack" style="gap:8px;text-align:left"><span>For your level (<b>${esc(L)}</b>) a workout counts toward your streak when you do:</span>
+      <span>${ic('clock','xs')} <b>${R.min}+ minutes</b> of training, and</span><span>${ic('dumbbell','xs')} <b>${R.sets} working sets</b> across 2 exercises, <i>or</i> <b>${R.sets+1} sets</b> in one exercise.</span>
+      <span>${ic('flame','xs')} Cardio-only days count once you log a cardio session.</span>
+      ${sc.missing&&sc.missing.length?`<span class="small" style="color:var(--streak)">Still needed: ${esc(sc.missing.join(' · '))}</span>`:''}
+      <span class="muted small">Missed days pause your streak. It only resets after more than 7 days without a workout that counts.</span></div>`); },
   'rank-open'(v){ S.sheet.open=S.sheet.open===v?null:v; renderSheet(); },
   activity(){ S.actSeenAt=Pf.actSeen||0; S.fview='activity'; S.actF='all'; Pf.actSeen=Date.now(); Store.save(); window.scrollTo(0,0); render(); },
   'act-back'(){ S.fview=null; window.scrollTo(0,0); render(); },
@@ -2585,7 +2628,7 @@ const A = {
   'cl-add'(){ const i=document.getElementById('cl-new'), t=i.value.trim(); if(!t) return; Pf.checklist.push({id:'c'+uid(),t:t.slice(0,60),days:null}); Store.save(); render(); },
   dev(){ S.sheet={kind:'dev'}; renderSheet(); },
   'dev-go'(v){ previewLoad(v); },
-  settings(){ S.nameOpen=Pf.username; S.meView='settings'; S.tab='me'; S.route='app'; S.sheet=null; window.scrollTo(0,0); render(); },
+  settings(){ S.nameOpen=Pf.username; S.draft={username:Pf.username||'',town:Pf.town||'',bio:Pf.bio||'',link:Pf.link||''}; S.meView='settings'; S.tab='me'; S.route='app'; S.sheet=null; window.scrollTo(0,0); render(); },
   'my-friends'(v){ S.flTab=v||'following'; S.fq=''; S.meView='friends'; S.tab='me'; S.route='app'; window.scrollTo(0,0); render(); },
   profile(){ S.meView=null; window.scrollTo(0,0); render(); },
   'chart-open'(v){ S.sheetFull=true; S.sheet={kind:'chart',which:v,range:'3m'}; renderSheet(); },
@@ -2596,7 +2639,7 @@ const A = {
   async 'wk-share'(v){ if(Social.postedToday()){ toast('You’ve shared 3 workouts today, the daily limit.'); return; } const w=Store.workouts.find(x=>x.id===v); if(!w) return; if(!w.pump){ toast('Add a pump picture first. The feed is photos only.'); return; } S.menu=null; S.sheet=null; await shareWorkout(w); render(); renderSheet(); toast('Shared to your feed'); },
   async 'wk-unshare'(v){ S.menu=null; S.sheet=null; await Social.delPost(v); render(); renderSheet(); toast('Now private: only you can see it'); },
   'pick-day'(){ S.sheet={kind:'pickday'}; renderSheet(); },
-  'town-pick'(v){ Pf.town=v; Store.save(); const i=document.getElementById('f-town'); if(i) i.value=v; const b=document.getElementById('town-sug'); if(b){ b.hidden=true; b.innerHTML=''; } const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); },
+  'town-pick'(v){ if(S.draft&&S.meView==='settings'){ S.draft.town=v; const sb=document.getElementById('idsave'); if(sb) sb.disabled=!draftDirty(); } else { Pf.town=v; Store.save(); } const i=document.getElementById('f-town'); if(i) i.value=v; const b=document.getElementById('town-sug'); if(b){ b.hidden=true; b.innerHTML=''; } const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); },
   'rep-preset'(v){ const p=REP_PRESETS[+v]; Pf.repMin=p.min; Pf.repMax=p.max; Pf.defaultsTouched=true; Store.save(); render(); },
   pick(v){ S.pick=v===dayKey(new Date())?null:v; S.sheet=null; render(); },
   ftab(v){ S.ftab=v; render(); },
@@ -2666,12 +2709,21 @@ const A = {
   'unf-ask'(v){ S.unfAsk=!S.unfAsk; render(); },
   friend(v,el,ok){ const i=Pf.friends.indexOf(v); if(i>=0&&!ok){ askConfirm('Unfollow '+Social.nameOf(v)+'?','Their workouts will leave your feed.','Unfollow',()=>A.friend(v,el,true)); return; } if(i>=0) Pf.friends.splice(i,1); else { Pf.friends.push(v); Pf.followedAt={...(Pf.followedAt||{}),[v]:Date.now()}; } Store.save(); Social.publish(); S.unfAsk=false; if(S.personId) render(); else renderSheet(); popCue(); },
   erase(){ S.confirmErase=true; render(); },
-  'np-open'(){ S.sheet={kind:'newpost',photo:null,cap:''}; renderSheet(); },
-  'np-pick'(){ const c=document.getElementById('np-cap'); if(c&&S.sheet) S.sheet.cap=c.value; S.photoFor='newpost'; document.getElementById('photo-in').click(); },
-  'np-clear'(){ const c=document.getElementById('np-cap'); if(c&&S.sheet){ S.sheet.cap=c.value; S.sheet.photo=null; } renderSheet(); },
-  async 'np-share'(){ const sh=S.sheet; if(!sh||!sh.photo) return; if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit.'); return; } const cap=(document.getElementById('np-cap')?.value||'').trim().slice(0,300);
-    boatLoading(true,'Posting…'); try{ const small=await shrinkData(sh.photo,380,.6); await Social.addPost({id:'u'+uid(),at:Date.now(),sharedAt:Date.now(),title:'',type:'',caption:cap,photo:small,kind:'photo'}); } finally{ boatLoading(false); }
-    S.sheet=null; renderSheet(); S.feedN=10; render(); popCue(); },
+  async 'id-save'(){ const d=S.draft; if(!d) return; const u=String(d.username||'').trim(), changedName=u.toLowerCase()!==String(Pf.username||'').toLowerCase()||u!==Pf.username;
+    const um=document.getElementById('u-msg'), say=(m)=>{ if(um) um.innerHTML=`<span style="color:var(--bad)">${esc(m)}</span>`; document.getElementById('f-user')?.focus(); };
+    if(changedName){ if(nameLocked()){ say('You can only change your username once a week.'); return; } const x=usernameIssue(u); if(x){ say(x); return; }
+      if(window.boatsClaimName){ const r=await window.boatsClaimName(u,Pf.nameClaimed||Pf.username); if(r==='taken'){ say(`@${u} is already taken. Try another.`); return; } if(r==='error'){ say('Could not check that name. Try again.'); return; } Pf.nameClaimed=u; } }
+    const town=String(d.town||'').trim(); if(town&&!placeValid(town)){ const tm=document.getElementById('t-msg'); if(tm) tm.innerHTML=townMsg(); document.getElementById('f-town')?.focus(); return; }
+    if(String(d.link||'').trim()&&!linkOf(d.link)){ toast('That link doesn’t look right. Check it and try again.'); document.getElementById('f-link')?.focus(); return; }
+    if(changedName){ Pf.nameAt=Date.now(); S.nameTaken=false; }
+    Pf.username=u; Pf.town=town; Pf.bio=String(d.bio||'').slice(0,130); Pf.link=String(d.link||'').trim();
+    S.draft={username:Pf.username,town:Pf.town,bio:Pf.bio,link:Pf.link}; Store.save(true); Social.publish(); render(); popCue(); },
+  'np-open'(){ S.np={photo:null,cap:''}; S.fview='newpost'; S.tab='friends'; S.route='app'; window.scrollTo(0,0); render(); },
+  'np-close'(){ S.np=null; S.fview=null; render(); },
+  'np-pick'(){ const c=document.getElementById('np-cap'); if(c&&S.np) S.np.cap=c.value; S.photoFor='newpost'; document.getElementById('photo-in').click(); },
+  async 'np-share'(){ const np=S.np; if(!np||!np.photo) return; if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit.'); return; } const cap=(document.getElementById('np-cap')?.value||'').trim().slice(0,300), id='u'+uid();
+    boatLoading(true,'Posting…'); try{ const small=await shrinkData(np.photo,480,.72); const hq=await savePhotoHq(id,np.photo); await Social.addPost({id,at:Date.now(),sharedAt:Date.now(),title:'',type:'',caption:cap,photo:small,hq,kind:'photo'}); } finally{ boatLoading(false); }
+    S.np=null; S.fview=null; S.feedN=10; window.scrollTo(0,0); render(); popCue(); },
   admin(){ if(!window.boatsAdmin) return; S.meView='admin'; S.adm=null; window.scrollTo(0,0); render(); window.boatsAdmin.load().then(d=>{ S.adm=d; },e=>{ S.adm={error:'Could not load data ('+((e&&e.code)||'error')+').'}; }).then(()=>{ if(S.meView==='admin') render(); }); },
   'adm-tab'(v){ S.admTab=v; render(); },
   async 'adm-copy'(){ const t=((S.adm&&S.adm.accounts)||[]).map(a=>a.email).filter(Boolean).join(', '); try{ await navigator.clipboard.writeText(t); popCue(); }catch(e){ toast('Could not copy. Long-press to select instead.'); } },
@@ -2746,13 +2798,15 @@ function onInput(e){
       it.sets.forEach((s,n)=>{ if(n>+j&&!s.st&&!s.wEdited){ s.w=t.value; const f=document.querySelector(`[data-set="${i}.${n}.w"]`); if(f) f.value=t.value; } }); }
     Store.save(); return; }
   if(t.id==='f-bio'){ let n=0; const v=t.value.replace(/\n/g,()=>++n<=2?'\n':' '); if(v!==t.value) t.value=v; }
+  if(t.dataset.f&&S.draft&&S.meView==='settings'&&S.route==='app'&&(t.dataset.f in S.draft)){ S.draft[t.dataset.f]=t.value; if(t.id==='f-town'){ showTownSug(); const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); } if(t.id==='f-user'){ const m=document.getElementById('u-msg'); if(m) m.innerHTML=userMsg(); } const b=document.getElementById('idsave'); if(b) b.disabled=!draftDirty(); return; }
   if(t.dataset.f && !t.closest('.stepper')){ Pf[t.dataset.f]=t.value; if(t.id==='f-town'){ showTownSug(); const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); } if(t.id==='f-user'){ const m=document.getElementById('u-msg'); if(m) m.innerHTML=userMsg(); } Store.save(); return; }
   if(t.dataset.f){ const n=parseInt(t.value); if(n>0){ Pf[t.dataset.f]=n; Store.save(); } }
 }
 document.addEventListener('change',e=>{ try{ onChange(e); }catch(err){ reportErr('change',err); } });
 function shrinkData(url,max,q){ return new Promise(res=>{ const img=new Image(); img.onload=()=>{ const k=Math.min(1,max/Math.max(img.width,img.height)), c=document.createElement('canvas'); c.width=Math.round(img.width*k); c.height=Math.round(img.height*k); c.getContext('2d').drawImage(img,0,0,c.width,c.height); res(c.toDataURL('image/jpeg',q)); }; img.onerror=()=>res(''); img.src=url; }); }
-function readImage(file,{square,max,q}){
+function readImage(file,{square,max,q,minSide}){
   return new Promise((res,rej)=>{ const rd=new FileReader(); rd.onerror=rej; rd.onload=()=>{ const img=new Image(); img.onerror=rej; img.onload=()=>{
+    if(minSide&&Math.min(img.width,img.height)<minSide){ rej(new Error('small')); return; }
     const c=document.createElement('canvas'), g=c.getContext('2d');
     if(square){ c.width=c.height=square; const s=Math.min(img.width,img.height); g.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,square,square); }
     else { const k=Math.min(1,max/Math.max(img.width,img.height)); c.width=Math.round(img.width*k); c.height=Math.round(img.height*k); g.drawImage(img,0,0,c.width,c.height); }
@@ -2771,19 +2825,17 @@ document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.closest&&e
 function onChange(e){
   const t=e.target;
   if(t.dataset.set){ const [i,j,k]=t.dataset.set.split('.'); if(k==='r') autoMark(+i,+j); return; }
-  if(t.id==='f-user'&&Pf.onboarded&&S.nameOpen!=null){ const u=String(Pf.username||'').trim(); if(u!==String(S.nameOpen||'').trim()&&!usernameIssue(u)){
-      if(window.boatsClaimName){ const prev=S.nameOpen; window.boatsClaimName(u,Pf.nameClaimed||prev).then(r=>{ if(r==='taken'){ Pf.username=prev; Pf.nameAt=S.nameAtPrev||0; S.nameOpen=prev; Store.save(); const i=document.getElementById('f-user'), m=document.getElementById('u-msg'); if(i) i.value=prev; if(m) m.innerHTML=`<span style="color:var(--bad)">@${esc(u)} is already taken. Try another.</span>`; } else if(r==='ok'){ Pf.nameClaimed=u; S.nameTaken=false; Store.save(); } }); S.nameAtPrev=Pf.nameAt; } if(!Pf.nameAt||Date.now()-Pf.nameAt>NAME_GRACE) Pf.nameAt=Date.now(); S.nameOpen=u; Store.save(); const m=document.getElementById('u-msg'); if(m) m.innerHTML=userMsg()+'<br><span class="muted">Usernames can be changed once a week.</span>'; } return; }
   if(t.id==='pex'){ S.pex=t.value; render(); return; }
   if(t.id==='daypick'){ S.pick=t.value===dayKey(new Date())?null:t.value; render(); }
   if((t.id==='photo-in'||t.id==='cam-in') && t.files[0]){
     const f=t.files[0], target=S.photoFor||'avatar'; S.photoFor=null; t.value='';
-    boatLoading(true,'Loading picture…'); readImage(f, target==='avatar'?{square:192,q:.82}:{max:720,q:.72}).finally(()=>boatLoading(false)).then(url=>{
+    boatLoading(true,'Loading picture…'); readImage(f, target==='avatar'?{square:400,q:.86,minSide:200}:{max:1080,q:.82,minSide:600}).finally(()=>boatLoading(false)).then(url=>{
       if(target==='avatar'){ Pf.photo=url; Store.save(); render(); toast('Picture updated'); }
       else if(target==='active'){ if(Pf.active){ Pf.active.pump=url; Store.save(); render(); toast('Pump picture saved. It goes with this workout when you end it.'); } }
-      else if(target==='newpost'){ if(S.sheet&&S.sheet.kind==='newpost'){ S.sheet.photo=url; renderSheet(); } }
+      else if(target==='newpost'){ if(S.np){ S.np.photo=url; render(); } }
       else if(target==='finish'){ if(S.sheet&&S.sheet.kind==='finish'){ readTitle(); S.sheet.pump=url; renderSheet(); } }
       else { const w=Store.workouts.find(x=>x.id===target); if(w){ Store.updateWorkout(w,{pump:url}); render(); if(S.shareAfterPhoto===target){ S.shareAfterPhoto=null; A['wk-share'](target); } else toast('Pump picture added'); } }
-    }).catch(()=>toast('That file is not an image Boats can read.'));
+    }).catch(e=>toast(e&&e.message==='small'?(target==='avatar'?'That picture is too small. Pick one that is at least 200 pixels wide.':'That photo is too low quality. Pick one that is at least 600 pixels on its shortest side.'):'That file is not an image Boats can read.'));
   }
 }
 
