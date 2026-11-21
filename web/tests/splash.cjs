@@ -1,0 +1,11 @@
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch();const errs=[];const ctx=await b.newContext({viewport:{width:375,height:812}});const p=await ctx.newPage();
+p.on('pageerror',e=>errs.push('PAGEERR '+e.message));
+await p.goto('http://localhost:8765/?emu=1');await p.waitForFunction(()=>typeof S!=='undefined'&&S.ready,null,{timeout:15000});await p.waitForTimeout(800);
+console.log('route',await p.evaluate(()=>S.route),'mode',await p.evaluate(()=>Store.mode));
+await p.screenshot({path:process.argv[2]+'/web-splash.png'});
+await Promise.all([p.waitForNavigation(),p.evaluate(()=>window.__emuSignIn('dana'))]);
+await p.waitForFunction(()=>typeof S!=='undefined'&&S.ready,null,{timeout:15000});await p.waitForTimeout(1500);
+console.log('after sign-in route',await p.evaluate(()=>S.route),'mode',await p.evaluate(()=>Store.mode));
+await p.screenshot({path:process.argv[2]+'/web-signed.png'});
+console.log(errs.join('\n')||'no errors');await b.close();process.exit(0);})().catch(e=>{console.log('ERR',e.message);process.exit(1)});

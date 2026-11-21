@@ -2292,6 +2292,7 @@ function applyWeight(exId,equip,w){
 const A = {
   soon(){ toast('Apple and Google sign-in are coming soon.'); },
   soon(v){ toast(`${v} sign-in is coming soon. Continue as guest for now.`); },
+  'g-in'(el){ if(!window.boatsSignIn) return; S.signing=true; render(); window.boatsSignIn('google').finally(()=>{ S.signing=false; render(); }); },
   login(){ if(!S.ready){ S.waiting='login'; render(); return; } const a=Store.accounts(); if(!a.length) return A['new-acct'](); if(a.length===1) return A['pick-acct'](a[0].id); S.picker=true; render(); },
   'new-acct'(){ if(!S.ready){ S.waiting='new'; render(); return; } Store.create(); Social.publish(); go('onboard',{ob:0}); },
   'pick-acct'(v){ Store.use(v); Social.last=''; Social.publish(); if(Pf.onboarded) go(Pf.active?'session':'app',{tab:homeTab(),pick:null,planDay:null}); else go('onboard',{ob:0}); },

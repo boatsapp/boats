@@ -10,7 +10,7 @@ const EMU = location.hostname === "localhost" && new URLSearchParams(location.se
 const auth = getAuth(app);
 const fs = initializeFirestore(app, { localCache: EMU ? memoryLocalCache() : persistentLocalCache() });
 if(EMU){ connectAuthEmulator(auth, "http://127.0.0.1:9199", { disableWarnings: true }); connectFirestoreEmulator(fs, "127.0.0.1", 8181);
-  window.__emuSignIn = n => signInWithCredential(auth, GoogleAuthProvider.credential(JSON.stringify({ sub: n, email: n + "@test.com", email_verified: true, name: n }))); }
+  window.__emuSignIn = n => signInWithCredential(auth, GoogleAuthProvider.credential(JSON.stringify({ sub: n, email: n + "@test.com", email_verified: true, name: n }))).then(() => location.reload()); }
 
 // Data is stored as JSON text so any app shape fits Firestore; a few top-level fields stay queryable for rules.
 const pack = (data, extra={}) => ({ j: JSON.stringify(data), at: Date.now(), ...extra });
@@ -84,24 +84,18 @@ const downloads = {
 window.claude = { use: async k => ({ db, user, downloads })[k] || null };
 window.boatsSignOut = async () => { await signOut(auth); localStorage.clear(); location.reload(); };
 
-// ---- sign-in gate ----
-const gate = document.getElementById("gate");
-const startApp = () => { gate.remove(); const s = document.createElement("script"); s.textContent = document.getElementById("appsrc").textContent; document.body.appendChild(s); };
-async function signIn(kind){
+// ---- sign-in ----
+window.boatsSignIn = async kind => {
   const p = kind === "apple" ? new OAuthProvider("apple.com") : new GoogleAuthProvider();
   if(kind === "google") p.setCustomParameters({ prompt: "select_account" });
-  gate.querySelector(".gerr").textContent = "";
-  try { await signInWithPopup(auth, p); }
+  try { await signInWithPopup(auth, p); location.reload(); }
   catch(e){
     if(e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment") return signInWithRedirect(auth, p);
-    if(e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") gate.querySelector(".gerr").textContent = "Sign-in didn't work. Try again.";
+    if(e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") window.toast && window.toast("Sign-in failed. Try again.");
   }
-}
-gate.querySelectorAll("[data-signin]").forEach(b => b.addEventListener("click", () => signIn(b.dataset.signin)));
+};
 await setPersistence(auth, browserLocalPersistence).catch(() => {});
-getRedirectResult(auth).catch(() => {});
-let started = false;
-onAuthStateChanged(auth, u => {
-  if(u && !started){ started = true; startApp(); }
-  else if(!u){ gate.classList.add("ready"); }
-});
+getRedirectResult(auth).then(r => { if(r && r.user && !window.__boatsHadUser) location.reload(); }).catch(() => {});
+const authReady = new Promise(res => { const off = onAuthStateChanged(auth, u => { off(); window.__boatsHadUser = !!u; res(u); }); });
+user.id = async () => (await authReady)?.uid || null;
+const s = document.createElement("script"); s.textContent = document.getElementById("appsrc").textContent; document.body.appendChild(s);
