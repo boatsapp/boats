@@ -35,7 +35,7 @@ head='''<!doctype html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="BOATS beta">
+<meta name="apple-mobile-web-app-title" content="BOATS Beta">
 <meta name="description" content="Because who else is going to carry them. A simple lifting tracker with friends.">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon-192.png">
@@ -51,8 +51,8 @@ os.makedirs(pub,exist_ok=True)
 open(os.path.join(pub,'index.html'),'w',encoding='utf-8').write(s)
 import subprocess; subprocess.run(['npm','run','-s','build'],cwd=web,check=True)
 open(os.path.join(pub,'manifest.webmanifest'),'w').write('''{
-  "name": "BOATS beta",
-  "short_name": "BOATS beta",
+  "name": "BOATS Beta",
+  "short_name": "BOATS Beta",
   "description": "Because who else is going to carry them.",
   "start_url": "/",
   "display": "standalone",
