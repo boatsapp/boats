@@ -97,12 +97,13 @@ button{font:inherit;cursor:pointer}
 
   <section>
     <h2>What is BOATS?</h2>
-    <p>BOATS is a workout tracker you can use with your friends. Log your lifts, see your progress, and share workouts with your crew.</p>
+    <p>Think Strava for weightlifters. Track workouts, share them to your story, add friends, track your progress, and copy splits, all from one app.</p>
   </section>
 
   <section>
     <h2>Will you help me carry the boat?</h2>
     <p>I’m inviting a few friends to try the beta. Log a real workout and tell me what felt easy, what confused you, or what broke. Your feedback will help shape what I build next.</p>
+    <p style="margin-top:10px">The first 100 members get to give live feedback and a custom Founding Crew badge on their profile forever.</p>
   </section>
 
   <div class="floatboat" id="topboat" aria-hidden="true"><span class="pboat">BOATSVG</span><span class="pwave">WAVESVG</span></div>
@@ -158,8 +159,8 @@ const STEPS = {
   ios: [
     { t: "Copy the BOATS link", b: "Open <b>Safari</b> and paste it into the address bar.", copy: true, skip: () => inIOSSafari() && onAppSite(), skipMsg: "You’re already in Safari on BOATS, so you can skip this step." },
     { t: "Open the menu, then Share", b: "Look for the <b>3 bars</b> (☰) or the <b>•••</b> button at the bottom of Safari and tap it, then tap <b>Share</b>.", note: "Safari just updated, so this can look a little different from phone to phone." },
-    { t: "Add to Home Screen", b: "Scroll down and tap <b>Add to Home Screen</b>. If it’s missing, look under <b>Edit Actions</b>." },
-    { t: "Turn on Open as Web App", b: "If you see an <b>Open as Web App</b> switch, turn it on. Then tap <b>Add</b>." },
+    { t: "Add to Home Screen", b: "Scroll down and tap <b>Add to Home Screen</b>.", note: "You may have to tap <b>View More</b> to see it. If it’s still missing, look under <b>Edit Actions</b>." },
+    { t: "Turn on Open as Web App", b: "Make sure <b>Open as Web App</b> is switched on, then tap <b>Add</b>." },
     { t: "Launch BOATS", b: "Find <b>BOATS Beta</b> on your Home Screen and tap it to launch.", last: true }],
   android: [
     { t: "Copy the BOATS link", b: "Open <b>Chrome</b> and paste it into the address bar.", copy: true, skip: () => inAndroidChrome() && onAppSite(), skipMsg: "You’re already in Chrome on BOATS, so you can skip this step." },

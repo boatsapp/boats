@@ -739,7 +739,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v103';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v104';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1843,12 +1843,12 @@ function vDms(){ const th=dmThreads(), reqs=th.filter(t=>t.req), main=th.filter(
     <div class="itabs" role="tablist"><button role="tab" aria-selected="${tab==='main'}" aria-label="Messages" class="${tab==='main'?'on':''}" data-a="dm-tab" data-v="main">${ic('chat')}</button><button role="tab" aria-selected="${tab==='req'}" aria-label="Requests" class="${tab==='req'?'on':''}" data-a="dm-tab" data-v="req"><span style="position:relative;display:inline-grid">${ic('me')}${reqs.length?`<i class="reqdot">${reqs.length}</i>`:''}</span></button></div>
     ${tab==='req'?`<p class="muted small" style="margin:0">Messages from people you don't follow. Accept to reply, or delete.</p>`:''}
     ${S.dmNew?`<div class="stack" style="gap:6px"><span class="flabel">New message to</span>${Pf.friends.length?`<div class="list">${Pf.friends.filter(u=>Social.people[u]).map(u=>`<button class="li" data-a="dm-open" data-v="${esc(u)}">${avatar(Social.nameOf(u),Social.photoOf(u),null)}<span class="grow"><span class="t">${esc(Social.nameOf(u))}</span></span>${ic('right','sm')}</button>`).join('')}</div>`:'<div class="card muted small">Follow people to message them.</div>'}</div>`:''}
-    ${list.length?`<div class="stack" style="gap:2px">${list.map(t=>`<div class="swrap"><button class="swdel" data-a="dm-hide" data-v="${esc(t.u)}">Delete</button><div class="actrow dmrow" ${t.req?'':`data-sw="${esc(t.u)}"`}><button class="actmain" data-a="dm-open" data-v="${esc(t.u)}" data-pin="${esc(t.u)}">${avatar(Social.nameOf(t.u),Social.photoOf(t.u),null)}<span class="acttxt"><b>${esc(Social.nameOf(t.u))}</b><br><span class="${!t.req&&!t.last.me&&t.last.at>(seen[t.u]||0)?'':'muted'}">${t.last.me?'You: ':''}${esc(t.last.text.slice(0,60))} · ${ago(t.last.at)}</span></span></button>${(Pf.dmPins||[]).includes(t.u)?`<span class="pinic" aria-label="Pinned">${ic('pin','xs')}</span>`:''}${t.req?`<button class="btn sm fbbtn" data-a="dm-accept" data-v="${esc(t.u)}">Accept</button><button class="btn sm" style="width:auto;flex:none" data-a="dm-hide" data-v="${esc(t.u)}">Delete</button>`:''}</div></div>`).join('')}</div>`
+    ${list.length?`<div class="stack" style="gap:2px">${list.map(t=>`<div class="swrap"><button class="swdel" data-a="dm-hide" data-v="${esc(t.u)}">Delete</button><div class="actrow dmrow" ${t.req?'':`data-sw="${esc(t.u)}"`}><button class="actmain" data-a="dm-open" data-dbl="dm-del-ask" data-v="${esc(t.u)}" data-pin="${esc(t.u)}">${avatar(Social.nameOf(t.u),Social.photoOf(t.u),null)}<span class="acttxt"><b>${esc(Social.nameOf(t.u))}</b><br><span class="${!t.req&&!t.last.me&&t.last.at>(seen[t.u]||0)?'':'muted'}">${t.last.me?'You: ':''}${esc(t.last.text.slice(0,60))} · ${ago(t.last.at)}</span></span></button>${(Pf.dmPins||[]).includes(t.u)?`<span class="pinic" aria-label="Pinned">${ic('pin','xs')}</span>`:''}${t.req?`<button class="btn sm fbbtn" data-a="dm-accept" data-v="${esc(t.u)}">Accept</button><button class="btn sm" style="width:auto;flex:none" data-a="dm-hide" data-v="${esc(t.u)}">Delete</button>`:''}</div></div>`).join('')}</div>`
       :`<div class="card empty">${ic('send')}<div style="margin-top:6px">${tab==='req'?'No message requests.':'No messages yet. Tap + to message someone you follow.'}</div></div>`}
     <p class="muted small" style="margin:0">Hold a chat to pin it (up to 5). Swipe left to delete. Test version: messages aren't private yet.</p>
   </div>${tabbar()}`; }
 function mentionHtml(t){ return esc(t).replace(/@([A-Za-z0-9._]{3,20})/g,(m,u)=>{ const id=Object.keys(Social.people||{}).find(k=>String((Social.people[k]||{}).username||'').toLowerCase()===u.toLowerCase()); return !id?m:id===Social.me()?`<button class="link mention" data-a="tab" data-v="me">@${u}</button>`:`<button class="link mention" data-a="person" data-v="${esc(id)}">@${u}</button>`; }); }
-function chatMsgs(u){ const msgs=chatWith(u); return msgs.length?msgs.map(m=>`<div class="brow ${m.me?'me':''}"><div class="bub ${m.me?'me':''}">${mentionHtml(m.text)}</div><span class="bt">${new Date(m.at).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})}</span></div>`).join(''):`<div class="muted small" style="text-align:center;margin:30px 0">Say hi to ${esc(Social.nameOf(u))}.</div>`; }
+function chatMsgs(u){ const msgs=chatWith(u); return msgs.length?msgs.map(m=>`<div class="brow ${m.me?'me':''}"><div class="bub ${m.me?'me':''}" ${m.me?`data-a="msg-tap" data-dbl="msg-del" data-v="${m.at}"`:''}>${mentionHtml(m.text)}</div><span class="bt">${new Date(m.at).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})}</span></div>`).join(''):`<div class="muted small" style="text-align:center;margin:30px 0">Say hi to ${esc(Social.nameOf(u))}.</div>`; }
 function vChat(){ const u=S.chatWith, msgs=chatWith(u), req=dmThreads().find(t=>t.u===u&&t.req);
   return `<div class="chatwrap"><div class="screen actpage chatpage">
     <div class="rowx" style="gap:8px;margin:-4px 0 -4px -8px"><button class="iconbtn" data-a="dm-back" aria-label="Back">${ic('back')}</button><button class="whobtn" data-a="person" data-v="${esc(u)}">${avatar(Social.nameOf(u),Social.photoOf(u),null)}<b>${esc(Social.nameOf(u))}</b></button><span class="spacer"></span>${Pf.friends.includes(u)?`<button class="fpill on" data-a="follow-tog" data-v="${esc(u)}" aria-label="Following ${esc(Social.nameOf(u))}, tap to unfollow">${ic('check','xs')}Following</button>`:`<button class="fpill" data-a="follow-tog" data-v="${esc(u)}">${ic('plus','xs')}Follow</button>`}</div>
@@ -2051,8 +2051,8 @@ const INSTALL_STEPS={
   ios:[
     {t:'Copy the BOATS link',b:'Open <b>Safari</b> and paste it into the address bar.',copy:true,skip:()=>inIOSSafari()&&onAppSite(),skipMsg:'You’re already in Safari on BOATS, so you can skip this step.'},
     {t:'Open the menu, then Share',b:'Look for the <b>3 bars</b> (☰) or the <b>•••</b> button at the bottom of Safari and tap it, then tap <b>Share</b>.',note:'Safari just updated, so this can look a little different from phone to phone.'},
-    {t:'Add to Home Screen',b:'Scroll down and tap <b>Add to Home Screen</b>. If it’s missing, look under <b>Edit Actions</b>.'},
-    {t:'Turn on Open as Web App',b:'If you see an <b>Open as Web App</b> switch, turn it on. Then tap <b>Add</b>.'},
+    {t:'Add to Home Screen',b:'Scroll down and tap <b>Add to Home Screen</b>.',note:'You may have to tap <b>View More</b> to see it. If it’s still missing, look under <b>Edit Actions</b>.'},
+    {t:'Turn on Open as Web App',b:'Make sure <b>Open as Web App</b> is switched on, then tap <b>Add</b>.'},
     {t:'Launch BOATS',b:'Find <b>BOATS Beta</b> on your Home Screen and tap it to launch.',last:true}],
   android:[
     {t:'Copy the BOATS link',b:'Open <b>Chrome</b> and paste it into the address bar.',copy:true,skip:()=>inAndroidChrome()&&onAppSite(),skipMsg:'You’re already in Chrome on BOATS, so you can skip this step.'},
@@ -2505,7 +2505,7 @@ function render(){
   if(vk!==render._vk){ render._vk=vk; revealCards(); }
   hqScan(); watchSeen();
 }
-let RIO=null;
+let RIO=null, DBL=null;
 document.addEventListener('dragstart',e=>{ if(e.target.closest&&e.target.closest('img,a,button')) e.preventDefault(); });
 document.addEventListener('contextmenu',e=>{ if(e.target.tagName==='IMG') e.preventDefault(); });
 if(window.visualViewport){ const kb=()=>{ const v=visualViewport, r=document.documentElement.style; r.setProperty('--vvh',Math.round(v.height)+'px'); r.setProperty('--vvt',Math.round(v.offsetTop)+'px'); const c=document.getElementById('chat'); if(c&&S.fview==='chat'&&c.dataset.end!=='0') c.scrollTop=c.scrollHeight; }; visualViewport.addEventListener('resize',kb); visualViewport.addEventListener('scroll',kb); kb(); }
@@ -2737,7 +2737,7 @@ const A = {
       if(window.boatsClaimName){ const r=await window.boatsClaimName(Pf.username,Pf.nameClaimed); if(r==='taken'){ const i=document.getElementById('f-user'), m=document.getElementById('u-msg'); i?.classList.add('bad'); if(m) m.innerHTML=`<span style="color:var(--bad)">@${esc(Pf.username)} is already taken. Try another.</span>`; i?.focus(); return; } if(r==='ok') Pf.nameClaimed=Pf.username; } }
     if(S.ob===1) applyRecDefaults();
     if(S.ob<3){ S.ob++; window.scrollTo(0,0); render(); } else { Pf.onboarded=true; if(!Pf.bwLog.length&&num(Pf.bodyweight)) Pf.bwLog.push({t:Date.now(),w:num(Pf.bodyweight)}); Store.save(); if(window.boatsClaimFounder) window.boatsClaimFounder(); go('app',{tab:'plan'}); } },
-  tab(v){ document.body.classList.remove('barhid'); S.sheet=null; S.sheetFull=false; S.fview=null; S.personId=null; S.postsOf=null; renderSheet(); if(v==='today'&&Pf.active&&S.tab==='today'){ go('session'); return; } if(v==='today'&&Pf.active&&S.route==='app'){ go('session'); return; } if(v!=='me'||S.tab!=='me') S.meView=null; S.tab=v; S.planDay=null; S.confirmErase=false; S.menu=null; S.route='app'; window.scrollTo(0,0); render(); },
+  tab(v){ document.body.classList.remove('barhid'); S.plist=null; if(v==='me') S.meView=null; S.sheet=null; S.sheetFull=false; S.fview=null; S.personId=null; S.postsOf=null; renderSheet(); if(v==='today'&&Pf.active&&S.tab==='today'){ go('session'); return; } if(v==='today'&&Pf.active&&S.route==='app'){ go('session'); return; } if(v!=='me'||S.tab!=='me') S.meView=null; S.tab=v; S.planDay=null; S.confirmErase=false; S.menu=null; S.route='app'; window.scrollTo(0,0); render(); },
   'edit-day'(v){ S.tab='plan'; S.planDay=v; window.scrollTo(0,0); render(); },
   'plan-back'(){ S.planDay=null; render(); },
   'add-ex'(){ openPicker({mode:'plan',day:S.planDay},Pf.split[S.planDay]); },
@@ -2978,6 +2978,9 @@ const A = {
   'unf-ask'(v){ S.unfAsk=!S.unfAsk; render(); },
   friend(v,el,ok){ const i=Pf.friends.indexOf(v); if(i>=0&&!ok){ askConfirm('Unfollow '+Social.nameOf(v)+'?','Their workouts will leave your feed.','Unfollow',()=>A.friend(v,el,true)); return; } if(i>=0) Pf.friends.splice(i,1); else { Pf.friends.push(v); Pf.followedAt={...(Pf.followedAt||{}),[v]:Date.now()}; } Store.save(); Social.publish(); S.unfAsk=false; if(S.personId) render(); else renderSheet(); popCue(); },
   erase(){ S.confirmErase=true; render(); },
+  'dm-del-ask'(v){ askConfirm('Delete this conversation?','It’s removed from your messages for good.','Delete',()=>A['dm-hide'](v)); },
+  'msg-tap'(){},
+  'msg-del'(v){ askConfirm('Delete this message?','It’s removed permanently for both of you.','Delete',()=>{ const d=Social.myDms(), u=S.chatWith, t=+v; d.out[u]=(d.out[u]||[]).filter(m=>m.at!==t); Social.saveDms(d); const c=document.getElementById('chat'); if(c) c.innerHTML=chatMsgs(u); popCue(); }); },
   'av-view'(v){ const c=cardOf(v)||{}; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="avview" data-a="ask-no">${c.photo?`<img src="${esc(c.photo)}" alt="${esc(c.username||'')}">`:`<span class="ini">${esc((c.username||'?')[0].toUpperCase())}</span>`}</div></div>`; },
   'mention-pick'(v){ const t=MT; if(!t) return; const pos=t.selectionStart, before=t.value.slice(0,pos).replace(/@([A-Za-z0-9._]{0,20})$/,'@'+v+' '), after=t.value.slice(pos); t.value=before+after; t.focus(); t.setSelectionRange(before.length,before.length); document.getElementById('msug')?.remove(); MT=null; },
   plist(v){ const [uid,tab]=v.split('|'); S.plq=''; S.plist={uid,tab}; window.scrollTo(0,0); render(); },
@@ -3062,6 +3065,9 @@ document.addEventListener('click',e=>{
   if(el.classList.contains('scrim') && e.target.closest('[data-stop]')) return;
   if(el.dataset.a==='ask-no'){ askEl.innerHTML=''; ASKFN=null; return; }
   if(el.dataset.a==='ask-yes'){ const f=ASKFN; askEl.innerHTML=''; ASKFN=null; f&&f(); return; }
+  if(el.dataset.dbl){ e.preventDefault(); const k=el.dataset.dbl+'|'+(el.dataset.v||''), now=Date.now();
+    if(DBL&&DBL.k===k&&now-DBL.t<320){ clearTimeout(DBL.to); DBL=null; A[el.dataset.dbl]&&A[el.dataset.dbl](el.dataset.v,el); return; }
+    if(DBL) clearTimeout(DBL.to); const sa=el.dataset.a, sv=el.dataset.v; DBL={k,t:now,to:setTimeout(()=>{ DBL=null; A[sa]&&A[sa](sv,el); },320)}; return; }
   const a=el.dataset.a, v=el.dataset.v;
   if(a.startsWith('split:')){ const d=a.slice(6); if(v==='rest'&&Pf.split[d]!=='rest'&&DAYS.filter(([k])=>Pf.split[k]==='rest').length>=3){ toast('Max 3 rest days a week'); return; } Pf.split[d]=v; if(Pf.active&&Pf.active.day===d) Pf.active.type=v; Store.save(); render(); return; }
   if(a.startsWith('swap:')){ const tk=dayKey(new Date()); const d=Pf.split[tk]===v?tk:DAYS.map(x=>x[0]).find(k=>Pf.split[k]===v);
