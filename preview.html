@@ -897,7 +897,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v115';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v116';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -2799,6 +2799,7 @@ function render(){ const oldHTML=app.innerHTML, oldY=window.scrollY, k=viewKey()
   renderSheet();
   { const lb=document.querySelector('.livebar'); document.documentElement.style.setProperty('--live-h',(lb?lb.offsetHeight+14:0)+'px'); }
   const vk=S.route+'|'+S.tab+'|'+(S.meView||'')+'|'+(S.pview||'');
+  app.querySelectorAll('.screen .tabbar, .screen .fabpost, .screen .invitebar, .session .tabbar').forEach(n=>app.appendChild(n));
   if(vk!==render._vk){ render._vk=vk; revealCards(); }
   hqScan(); watchSeen(); dmImgScan(); setTimeout(fabCheck,50);
 }
@@ -2810,6 +2811,8 @@ if(window.visualViewport){ const kb=()=>{ const v=visualViewport, r=document.doc
 // In a chat the page itself never moves: only a message list that's long enough to scroll can be dragged.
 document.addEventListener('touchmove',e=>{ if(!document.body.classList.contains('chatopen')) return; const c=e.target.closest&&e.target.closest('#chat'); if(!c||c.scrollHeight<=c.clientHeight+1){ if(e.cancelable) e.preventDefault(); } },{passive:false});
 let PSW=null;
+document.addEventListener('touchcancel',()=>{ if(PTR&&PTR.scr){ PTR.scr.style.transition='transform .25s'; PTR.scr.style.transform=''; try{ ptrEl().style.opacity=0; }catch(e){} } PTR=null;
+  if(PSW&&PSW.pg){ PSW.pg.style.transition='transform .2s'; PSW.pg.style.transform=''; } PSW=null; document.body.classList.remove('swipeback'); try{ behindHide(); }catch(e){} },{passive:true});
 document.addEventListener('touchstart',e=>{ if(S.sheet||document.getElementById('ask').innerHTML||S.route!=='app'&&S.route!=='onboard') return; if(e.target.closest('.slides,.carousel,#car,input,textarea,[data-sw],.npthumbs,#cropcv,#avcv,.chat,.seg,.chips')) return;
   const back=[...document.querySelectorAll('#app [aria-label="Back"], #app [data-a="profile"], #app [data-a="settings"].link')].find(b=>b.offsetParent!==null); if(!back) return;
   const pg=document.querySelector('#app .chatwrap')||document.querySelector('#app .screen'); PSW={x:e.touches[0].clientX,y:e.touches[0].clientY,back,pg,on:false}; },{passive:true});
