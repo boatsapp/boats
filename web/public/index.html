@@ -182,9 +182,11 @@ svg.i.xs{width:14px;height:14px}
 .sldots i{width:6px;height:6px;border-radius:50%;background:var(--faint);opacity:.6}
 .sldots i.on{background:var(--accent);opacity:1}
 .phwrap .ovwrap:has(.slides){overflow:visible}
-.npthumbs{display:flex;gap:8px}
-.npthumbs button{width:64px;height:80px;border-radius:10px;overflow:hidden;border:2px solid transparent;padding:0;background:var(--surface);flex:none}
+.npthumbs{display:flex;gap:8px;touch-action:none;flex-wrap:nowrap;overflow:visible}
+.npthumbs button{transition:transform .18s ease;width:56px;height:70px;border-radius:10px;overflow:hidden;border:2px solid transparent;padding:0;background:var(--surface);flex:none}
 .npthumbs button.on{border-color:var(--accent)}
+.npthumbs button.dragging{transition:none;z-index:2;box-shadow:0 10px 24px rgba(0,0,0,.45)}
+.npthumbs button img{pointer-events:none}
 .npthumbs img{width:100%;height:100%;object-fit:cover}
 .npthumbs .npadd{display:grid;place-items:center;border:1px dashed var(--line);color:var(--muted)}
 .pgrid3 button{position:relative}
@@ -831,7 +833,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v110';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v111';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1977,13 +1979,14 @@ function vChat(){ const u=S.chatWith, msgs=chatWith(u), req=dmThreads().find(t=>
 function npKeep(){ const c=document.getElementById('np-cap'); if(c&&S.np) S.np.cap=c.value; }
 function npCur(){ const np=S.np; return np&&np.list&&np.list[np.i||0]; }
 function vNewPost(){ const np=S.np||{}, list=np.list||[], cur=npCur(), cr=cur&&cur.crop;
-  const photo=!list.length?`<button class="btn npick" data-a="np-pick">${ic('grid','sm')}Choose photos<span class="muted small" style="font-weight:500">Up to 3, from your library</span></button>`
+  const photo=!list.length?`<button class="btn npick" data-a="np-pick">${ic('grid','sm')}Choose photos<span class="muted small" style="font-weight:500">Up to 5, from your library</span></button>`
     :np.editing?`<div class="stack" style="gap:12px"><canvas class="cropcv" id="cropcv" width="800" height="1000" aria-label="Drag to move the photo"></canvas>
         <div class="rowx" style="gap:10px">${ic('search','sm')}<input type="range" id="np-zoom" min="1" max="3" step="0.01" value="${cr.z}" aria-label="Zoom" style="flex:1"></div>
         <span class="muted small" style="text-align:center">Drag to move · slide to zoom</span>
         <div class="rowx" style="gap:8px"><button class="btn" style="flex:1" data-a="np-crop-cancel">Cancel</button><button class="btn primary" style="flex:1" data-a="np-crop-done">Done</button></div></div>`
     :`<div class="stack" style="gap:10px"><img class="pump npimg" src="${esc(cur.photo)}" alt="Photo ${(np.i||0)+1}">
-        <div class="npthumbs">${list.map((x,k)=>`<button class="${k===(np.i||0)?'on':''}" data-a="np-sel" data-v="${k}" aria-label="Photo ${k+1}"><img src="${esc(x.photo)}" alt=""></button>`).join('')}${list.length<3?`<button class="npadd" data-a="np-pick" aria-label="Add a photo">${ic('plus')}</button>`:''}</div>
+        <div class="npthumbs" id="npthumbs">${list.map((x,k)=>`<button class="${k===(np.i||0)?'on':''}" data-a="np-sel" data-v="${k}" data-th="${k}" aria-label="Photo ${k+1}. Hold and drag to reorder"><img src="${esc(x.photo)}" alt=""></button>`).join('')}${list.length<5?`<button class="npadd" data-a="np-pick" aria-label="Add a photo">${ic('plus')}</button>`:''}</div>
+        ${list.length>1?'<span class="muted small" style="margin-top:-4px">Hold a photo and drag to change the order.</span>':''}
         <div class="nptools"><button data-a="np-crop">${ic('crop','sm')}<span>Crop & zoom</span></button><button data-a="np-replace">${ic('swap','sm')}<span>Replace</span></button><button data-a="np-trash" aria-label="Remove this photo">${ic('trash','sm')}<span>Remove</span></button></div></div>`;
   return `<div class="screen npage">
     <div class="rowx" style="gap:8px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="np-close" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">New post</span>${list.length>1?`<span class="muted small">${list.length} photos</span>`:''}</div>
@@ -1995,9 +1998,16 @@ function vNewPost(){ const np=S.np||{}, list=np.list||[], cur=npCur(), cr=cur&&c
 function npRegion(img,cr){ const iw=img.width, ih=img.height, r=4/5; let sw=iw, sh=iw/r; if(sh>ih){ sh=ih; sw=ih*r; } sw/=cr.z; sh/=cr.z; return {sx:(iw-sw)*cr.x, sy:(ih-sh)*cr.y, sw, sh}; }
 function npRender(img,cr,maxW){ const g=npRegion(img,cr), ow=Math.min(maxW,Math.max(720,Math.round(g.sw))), oh=Math.round(ow*5/4), c=document.createElement('canvas'); c.width=ow; c.height=oh; const x=c.getContext('2d'); x.imageSmoothingQuality='high'; x.drawImage(img,g.sx,g.sy,g.sw,g.sh,0,0,ow,oh); let q=.92, u=c.toDataURL('image/jpeg',q); while(u.length>850000&&q>.6){ q-=.06; u=c.toDataURL('image/jpeg',q); } return u; }
 function npDraw(){ const cv=document.getElementById('cropcv'), cur=npCur(); if(!cv||!cur) return; const NPIMG=cur.im, g=npRegion(NPIMG,cur.crop), x=cv.getContext('2d'); x.clearRect(0,0,cv.width,cv.height); x.drawImage(NPIMG,g.sx,g.sy,g.sw,g.sh,0,0,cv.width,cv.height); }
-let NPIMG=null, AVIMG=null;
+let NPIMG=null, AVIMG=null, THD=null;
+document.addEventListener('pointerdown',e=>{ const b=e.target.closest('[data-th]'); if(!b||!S.np) return; const row=document.getElementById('npthumbs');
+  THD={b,row,from:+b.dataset.th,x0:e.clientX,on:false,t:setTimeout(()=>{ if(!THD) return; THD.on=true; b.classList.add('dragging'); try{ navigator.vibrate&&navigator.vibrate(10); }catch(_){} },280)}; });
+document.addEventListener('pointermove',e=>{ if(!THD) return; if(!THD.on){ if(Math.abs(e.clientX-THD.x0)>8){ clearTimeout(THD.t); THD=null; } return; } e.preventDefault();
+  const dx=e.clientX-THD.x0; THD.b.style.transform=`translateX(${dx}px) scale(1.08)`; const w=THD.b.offsetWidth+8, n=S.np.list.length; THD.to=Math.max(0,Math.min(n-1,THD.from+Math.round(dx/w)));
+  THD.row.querySelectorAll('[data-th]').forEach(x=>{ const k=+x.dataset.th; if(x===THD.b) return; let sh=0; if(THD.from<THD.to&&k>THD.from&&k<=THD.to) sh=-w; if(THD.from>THD.to&&k<THD.from&&k>=THD.to) sh=w; x.style.transform=sh?`translateX(${sh}px)`:''; }); },{passive:false});
+['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,()=>{ if(!THD) return; clearTimeout(THD.t); const {on,from,to}=THD; THD=null; if(!on) return; S.noClick=Date.now();
+  const L=S.np.list, cur=L[S.np.i||0]; if(to!=null&&to!==from){ const [it]=L.splice(from,1); L.splice(to,0,it); } S.np.i=Math.max(0,L.indexOf(cur)); npKeep(); render(); }));
 async function npAdd(url){ const np=S.np; if(!np) return; const im=await loadImg(url), item={im,crop:{x:.5,y:.5,z:1}}; item.photo=npRender(im,item.crop,1440); np.list=np.list||[];
-  if(np.replaceAt!=null){ np.list[np.replaceAt]=item; np.i=np.replaceAt; np.replaceAt=null; } else if(np.list.length<3){ np.list.push(item); np.i=np.list.length-1; } np.editing=false; render(); }
+  if(np.replaceAt!=null){ np.list[np.replaceAt]=item; np.i=np.replaceAt; np.replaceAt=null; } else if(np.list.length<5){ np.list.push(item); np.i=np.list.length-1; } np.editing=false; render(); }
 function avRegion(img,c){ const s0=Math.min(img.width,img.height), s=s0/c.z; return {sx:(img.width-s)*c.x, sy:(img.height-s)*c.y, s}; }
 function avDraw(){ const cv=document.getElementById('avcv'), sh=S.sheet; if(!cv||!sh||sh.kind!=='avcrop'||!AVIMG) return; const g=avRegion(AVIMG,sh), x=cv.getContext('2d'); x.clearRect(0,0,600,600); x.drawImage(AVIMG,g.sx,g.sy,g.s,g.s,0,0,600,600); }
 let AVD=null;
@@ -3323,7 +3333,7 @@ function onChange(e){
   if(t.dataset.set){ const [i,j,k]=t.dataset.set.split('.'); if(k==='r') autoMark(+i,+j); return; }
   if(t.id==='pex'){ S.pex=t.value; render(); return; }
   if(t.id==='daypick'){ S.pick=t.value===dayKey(new Date())?null:t.value; render(); }
-  if(t.id==='photo-in'&&t.files.length&&S.photoFor==='newpost'&&S.np){ const room=3-(S.np.replaceAt!=null?2:(S.np.list||[]).length), files=[...t.files].slice(0,Math.max(1,room)); S.photoFor=null; t.value=''; t.multiple=false;
+  if(t.id==='photo-in'&&t.files.length&&S.photoFor==='newpost'&&S.np){ const room=5-(S.np.replaceAt!=null?4:(S.np.list||[]).length), files=[...t.files].slice(0,Math.max(1,room)); S.photoFor=null; t.value=''; t.multiple=false;
     boatLoading(true,'Loading pictures…'); (async()=>{ let small=0; for(const f of files){ try{ await npAdd(await readImage(f,{max:2400,q:.92,minSide:600})); }catch(e){ small++; } } boatLoading(false); if(small) toast(small===files.length?'Those photos are too low quality. Pick ones at least 600 pixels on the short side.':'Some photos were too low quality and were skipped.'); })(); return; }
   if((t.id==='photo-in'||t.id==='cam-in') && t.files[0]){
     const f=t.files[0], target=S.photoFor||'avatar'; S.photoFor=null; t.value='';
