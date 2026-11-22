@@ -175,7 +175,7 @@ body.kbopen .chatwrap .chatpage{padding-bottom:0!important}
 #behind{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:var(--bg);transform:translateX(-22%);filter:blur(6px) brightness(.6)}
 #behind .bh-in{will-change:transform}
 body.swipeback #app{position:relative;z-index:1}
-body.swipeback #app .screen,body.swipeback #app .chatwrap{background:var(--bg)}
+body.swipeback #app .screen,body.swipeback #app .chatwrap{background:var(--bg);min-height:100vh;min-height:100dvh}
 body.swipeback{background:var(--bg)!important}
 .dmtools{display:flex;align-items:center;gap:14px;align-self:center;padding-right:2px}
 .dmtools button{border:0;background:none;padding:0;color:#fff;display:grid;place-items:center}
@@ -920,7 +920,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v118';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v119';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -2126,7 +2126,7 @@ function vNewPost(){ const np=S.np||{}, list=np.list||[], cur=npCur(), cr=cur&&c
   return `<div class="screen npage">
     <div class="rowx" style="gap:8px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="np-close" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">New post</span>${list.length>1?`<span class="muted small">${list.length} photos</span>`:''}</div>
     ${photo}
-    ${np.editing?'':`<div class="field mfield"><label for="np-cap">Caption</label><textarea class="input" id="np-cap" maxlength="300" rows="3" placeholder="Say something about it. Type @ to tag someone.">${esc(np.cap||'')}</textarea></div>
+    ${np.editing?'':`<div class="field mfield"><textarea class="input" id="np-cap" maxlength="300" rows="3" aria-label="Caption" placeholder="Write a caption, tag someone, and share to boats.">${esc(np.cap||'')}</textarea></div>
     ${Social.postedToday()?`<div class="card muted small">You’ve shared 3 posts today, the daily limit.</div>`:`<button class="btn primary" data-a="np-share" ${list.length?'':'disabled'}>Share to feed</button><span class="muted small" style="text-align:center;margin-top:-6px">Shows in the feed and on your profile. Up to 3 posts a day.</span>`}`}
   </div>`; }
 // 4:5 crop at zoom z (1 = fill), centred on x/y (0..1)
@@ -2840,7 +2840,7 @@ document.addEventListener('touchstart',e=>{ if(S.sheet||document.getElementById(
   const back=[...document.querySelectorAll('#app [aria-label="Back"], #app [data-a="profile"], #app [data-a="settings"].link')].find(b=>b.offsetParent!==null); if(!back) return;
   const pg=document.querySelector('#app .chatwrap')||document.querySelector('#app .screen'); PSW={x:e.touches[0].clientX,y:e.touches[0].clientY,back,pg,on:false}; },{passive:true});
 function behindShow(){ document.getElementById('behind')?.remove(); const top=VSTACK[VSTACK.length-1]; if(!top) return; const el=document.createElement('div'); el.id='behind'; el.setAttribute('aria-hidden','true');
-  el.innerHTML=`<div class="bh-in" style="transform:translateY(${-top.y}px)">${top.html}</div>`; el.querySelectorAll('.tabbar,.fbk,.fabpost,.devbtn,#notebar').forEach(n=>n.remove()); document.body.insertBefore(el,document.body.firstChild); }
+  el.innerHTML=`<div class="bh-in" style="transform:translateY(${-top.y}px)">${top.html}</div>`; el.querySelectorAll('.tabbar,.fbk,.fabpost,.devbtn,#notebar').forEach(n=>n.remove()); el.querySelectorAll('.rv').forEach(n=>n.classList.add('in')); document.body.insertBefore(el,document.body.firstChild); }
 function behindHide(){ document.getElementById('behind')?.remove(); }
 document.addEventListener('touchmove',e=>{ if(!PSW) return; const dx=e.touches[0].clientX-PSW.x, dy=e.touches[0].clientY-PSW.y;
   if(!PSW.on){ if(Math.abs(dx)<10) return; if(dx<0||Math.abs(dy)>Math.abs(dx)){ PSW=null; return; } PSW.on=true; behindShow(); document.body.classList.add('swipeback'); if(PSW.pg) PSW.pg.style.transition='none'; }
