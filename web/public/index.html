@@ -920,7 +920,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v117';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v118';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1487,13 +1487,14 @@ function showTownSug(){ const i=document.getElementById('f-town'), box=document.
   box.innerHTML=m.map(n=>`<button type="button" role="option" data-a="town-pick" data-v="${esc(n)}">${ic('pin','xs')}${esc(n)}</button>`).join(''); box.hidden=!m.length; i.setAttribute('aria-expanded',String(!!m.length)); }
 function privacyNote(){ return `<div class="card small" style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px">${ic('lock','sm')}<span>Everything here stays <b>private</b> until you make it public.</span></div>`; }
 const BIOFIELD=()=>`<div class="field"><label for="f-bio">About the Captain</label><textarea class="input" id="f-bio" maxlength="130" rows="3" placeholder="In fewer than 3 lines" data-f="bio" style="height:auto;padding:12px 14px;resize:none">${esc(dv('bio'))}</textarea></div>`;
+const NAMEFIELD=gap=>`<label for="f-name" ${gap?'style="margin-top:10px"':''}>Your name</label><input class="input" id="f-name" maxlength="40" placeholder="e.g. Jack Sparrow" autocomplete="off" autocorrect="off" value="${esc(dv('realName'))}" data-f="realName">`;
 function idFields(withBio){
   return `<div class="rowx idrow" style="gap:16px;align-items:flex-start">
       <button data-a="photo" aria-label="Choose profile picture" style="position:relative">${avatar(Pf.username||'?',Pf.photo,null,true)}<span class="ico" style="position:absolute;right:-4px;bottom:-4px;width:30px;height:30px;border-radius:50%;border:3px solid var(--bg)">${ic('camera','xs')}</span></button>
       <div class="field" style="flex:1;min-width:0"><label for="f-user">Create username</label><input class="input" id="f-user" maxlength="17" placeholder="e.g. jack.sparrow" autocapitalize="off" autocorrect="off" spellcheck="false" value="${esc(dv('username'))}" data-f="username" aria-describedby="u-msg" ${nameLocked()?'readonly':''}><div id="u-msg" class="small" aria-live="polite">${userMsg()}</div>
-        <label for="f-name" style="margin-top:10px">Your name</label><input class="input" id="f-name" maxlength="40" placeholder="e.g. Jack Sparrow" autocomplete="off" autocorrect="off" value="${esc(dv('realName'))}" data-f="realName"></div>
+        ${withBio?`<label for="f-bio" style="margin-top:10px">About the Captain</label>${BIOFIELD().replace(/^<div class="field"><label for="f-bio">About the Captain<\/label>/,'').replace(/<\/div>$/,'')}`:NAMEFIELD(true)}</div>
     </div>
-    ${withBio?BIOFIELD():''}
+    ${withBio?`<div class="field">${NAMEFIELD(false)}</div>`:''}
     <div class="field"><label for="f-town">Town</label><div class="inwrap townwrap"><input class="input" id="f-town" maxlength="40" placeholder="Start typing" autocomplete="off" value="${esc(dv('town'))}" data-f="town" aria-describedby="t-msg" role="combobox" aria-autocomplete="list" aria-controls="town-sug" aria-expanded="false"><div class="sug" id="town-sug" role="listbox" hidden></div></div><div id="t-msg" class="small" aria-live="polite">${townMsg()}</div></div>`;
 }
 function goalCards(){
