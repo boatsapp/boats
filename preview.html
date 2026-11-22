@@ -149,6 +149,15 @@ svg.i.xs{width:14px;height:14px}
 .cmbox .input{height:42px;font-size:16px}
 .cmpost{font-weight:700;color:var(--accent)}
 .li.dimday{opacity:.45}
+.bseen{align-self:flex-end;font-size:11px;color:var(--muted);margin:-2px 4px 0 0}
+.bub.hasphoto{padding:4px;overflow:hidden}
+.dmphoto{display:block;line-height:0;cursor:pointer}
+.dmphoto img{width:200px;max-width:100%;border-radius:16px;background:var(--surface-2);min-height:120px;object-fit:cover}
+.bub.hasphoto span:not(.dmphoto){display:block;padding:6px 9px 4px}
+.dmbig{max-width:92vw;max-height:84vh;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.chatbar{align-items:flex-end}
+.chatbar textarea#dm-in{flex:1;min-height:44px;max-height:84px;resize:none;padding:11px 14px;line-height:1.35;overflow-y:auto}
+.dmcam{flex:none;align-self:center}
 .anchorb.withn{width:auto;display:inline-flex;align-items:center;gap:2px}
 .anchorb.withn i{font-style:normal;font-size:11.5px;font-weight:700;letter-spacing:.02em}
 #edit-in{margin-top:8px}
@@ -221,8 +230,10 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .post .cms{display:flex;flex-direction:column;gap:8px;margin-top:6px}
 .post .cap{margin-top:2px!important}
 .tabbar,.fbk,.fabpost{transition:transform .38s cubic-bezier(.2,.8,.2,1),opacity .3s ease}
-body.barhid .tabbar{transform:translateY(calc(100% + 24px))}
-body.barhid .fbk,body.barhid .fabpost{transform:translateY(calc(var(--tab-h) + 24px));opacity:0;pointer-events:none}
+.tabbar nav{transition:transform .35s cubic-bezier(.2,.8,.2,1),height .35s cubic-bezier(.2,.8,.2,1),max-width .35s cubic-bezier(.2,.8,.2,1)}
+body.barmini .tabbar nav{height:52px;max-width:330px;transform:translateY(4px)}
+body.barmini .tabbar nav svg{transform:scale(.88)}
+body.barmini .tabbar .midic{transform:scale(.88)}
 .fabpost.limit{width:auto;height:40px;padding:0 14px 0 10px;border-radius:999px;gap:6px;display:flex;align-items:center;background:var(--surface);color:var(--muted);border:1px solid var(--line);box-shadow:none;font-size:13px;font-weight:600}
 .fabpost.limit svg{width:16px;height:16px;opacity:.5}
 .streakpill.solid{background:var(--streak);border-color:var(--streak);color:#fff;font-weight:800;height:28px;padding:0 11px;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
@@ -642,7 +653,7 @@ body.chatopen{position:fixed;inset:0;width:100%;overflow:hidden}
 .amt{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 
 /* session */
-.session{height:100%;display:flex;flex-direction:column;max-width:560px;margin:0 auto}
+.session{height:100%;display:flex;flex-direction:column;max-width:560px;margin:0 auto;padding-bottom:calc(var(--tab-h) + 8px + env(safe-area-inset-bottom,0px))}
 .s-top{display:flex;align-items:center;gap:8px;padding:10px max(12px,env(safe-area-inset-right,0px)) 6px max(12px,env(safe-area-inset-left,0px))}
 .s-top .center{flex:1;text-align:center;min-width:0}
 .clock{font-family:var(--display);font-weight:700;font-size:34px;letter-spacing:-.02em;line-height:1}
@@ -812,7 +823,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v111';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v112';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1200,7 +1211,7 @@ function morphFeed(f,html){ const t=document.createElement('div'); t.innerHTML=h
   t.querySelectorAll('article[data-key]').forEach(a=>{ const old=f.querySelector(`article[data-key="${CSS.escape(a.dataset.key)}"] .ovwrap`), nw=a.querySelector('.ovwrap'); if(old&&nw) nw.replaceWith(old); });
   f.replaceChildren(...t.childNodes); hqScan(); watchSeen(); }
 function refreshSocial(){
-  if(S.route==='app'&&S.tab==='friends'&&S.fview==='chat'&&document.getElementById('chat')){ const c=document.getElementById('chat'), html=chatMsgs(S.chatWith); if(c.innerHTML!==html){ const atEnd=c.scrollHeight-c.scrollTop-c.clientHeight<80; c.innerHTML=html; if(atEnd) c.scrollTop=c.scrollHeight; } return; }
+  if(S.route==='app'&&S.tab==='friends'&&S.fview==='chat'&&document.getElementById('chat')){ const c=document.getElementById('chat'), html=chatMsgs(S.chatWith); if(!document.hidden) markSeen(S.chatWith); if(c.innerHTML!==html){ const atEnd=c.scrollHeight-c.scrollTop-c.clientHeight<80; c.innerHTML=html; if(atEnd) c.scrollTop=c.scrollHeight; } return; }
   if(S.route==='app'&&S.tab==='friends'&&S.fview==='dms'){ if(SWD||XLP||document.querySelector('[data-sw].open')){ S.dmDirty=true; return; } const h=vDms(); if(h===S._dmHtml) return; S._dmHtml=h; render(); return; }
   if(S.route==='app'&&S.tab==='friends'&&S.fview){ render(); return; }
   if(S.route==='app' && S.tab==='friends'){ const l=document.getElementById('flist'), f=document.getElementById('feed'); if(l) l.innerHTML=(S.flTab==='crew'?crewList():friendsList()); else if(f) morphFeed(f,feedList()); else render(); }
@@ -1425,11 +1436,11 @@ const liveWorkout = () => !!(Pf.active&&Date.now()-(Pf.active.startedAt||0)<3*36
 // Time spent on the feed vs. the workout side (Lift, Plan, Progress, a workout), counted on this phone
 setInterval(()=>{ if(document.hidden||!Pf||!Pf.onboarded||S.route==='splash'||S.route==='onboard') return; const k=S.route==='session'||(S.route==='app'&&['today','plan','progress'].includes(S.tab))?'lift':(S.route==='app'&&S.tab==='friends')?'feed':null; if(!k) return;
   Pf.usage={...(Pf.usage||{})}; Pf.usage[k]=(Pf.usage[k]||0)+15; if(!(Pf.usage[k]%60)) Store.save(); },15000);
-function liveBar(){ const a=Pf.active; if(!a) return ''; const r=S.rest;
+function liveBar(){ const a=Pf.active; if(!a||S.route==='session') return ''; const r=S.rest;
   return `<button class="livebar ${r?'resting':''}" data-a="resume">${r?`<span class="eyebrow" style="color:inherit">Rest</span><b class="num" data-rest>${fmtClock(r.until-Date.now())}</b>`:a.pausedAt?`<span class="eyebrow" style="color:inherit">Paused</span><b class="num">${fmtUp(elapsed(a))}</b>`:`<span class="eyebrow" style="color:inherit">Workout</span><b class="num" data-timer>${a.startedAt?fmtUp(elapsed(a)):'0:00'}</b>`}<span class="lbgo">${ic('right','sm')}</span></button>`; }
 function tabbar(){
   const t=[['friends','Feed','boat'],['plan','Plan','plan'],['today','Lift','dumbbell'],['progress','Progress','progress'],['me','Profile','me']];
-  return `<div class="tabbar">${liveBar()}<nav>${t.map(([k,l,icn])=>`<button class="tab ${S.tab===k?'on':''} ${k==='today'?'mid':''}" data-a="tab" data-v="${k}" aria-label="${l}">${k==='today'?`<span class="midic">${ic(icn)}</span>`:ic(icn)}${l}</button>`).join('')}</nav></div>`;
+  return `<div class="tabbar">${liveBar()}<nav>${t.map(([k,l,icn])=>`<button class="tab ${(S.route==='session'?k==='today':S.tab===k)?'on':''} ${k==='today'?'mid':''}" data-a="tab" data-v="${k}" aria-label="${l}">${k==='today'?`<span class="midic">${ic(icn)}</span>`:ic(icn)}${l}</button>`).join('')}</nav></div>`;
 }
 function weekStrip(){
   const ws=weekStart(), today=dayKey(new Date());
@@ -1888,7 +1899,7 @@ function feedList(){
   shown.forEach((x,i)=>{ if(sess.invite&&i===at) html+=invite; html+=postCard(x.id,x.p,x.id===Social.me(),x.sug); });
   if(sess.invite&&at>=shown.length&&shown.length<=n) html+=invite;
   if(items.length>n) html+=`<div id="feedmore" class="muted small" style="text-align:center;padding:14px">Loading more…</div>`;
-  else if(items.length&&!(sess.invite&&at>=items.length)) html+=`<div class="muted small" style="text-align:center;padding:14px 0 4px">That’s everything for now. Pull down to refresh.</div>`;
+  else if(items.length&&!(sess.invite&&at>=items.length)) html+=(Social.postedToday()?'':`<button class="postnudge" data-a="np-open">${avatar(Pf.username||'?',Pf.photo,null)}<span class="pn-t"><b>Post here for some motion</b><span>Share a gym pic. Your crew sees it first.</span></span><span class="pn-plus">${ic('plus')}</span></button>`)+`<div class="muted small" style="text-align:center;padding:14px 0 4px">That’s everything for now. Pull down to refresh.</div>`;
   return html;
 }
 function myPostsList(){ const ps=Social.myPosts(); return ps.length?ps.map(p=>postCard(Social.me(),p,true)).join(''):`<div class="card muted small">Share a workout when you end it and it shows here. Up to 3 posts a day.</div>`; }
@@ -1917,8 +1928,8 @@ function vActivity(){ const f=S.actF||'all', seen=S.actSeenAt||0, me=Social.me()
       :`<div class="card empty">${ic('heart')}<div style="margin-top:6px">${f==='all'?'When people follow you, like or comment on your posts, it shows up here.':'Nothing here yet.'}</div></div>`}
   </div>${tabbar()}`; }
 function chatWith(u){ const me=Social.me(), mineAll=((Social.dms[me]||{}).out||{})[u]||[], theirsAll=((Social.dms[u]||{}).out||{})[me]||[];
-  const myLikes=new Set(mineAll.filter(m=>m.like).map(m=>m.like)), theirLikes=new Set(theirsAll.filter(m=>m.like).map(m=>m.like));
-  return [...mineAll.filter(m=>!m.like).map(m=>({...m,me:true,lkMe:myLikes.has(m.at),lkThem:theirLikes.has(m.at)})),...theirsAll.filter(m=>!m.like).map(m=>({...m,me:false,lkMe:myLikes.has(m.at),lkThem:theirLikes.has(m.at)}))].sort((a,b)=>a.at-b.at); }
+  const myLikes=new Set(mineAll.filter(m=>m.like).map(m=>m.like)), theirLikes=new Set(theirsAll.filter(m=>m.like).map(m=>m.like)), real=m=>!m.like&&!m.seen;
+  return [...mineAll.filter(real).map(m=>({...m,me:true,lkMe:myLikes.has(m.at),lkThem:theirLikes.has(m.at)})),...theirsAll.filter(real).map(m=>({...m,me:false,lkMe:myLikes.has(m.at),lkThem:theirLikes.has(m.at)}))].sort((a,b)=>a.at-b.at); }
 function dmThreads(){ const me=Social.me(), ids=new Set(Object.keys((Social.dms[me]||{}).out||{}));
   for(const [u,d] of Object.entries(Social.dms||{})) if(u!==me&&d&&d.out&&d.out[me]&&d.out[me].length) ids.add(u);
   return [...ids].map(u=>{ const msgs=chatWith(u); const iSent=msgs.some(m=>m.me); const req=!iSent&&!Pf.friends.includes(u)&&!(Pf.dmOk||[]).includes(u); return {u,msgs,last:msgs[msgs.length-1],req}; })
@@ -1941,12 +1952,20 @@ function vDms(){ const th=dmThreads(), reqs=th.filter(t=>t.req), main=th.filter(
   </div>${tabbar()}`; }
 function mentionHtml(t){ return esc(t).replace(/@([A-Za-z0-9._]{3,20})/g,(m,u)=>{ const id=Object.keys(Social.people||{}).find(k=>String((Social.people[k]||{}).username||'').toLowerCase()===u.toLowerCase()); return !id?m:id===Social.me()?`<button class="link mention" data-a="tab" data-v="me">@${u}</button>`:`<button class="link mention" data-a="person" data-v="${esc(id)}">@${u}</button>`; }); }
 // Your messages sent within 5 minutes of each other stack as one group; under each group: time · Delete.
+function seenBy(u){ const theirs=((Social.dms[u]||{}).out||{})[Social.me()]||[]; return Math.max(0,...theirs.filter(m=>m.seen).map(m=>m.seen)); }
+function markSeen(u){ const theirs=chatWith(u).filter(m=>!m.me); if(!theirs.length) return; const last=theirs[theirs.length-1].at, d=Social.myDms(), list=d.out[u]||[], cur=list.find(m=>m.seen);
+  if(cur&&cur.seen>=last) return; d.out[u]=[...list.filter(m=>!m.seen),{at:Date.now(),seen:last}]; Social.saveDms(d); }
+function dmBody(m){ return m.photo||m.pimg?`<span class="dmphoto" data-a="dm-photo-view" data-v="${esc(m.photo||'')}"><img src="${esc(DMIMG[m.photo]||m.pimg||'')}" ${m.photo&&!DMIMG[m.photo]?`data-dmimg="${esc(m.photo)}"`:''} alt="Photo"></span>${m.text?`<span>${mentionHtml(m.text)}</span>`:''}`:mentionHtml(m.text); }
+const DMIMG={}, DMASK={};
+function dmImgScan(){ if(!window.boatsDmPhoto) return; document.querySelectorAll('img[data-dmimg]').forEach(img=>{ const id=img.dataset.dmimg; if(DMIMG[id]){ img.src=DMIMG[id]; img.removeAttribute('data-dmimg'); return; } if(DMASK[id]) return; DMASK[id]=1;
+  window.boatsDmPhoto.get(id).then(u=>{ if(!u) return; DMIMG[id]=u; document.querySelectorAll(`img[data-dmimg="${CSS.escape(id)}"]`).forEach(x=>{ x.src=u; x.removeAttribute('data-dmimg'); }); }).catch(()=>{}); }); }
 function chatMsgs(u){ const msgs=chatWith(u); if(!msgs.length) return `<div class="muted small" style="text-align:center;margin:30px 0">Say hi to ${esc(Social.nameOf(u))}.</div>`;
   const tm=t=>new Date(t).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}); let out='', gStart=null;
   msgs.forEach((m,i)=>{ const prev=msgs[i-1], next=msgs[i+1];
     if(m.me&&!(prev&&prev.me&&m.at-prev.at<=5*60000)) gStart=m.at;
     const editing=m.me&&S.msgEdit===gStart, liked=m.lkMe||m.lkThem;
-    out+=`<div class="brow ${m.me?'me':''}">${editing?`<button class="bdel" data-a="msg-del" data-v="${m.at}" aria-label="Delete this message">${ic('x','xs')}</button>`:''}<div class="bub ${m.me?'me':''} ${liked?'liked':''}" data-a="msg-tap" data-dbl="msg-like" data-v="${m.me?1:0}|${m.at}">${mentionHtml(m.text)}${liked?`<span class="blike" aria-label="Liked">${ic('heart','xs')}</span>`:''}</div><span class="bt">${tm(m.at)}</span></div>`;
+    out+=`<div class="brow ${m.me?'me':''}">${editing?`<button class="bdel" data-a="msg-del" data-v="${m.at}" aria-label="Delete this message">${ic('x','xs')}</button>`:''}<div class="bub ${m.me?'me':''} ${liked?'liked':''} ${m.photo||m.pimg?'hasphoto':''}" data-a="msg-tap" data-dbl="msg-like" data-v="${m.me?1:0}|${m.at}">${dmBody(m)}${liked?`<span class="blike" aria-label="Liked">${ic('heart','xs')}</span>`:''}</div><span class="bt">${tm(m.at)}</span></div>`;
+    if(m.me&&!next&&seenBy(u)>=m.at) out+=`<div class="bseen">Seen</div>`;
     if(m.me&&!(next&&next.me&&next.at-m.at<=5*60000)) out+=`<div class="bfoot"><button class="link" data-a="msg-edit" data-v="${gStart}">${editing?'Done':'Delete'}</button></div>`; });
   return out; }
 function vChat(){ const u=S.chatWith, msgs=chatWith(u), req=dmThreads().find(t=>t.u===u&&t.req);
@@ -1954,7 +1973,7 @@ function vChat(){ const u=S.chatWith, msgs=chatWith(u), req=dmThreads().find(t=>
     <div class="rowx" style="gap:8px;margin:-4px 0 -4px -8px"><button class="iconbtn" data-a="dm-back" aria-label="Back">${ic('back')}</button><button class="whobtn" data-a="person" data-v="${esc(u)}">${avatar(Social.nameOf(u),Social.photoOf(u),null)}<b>${esc(Social.nameOf(u))}</b></button><span class="spacer"></span>${Pf.friends.includes(u)?`<button class="fpill on" data-a="follow-tog" data-v="${esc(u)}" aria-label="Following ${esc(Social.nameOf(u))}, tap to unfollow">${ic('check','xs')}Following</button>`:`<button class="fpill" data-a="follow-tog" data-v="${esc(u)}">${ic('plus','xs')}Follow</button>`}</div>
     <div class="chat" id="chat">${chatMsgs(u)}</div>
     ${req?`<div class="card stack" style="gap:8px"><span class="small"><b>${esc(Social.nameOf(u))}</b> wants to message you.</span><div class="rowx" style="gap:8px"><button class="btn sm" style="flex:1" data-a="dm-hide" data-v="${esc(u)}">Delete</button><button class="btn sm fbbtn" style="flex:1" data-a="dm-accept" data-v="${esc(u)}">Accept</button></div></div>`
-      :`<div class="chatbar"><input class="input" id="dm-in" maxlength="500" placeholder="Message…" autocomplete="off" enterkeyhint="send"><button class="btn primary" style="width:auto;flex:none" data-a="dm-send">${ic('send','sm')}</button></div>`}
+      :`<div class="chatbar"><button class="iconbtn dmcam" data-a="dm-photo" aria-label="Send a photo">${ic('camera')}</button><textarea class="input" id="dm-in" maxlength="200" rows="1" placeholder="Message…" autocomplete="off" enterkeyhint="send"></textarea><button class="btn primary" style="width:auto;flex:none" data-a="dm-send">${ic('send','sm')}</button></div>`}
   </div></div>`; }
 function npKeep(){ const c=document.getElementById('np-cap'); if(c&&S.np) S.np.cap=c.value; }
 function npCur(){ const np=S.np; return np&&np.list&&np.list[np.i||0]; }
@@ -2005,7 +2024,7 @@ function vFriends(){
     <div class="rowx fhead"><span class="wordmark">BOATS<sup class="betatag sm">BETA</sup></span><span class="spacer"></span><button class="iconbtn ${dmUnread()?'dot':''}" data-a="dms" aria-label="Messages">${ic('send')}</button><button class="iconbtn ${actUnread()?'dot':''}" data-a="activity" aria-label="Activity: new followers and comments">${ic('heart')}</button></div>
     ${gymBubbles()}
     <div class="stack" id="feed" style="gap:14px">${feedList()}</div>
-    ${Social.postedToday()||!feedItems().length?'':`<button class="postnudge" data-a="np-open">${avatar(Pf.username||'?',Pf.photo,null)}<span class="pn-t"><b>Post here for some motion</b><span>Share a gym pic. Your crew sees it first.</span></span><span class="pn-plus">${ic('plus')}</span></button>`}</div>
+
     ${Social.postedToday()?`<button class="fabpost limit" data-a="np-limit" aria-label="Daily post limit reached">${ic('plus')}<span>Limit reached</span></button>`:`<button class="fabpost" data-a="np-open" aria-label="Share a photo to the feed">${ic('plus')}</button>`}${tabbar()}`;
 }
 function vFriendList(){
@@ -2313,7 +2332,7 @@ function vSession(){
     <div class="carousel" id="car">${cards}<section class="ex-card add"><div class="ico" style="width:56px;height:56px;border-radius:16px">${ic('plus')}</div><div class="h2">Add an exercise</div><p class="muted small" style="margin:0;max-width:26ch">Machine taken? Swipe to any exercise and come back to it later.</p><button class="btn sm primary" data-a="s-add">Browse library</button></section></div>
     <div class="dots" id="dots">${a.items.map((_,i)=>`<button class="${i===a.idx?'on':''} ${grade(i)}" data-a="s-go" data-v="${i}" aria-label="Exercise ${i+1}${({'g-all':': every set hit','g-some':': some sets hit','g-none':': no sets hit'})[grade(i)]||''}"></button>`).join('')}<button class="dplus ${a.idx>=a.items.length?'on':''}" data-a="s-add" aria-label="Add an exercise">${ic('plus','xs')}</button></div>
     <div class="s-foot floatboat ${a.pausedAt?'still':''}" aria-hidden="true"><span class="pboat">${ic('boat')}</span>${waveSvg()}</div>
-  </div>`;
+  </div>${tabbar()}`;
 }
 
 /* ---------- sheets ---------- */
@@ -2412,7 +2431,7 @@ function vSheet(){
         ${sh.pump?`${Social.postedToday()?`<div class="muted small">You’ve shared 3 posts today, so this one is saved privately.</div>`:''}<button class="btn primary" data-a="fin-share">${ic('share','sm')}Ship off</button><button class="btn" data-a="post-nofilter">Post without filter</button><span class="muted small" style="text-align:center;margin-top:-4px">Your post on BOATS is the photo in portrait, without the overlay.</span>`:''}
         ${sh.pump?'':Social.postedToday()?`<div class="muted small">You’ve shared 3 workouts today, the daily limit.</div>`:!sh.pump?`<div class="muted small">${ic('camera','xs')} Add a pump picture to share this to the feed. Without one it’s saved privately to your profile.</div>`
           :`<button class="li" style="padding:6px 0" data-a="share-tog"><span class="grow"><span class="t">Post voyage</span><br><span class="s">${sh.share?'Public: friends see it in their feed':'Private: saved to your profile, only you see it'}</span></span><span class="toggle ${sh.share?'on':''}"></span></button>`}
-        ${sh.pump?'':`<button class="btn primary" data-a="save-workout">End workout</button>`}${marked.length?'':`<span class="muted small" style="text-align:center;margin-top:-6px">No sets logged. You can still end it.</span>`}
+        ${sh.pump?'':`<button class="btn primary" data-a="save-workout">End workout</button>`}
         ${sh.pump?`<button class="btn" data-a="save-private">Save privately</button>`:`<button class="btn" data-a="close-sheet">Not done</button>`}
         <button class="btn ghost danger" data-a="discard">Discard workout</button>`);
   }
@@ -2604,23 +2623,38 @@ function previewLoad(kind){
   Social.reacts={f2:{likes:{'f1:p1':true},comments:{'f1:p1':[{at:now-20*60000,text:'Let’s go!!'}]}},f3:{likes:{'f1:p1':true,'f2:p2':true}}};
   if(kind==='feed'){ go('app',{tab:'friends'}); return; }
   if(kind==='feed0'){ Pf.friends=[]; go('app',{tab:'friends'}); return; }
+  const fakePic=(col,txt)=>{ const c=document.createElement('canvas'); c.width=1080; c.height=1350; const g=c.getContext('2d'); g.fillStyle=col; g.fillRect(0,0,1080,1350); g.fillStyle='rgba(255,255,255,.85)'; g.font='bold 120px sans-serif'; g.textAlign='center'; g.fillText(txt,540,700); return c.toDataURL('image/jpeg',.8); };
+  if(kind==='feedempty'){ Social.posts={}; S.feedSeed=Date.now(); go('app',{tab:'friends'}); return; }
+  if(kind==='newpost'){ go('app',{tab:'friends'}); S.np={list:[],i:0,cap:'Leg day with @mia_strong'}; S.fview='newpost'; render(); (async()=>{ for(const [c,t] of [['#2E6F9E','1'],['#9E4A2E','2'],['#3E8E5A','3']]) await npAdd(fakePic(c,t)); })(); return; }
+  if(kind==='comments'){ const k='f1:p1', r=Social.myReacts(); r.comments[k]=[{at:Date.now()-3*3600e3,text:'Huge PR, 3 plates 🔥'},{at:Date.now()-2*3600e3,text:'@jordan.lifts what program?'}]; Social.saveReacts(r,true); Social.founders={me:1,f1:3}; S.feedSeed=Date.now(); go('app',{tab:'friends'}); A['cm-open'](k); return; }
+  if(kind==='person'){ Social.founders={f1:3}; go('app',{tab:'friends'}); A.person('f1'); return; }
+  if(kind==='plist'){ go('app',{tab:'friends'}); A.person('f1'); A.plist('f1|following'); return; }
+  if(kind==='dms'||kind==='chat'){ const n=Date.now(), d=Social.myDms(); d.out.f1=[{at:n-50*60000,text:'Leg day tomorrow?'},{at:n-49*60000,pimg:fakePic('#2E6F9E','PR'),text:''},{at:n-20*60000,text:'6am works'},{at:n-19*60000,like:n-40*60000}]; Social.saveDms(d);
+    Social.dms.f1={out:{me:[{at:n-40*60000,text:'Bet. Bring chalk'},{at:n-10*60000,seen:n-19*60000}]}}; go('app',{tab:'friends'}); if(kind==='dms') A.dms(); else A['dm-open']('f1'); return; }
+  if(kind==='settings'){ go('app',{tab:'me'}); A.settings(); return; }
+  if(kind==='avcrop'){ go('app',{tab:'me'}); loadImg(fakePic('#555','You')).then(im=>{ AVIMG=im; S.sheet={kind:'avcrop',x:.5,y:.5,z:1}; renderSheet(); setTimeout(avDraw,0); }); return; }
+  if(kind==='install'){ go('app',{tab:'me'}); A.install(); return; }
+  if(kind==='admin'){ window.boatsAdmin=window.boatsAdmin||{load:async()=>({accounts:[{uid:'f1',email:'jordan@example.com',name:'Jordan',createdAt:Date.now()-5*864e5,lastAt:Date.now()-3600e3},{uid:'f2',email:'mia@example.com',name:'Mia',createdAt:Date.now()-2*864e5,lastAt:Date.now()}],feedback:[{uid:'f1',at:Date.now()-7200e3,text:'Rest timer stops when I lock my phone',where:'Workout'},{uid:'f2',at:Date.now()-3600e3,text:'timer stopped after locking phone during rest',where:'Workout'},{uid:'f2',at:Date.now()-600e3,text:'Love the story share',where:'End workout'}]}),editFeedback:async()=>{}}; go('app',{tab:'me'}); A.admin(); return; }
+  if(kind==='ranks'){ go('app',{tab:'me'}); A.ranks(); return; }
   if(kind==='lifter'){ go('app',{tab:'today'}); return; }
   if(kind==='progress'){ go('app',{tab:'progress'}); return; }
   if(kind==='history'){ go('app',{tab:'me',pview:'list'}); return; }
   if(kind==='friends'){ go('app',{tab:'me',meView:'friends'}); return; }
   if(kind==='plan'){ go('app',{tab:'plan',planDay:'mon'}); return; }
   if(kind==='me'){ go('app',{tab:'me'}); return; }
-  if(kind==='session'||kind==='rest'){
+  if(kind==='session'||kind==='rest'||kind==='finish'){
     Pf.active={id:uid(),startedAt:Date.now()-23*60000,day:'mon',type:'push',idx:1,items:Pf.plans.mon.map(itemFromPlan)};
     const mk=(s,st,r)=>{ s.st=st; s.r=String(r??s.pr); }; Pf.active.items[0].sets.forEach(s=>mk(s,'ok')); mk(Pf.active.items[1].sets[0],'ok'); mk(Pf.active.items[1].sets[1],'fail',6);
     if(kind==='rest') S.rest={until:Date.now()+72000,total:90};
-    go('session'); return; }
+    go('session'); if(kind==='finish'){ A.finish(); S.sheet.pump=fakePic('#2E6F9E','PR'); renderSheet(); } return; }
   if(kind==='suggest'){ go('app',{tab:'me',pview:'list'});
     S.sheet={kind:'suggest',items:[{exId:'chest-press',equip:'Barbell',dir:1,top:185,repMax:10},{exId:'lat-pulldown',equip:'Cable',dir:-1,top:140,repMax:10}]}; renderSheet(); return; }
 }
 const PREVIEW_STEPS=[['Start over','fresh'],['Setup · About you','setup0'],['Setup · Goal','setup1'],['Setup · Rest','setup2'],['Setup · Split','setup3'],
   ['New user, nothing planned','newuser'],['Lifter with 6 weeks of history','lifter'],['Plan · Monday','plan'],['Mid-workout','session'],['Rest timer running','rest'],
-  ['Weight suggestion popup','suggest'],['Progress charts','progress'],['History','history'],['Friends feed','feed'],['Feed, no friends yet','feed0'],['Friends','friends'],['Profile','me']];
+  ['Weight suggestion popup','suggest'],['End workout · story share','finish'],['Progress charts','progress'],['History','history'],['Friends feed','feed'],['Feed, no friends yet','feed0'],['Feed · empty','feedempty'],
+  ['New post · 3 photos','newpost'],['Comments slider','comments'],['Someone’s profile','person'],['Their crew list','plist'],['Messages','dms'],['Chat with photos, likes, Seen','chat'],
+  ['Friends','friends'],['Profile','me'],['Settings','settings'],['Profile picture crop','avcrop'],['Download app walkthrough','install'],['Data center','admin'],['Leaderboards','ranks']];
 function devPanel(){
   if(!PREVIEW) return '';
   return `<button class="devbtn" data-a="dev" aria-label="Preview tools">Preview</button>`;
@@ -2646,7 +2680,7 @@ function render(){ document.body.classList.toggle('chatopen',S.route==='app'&&S.
   { const lb=document.querySelector('.livebar'); document.documentElement.style.setProperty('--live-h',(lb?lb.offsetHeight+14:0)+'px'); }
   const vk=S.route+'|'+S.tab+'|'+(S.meView||'')+'|'+(S.pview||'');
   if(vk!==render._vk){ render._vk=vk; revealCards(); }
-  hqScan(); watchSeen();
+  hqScan(); watchSeen(); dmImgScan();
 }
 let RIO=null, DBL=null;
 document.addEventListener('dragstart',e=>{ if(e.target.closest&&e.target.closest('img,a,button')) e.preventDefault(); });
@@ -2655,6 +2689,9 @@ document.addEventListener('contextmenu',e=>{ if(e.target.tagName==='IMG') e.prev
 if(window.visualViewport){ const kb=()=>{ const v=visualViewport, r=document.documentElement.style; r.setProperty('--vvh',Math.round(v.height)+'px'); r.setProperty('--vvt',Math.round(v.offsetTop)+'px'); const c=document.getElementById('chat'); if(c&&S.fview==='chat'&&c.dataset.end!=='0') c.scrollTop=c.scrollHeight; }; visualViewport.addEventListener('resize',kb); visualViewport.addEventListener('scroll',kb); kb(); }
 // In a chat the page itself never moves: only a message list that's long enough to scroll can be dragged.
 document.addEventListener('touchmove',e=>{ if(!document.body.classList.contains('chatopen')) return; const c=e.target.closest&&e.target.closest('#chat'); if(!c||c.scrollHeight<=c.clientHeight+1){ if(e.cancelable) e.preventDefault(); } },{passive:false});
+let PSW=null;
+document.addEventListener('touchstart',e=>{ if(!S.personId||S.sheet||S.route!=='app'||e.target.closest('.slides,.pgrid3,input,textarea')) return; PSW={x:e.touches[0].clientX,y:e.touches[0].clientY}; },{passive:true});
+document.addEventListener('touchend',e=>{ if(!PSW) return; const t=e.changedTouches[0], dx=t.clientX-PSW.x, dy=t.clientY-PSW.y; PSW=null; if(dx>80&&Math.abs(dy)<60&&S.personId){ S.noClick=Date.now(); A['person-back'](); } },{passive:true});
 let TSW=null;
 document.addEventListener('touchstart',e=>{ const c=e.target.closest('#chat'); if(!c) return; TSW={c,x:e.touches[0].clientX,y:e.touches[0].clientY,on:false}; },{passive:true});
 document.addEventListener('touchmove',e=>{ if(!TSW) return; const dx=TSW.x-e.touches[0].clientX, dy=e.touches[0].clientY-TSW.y; if(!TSW.on){ if(Math.abs(dx)<10) return; if(Math.abs(dy)>Math.abs(dx)){ TSW=null; return; } TSW.on=true; TSW.c.classList.add('dragging'); } TSW.c.style.setProperty('--tx',Math.max(0,Math.min(72,dx))+'px'); },{passive:true});
@@ -2668,7 +2705,7 @@ document.addEventListener('pointermove',e=>{ if(XLP&&Math.hypot(e.clientX-XLP.x0
 ['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,()=>{ if(XLP){ clearTimeout(XLP.t); XLP.b.classList.remove('holding'); XLP=null; } if(S.holdFired){ S.holdFired=false; S.noClick=Date.now(); } if(S.dmDirty&&!SWD&&!document.querySelector('[data-sw].open')){ S.dmDirty=false; setTimeout(()=>{ if(S.fview==='dms') render(); },250); } }));
 // pull to refresh on the feed, like Instagram
 let PTR=null, BARY=0, BARDIR=0;
-window.addEventListener('scroll',()=>{ const y=window.scrollY, d=y-BARY; if(Math.abs(d)<6) return; const hide=d>0&&y>90&&S.route==='app'&&!Pf.active&&S.fview!=='chat'; if(hide!==document.body.classList.contains('barhid')) document.body.classList.toggle('barhid',hide); BARY=y; },{passive:true});
+window.addEventListener('scroll',()=>{ const y=window.scrollY, d=y-BARY; if(Math.abs(d)<6) return; const mini=d>0&&y>60; if(mini!==document.body.classList.contains('barmini')) document.body.classList.toggle('barmini',mini); BARY=y; },{passive:true});
 window.addEventListener('scroll',()=>{ if(S.route!=='app'||S.tab!=='friends'||S.fview||S.personId) return; const m=document.getElementById('feedmore'); if(!m||m.getBoundingClientRect().top>innerHeight+700) return; S.feedN=(S.feedN||10)+10; const f=document.getElementById('feed'); if(f) morphFeed(f,feedList()); },{passive:true});
 // one wave period = 30px; the strip slides exactly one period, so the loop is seamless
 function waveSvg(){ return `<span class="pwave"><svg viewBox="0 0 120 10" width="120" height="10" aria-hidden="true"><path d="M0 5 Q7.5 0 15 5 T30 5 T45 5 T60 5 T75 5 T90 5 T105 5 T120 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>`; }
@@ -2749,7 +2786,7 @@ function revealCards(){ if(!('IntersectionObserver' in window)) return; if(RIO) 
   RIO=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); RIO.unobserve(e.target); } }),{rootMargin:'0px 0px -6% 0px'});
   document.querySelectorAll('#feed > *, .pgrid3 > button, .prof .post').forEach((n,i)=>{ n.classList.add('rv'); n.style.transitionDelay=Math.min(i,6)*40+'ms'; RIO.observe(n); }); }
 function renderSheet(){ const b=document.getElementById('sbody'), st=b?b.scrollTop:0, same=S.sheet&&renderSheet._k===S.sheet.kind; renderSheet._k=S.sheet&&S.sheet.kind; sheetEl.innerHTML=vSheet()+(PREVIEW&&S.sheet&&S.sheet.kind!=='dev'?devPanel():''); const nb=document.getElementById('sbody'); if(nb) nb.scrollTop=st; if(same){ sheetEl.querySelectorAll('.scrim,.sheet').forEach(n=>n.style.animation='none'); } if(S.sheet&&(S.sheet.kind==='export'||(S.sheet.kind==='finish'&&S.sheet.pump))) drawOverlayInto(document.getElementById('ovc')); if(S.sheet&&S.sheet.kind==='avcrop') avDraw(); }
-function go(route,opts={}){ document.body.classList.remove('barhid'); Object.assign(S,opts); S.route=route; if(route==='session'&&Pf.active){ try{ reconcileWorkout(); Store.save(); }catch(e){} } window.scrollTo(0,0); render(); }
+function go(route,opts={}){ document.body.classList.remove('barmini'); Object.assign(S,opts); S.route=route; if(route==='session'&&Pf.active){ try{ reconcileWorkout(); Store.save(); }catch(e){} } window.scrollTo(0,0); render(); }
 function cardW(){ const c=document.getElementById('car'); return c?c.querySelector('.ex-card').offsetWidth+10:1; }
 function onCarScroll(e){
   const i=Math.round(e.currentTarget.scrollLeft/cardW());
@@ -2885,7 +2922,7 @@ const A = {
       if(window.boatsClaimName){ const r=await window.boatsClaimName(Pf.username,Pf.nameClaimed); if(r==='taken'){ const i=document.getElementById('f-user'), m=document.getElementById('u-msg'); i?.classList.add('bad'); if(m) m.innerHTML=`<span style="color:var(--bad)">@${esc(Pf.username)} is already taken. Try another.</span>`; i?.focus(); return; } if(r==='ok') Pf.nameClaimed=Pf.username; } }
     if(S.ob===1) applyRecDefaults();
     if(S.ob<3){ S.ob++; window.scrollTo(0,0); render(); } else { Pf.onboarded=true; if(!Pf.bwLog.length&&num(Pf.bodyweight)) Pf.bwLog.push({t:Date.now(),w:num(Pf.bodyweight)}); Store.save(); if(window.boatsClaimFounder) window.boatsClaimFounder(); go('app',{tab:'plan'}); } },
-  tab(v){ document.body.classList.remove('barhid'); S.plist=null; if(v==='me') S.meView=null; S.sheet=null; S.sheetFull=false; S.fview=null; S.personId=null; S.postsOf=null; renderSheet(); if(v==='today'&&Pf.active&&S.tab==='today'){ go('session'); return; } if(v==='today'&&Pf.active&&S.route==='app'){ go('session'); return; } if(v!=='me'||S.tab!=='me') S.meView=null; S.tab=v; S.planDay=null; S.confirmErase=false; S.menu=null; S.route='app'; window.scrollTo(0,0); render(); },
+  tab(v){ document.body.classList.remove('barmini'); S.plist=null; if(v==='me') S.meView=null; S.sheet=null; S.sheetFull=false; S.fview=null; S.personId=null; S.postsOf=null; renderSheet(); if(v==='today'&&Pf.active&&S.tab==='today'){ go('session'); return; } if(v==='today'&&Pf.active&&S.route==='app'){ go('session'); return; } if(v!=='me'||S.tab!=='me') S.meView=null; S.tab=v; S.planDay=null; S.confirmErase=false; S.menu=null; S.route='app'; window.scrollTo(0,0); render(); },
   'edit-day'(v){ S.tab='plan'; S.planDay=v; window.scrollTo(0,0); render(); },
   'plan-back'(){ S.planDay=null; render(); },
   'add-ex'(){ openPicker({mode:'plan',day:S.planDay},Pf.split[S.planDay]); },
@@ -3022,9 +3059,9 @@ const A = {
   'dm-pin'(v){ const p=Pf.dmPins||[]; if(p.includes(v)) Pf.dmPins=p.filter(x=>x!==v); else { if(p.length>=5){ toast('Max 5 pinned chats'); return; } Pf.dmPins=[...p,v]; } Store.save(); render(); popCue(); },
   'dm-tab'(v){ S.dmTab=v; render(); },
   'dm-new'(){ S.dmNew=!S.dmNew; render(); },
-  'dm-open'(v){ S.personId=null; S.postsOf=null; S.dmQ=''; S.sheet=null; renderSheet(); S.chatWith=v; S.fview='chat'; S.tab='friends'; S.route='app'; Pf.dmSeen={...(Pf.dmSeen||{}),[v]:Date.now()}; Store.save(); render(); const c=document.getElementById('chat'); if(c) c.scrollTop=c.scrollHeight; },
+  'dm-open'(v){ setTimeout(()=>markSeen(v),300); S.personId=null; S.postsOf=null; S.dmQ=''; S.sheet=null; renderSheet(); S.chatWith=v; S.fview='chat'; S.tab='friends'; S.route='app'; Pf.dmSeen={...(Pf.dmSeen||{}),[v]:Date.now()}; Store.save(); render(); const c=document.getElementById('chat'); if(c) c.scrollTop=c.scrollHeight; },
   'dm-back'(){ S.fview='dms'; render(); },
-  'dm-send'(){ const i=document.getElementById('dm-in'), t=(i&&i.value||'').trim(); if(!t) return; const d=Social.myDms(), u=S.chatWith; d.out[u]=[...(d.out[u]||[]),{at:Date.now(),text:t.slice(0,500)}].slice(-60); Social.saveDms(d); Pf.dmSeen={...(Pf.dmSeen||{}),[u]:Date.now()}; Store.save(); render(); const ch=document.getElementById('chat'); if(ch) ch.scrollTop=ch.scrollHeight; setTimeout(()=>document.getElementById('dm-in')?.focus(),30); },
+  'dm-send'(){ const i=document.getElementById('dm-in'), t=(i&&i.value||'').replace(/\n+/g,' ').trim(); if(!t) return; const d=Social.myDms(), u=S.chatWith; d.out[u]=[...(d.out[u]||[]),{at:Date.now(),text:t.slice(0,200)}].slice(-60); Social.saveDms(d); Pf.dmSeen={...(Pf.dmSeen||{}),[u]:Date.now()}; Store.save(); render(); const ch=document.getElementById('chat'); if(ch) ch.scrollTop=ch.scrollHeight; setTimeout(()=>document.getElementById('dm-in')?.focus(),30); },
   'dm-accept'(v){ Pf.dmOk=[...new Set([...(Pf.dmOk||[]),v])]; Store.save(); render(); popCue(); },
   'dm-hide'(v){ const h=Array.isArray(Pf.dmHidden)?Object.fromEntries(Pf.dmHidden.map(x=>[x,Date.now()])):{...(Pf.dmHidden||{})}; h[v]=Date.now(); Pf.dmHidden=h; Pf.dmPins=(Pf.dmPins||[]).filter(x=>x!==v); Store.save(); if(S.fview==='chat') S.fview='dms'; render(); },
   'fl-tab'(v){ S.flTab=v; render(); },
@@ -3085,7 +3122,7 @@ const A = {
   async 'text-invite'(){ const txt=inviteText()+'\n'+ARTIFACT_URL; if(navigator.share){ try{ await navigator.share({text:txt}); return; }catch(e){ if(e&&e.name==='AbortError') return; } } try{ await navigator.clipboard.writeText(txt); toast('Invite copied. Paste it in a text.'); }catch(e){ toast('Copy failed. Long-press the message above to copy it.'); } if(matchMedia('(pointer:coarse)').matches) location.href='sms:?&body='+encodeURIComponent(txt); },
   'copy-invite'(){ const txt=inviteText()+'\n'+ARTIFACT_URL, box=document.getElementById('invite-msg'); const sel=()=>{ const r=document.createRange(); r.selectNodeContents(box); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast('Text selected. Copy it to send.'); };
     try{ navigator.clipboard.writeText(txt).then(()=>toast('Invite copied. Paste it in a text.'),sel); }catch(e){ sel(); } },
-  person(v){ S.plist=null; S.postsOf=null; S.sheet=null; S.sheetFull=false; renderSheet(); if(v===Social.me()){ S.personId=null; A.tab('me'); return; } S.personFrom=window.scrollY; S.personId=v; S.unfAsk=false; S.route='app'; window.scrollTo(0,0); render(); },
+  person(v){ S.backComments=S.sheet&&S.sheet.kind==='comments'?S.sheet.key:null; S.sheetBottom=false; S.plist=null; S.postsOf=null; S.sheet=null; S.sheetFull=false; renderSheet(); if(v===Social.me()){ S.personId=null; A.tab('me'); return; } S.personFrom=window.scrollY; S.personId=v; S.unfAsk=false; S.route='app'; window.scrollTo(0,0); render(); },
   'split-view'(v){ S.sheet={kind:'splitview',id:v}; renderSheet(); },
   'split-copy-ask'(){ S.sheet.confirm=true; renderSheet(); },
   'split-copy-no'(){ S.sheet.confirm=false; renderSheet(); },
@@ -3104,7 +3141,7 @@ const A = {
     S.sheet.sent=true; renderSheet(); popCue(); },
   'posts-open'(v){ const [uid]=v.split(':'); S.sheet=null; renderSheet(); S.postsFrom=window.scrollY; S.postsOf=uid; S.route='app'; render(); requestAnimationFrame(()=>{ const a=document.querySelector(`article[data-key="${CSS.escape(v)}"]`); window.scrollTo(0,a?a.getBoundingClientRect().top+window.scrollY-12:0); }); },
   'posts-back'(){ S.postsOf=null; render(); window.scrollTo(0,S.postsFrom||0); },
-  'person-back'(){ S.personId=null; render(); window.scrollTo(0,S.personFrom||0); },
+  'person-back'(){ S.personId=null; render(); window.scrollTo(0,S.personFrom||0); if(S.backComments){ const k=S.backComments; S.backComments=null; A['cm-open'](k); } },
   async 'pdf-export'(){ boatLoading(true,'Making your PDF…'); try{ const blob=await buildPdf(); const name=`boats-${(Pf.username||'workouts').replace(/[^a-z0-9._-]/gi,'')}-${dateKey()}.pdf`;
       const dl=window.claude&&claude.use?await claude.use('downloads').catch(()=>null):null;
       if(dl){ try{ await dl.save({filename:name,data:blob}); popCue(); }catch(e){ if(e&&e.code!=='declined') toast('Could not save the PDF here.'); } }
@@ -3130,6 +3167,8 @@ const A = {
   erase(){ S.confirmErase=true; render(); },
   'dm-del-ask'(v){ askConfirm('Delete this conversation?','It’s removed from your messages for good.','Delete',()=>A['dm-hide'](v)); },
   'msg-tap'(){},
+  'dm-photo'(){ S.photoFor='dm'; const inp=document.getElementById('photo-in'); inp.multiple=false; inp.click(); },
+  'dm-photo-view'(v,el){ const img=el.querySelector('img'); if(!img) return; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><img class="dmbig" src="${esc(img.src)}" alt="Photo" data-a="ask-no"></div>`; },
   'edit-save'(){ const t=document.getElementById('edit-in'), v=(t&&t.value||'').trim(), f=EDITFN; askEl.innerHTML=''; EDITFN=null; if(f) f(v); },
   'post-edit'(v){ const p=Social.myPosts().find(x=>x.id===v); if(!p) return; editBox('Edit caption',p.caption||'',300,async val=>{ await Social.savePosts(Social.myPosts().map(x=>x.id===v?{...x,caption:val.slice(0,300),edited:Date.now()}:x)); patchPost(Social.me()+':'+v); popCue(); savedNote('Caption updated'); }); },
   'cm-edit'(v){ const [,key,,at]=v.split('|'), t=+at, r=Social.myReacts(), c=(r.comments[key]||[]).find(x=>x.at===t); if(!c) return;
@@ -3182,7 +3221,7 @@ const A = {
   'np-crop'(){ npKeep(); const c=npCur(); S.np.prevCrop={...c.crop}; S.np.editing=true; render(); setTimeout(npDraw,0); },
   'np-crop-cancel'(){ const c=npCur(); c.crop=S.np.prevCrop||c.crop; S.np.editing=false; render(); },
   'np-crop-done'(){ const c=npCur(); c.photo=npRender(c.im,c.crop,1440); S.np.editing=false; render(); },
-  'np-pick'(){ const c=document.getElementById('np-cap'); if(c&&S.np) S.np.cap=c.value; S.np.replaceAt=null; S.photoFor='newpost'; const inp=document.getElementById('photo-in'); inp.multiple=true; inp.click(); },
+  'np-pick'(){ if(S.np&&(S.np.list||[]).length>=5){ toast('Max 5 photos per post.'); return; } const c=document.getElementById('np-cap'); if(c&&S.np) S.np.cap=c.value; S.np.replaceAt=null; S.photoFor='newpost'; const inp=document.getElementById('photo-in'); inp.multiple=true; inp.click(); },
   async 'np-share'(){ const np=S.np; if(!np||!(np.list||[]).length) return; if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit.'); return; } const cap=(document.getElementById('np-cap')?.value||'').trim().slice(0,300), id='u'+uid();
     boatLoading(true,'Posting…'); try{ const L=np.list, small=await shrinkData(L[0].photo,540,.78); const hq=await savePhotoHq(id,L[0].photo); const mthumbs=[];
       for(let k=1;k<L.length;k++){ await savePhotoHq(`${id}_${k}`,L[k].photo); mthumbs.push(await shrinkData(L[k].photo,240,.6)); }
@@ -3266,6 +3305,7 @@ function mentionSug(t){ const old=document.getElementById('msug'); const pos=t.s
 function onInput(e){
   const t=e.target;
   if(t.id==='cm2-in') S.cmDraft=t.value;
+  if(t.id==='dm-in'){ t.style.height='auto'; t.style.height=Math.min(t.scrollHeight,84)+'px'; }
   if(t.id==='np-cap'||t.id==='cm2-in'||(t.closest&&t.closest('.cmbox'))) mentionSug(t);
   if(t.id==='q'){ S.sheet.q=t.value; document.getElementById('plist').innerHTML=pickerList(); return; }
   if(t.id==='pl-q'){ S.plq=t.value; const h=document.createElement('div'); h.innerHTML=vPeopleList(); const n=h.querySelector('#plrows'), o=document.getElementById('plrows'); if(n&&o) o.replaceWith(n); return; }
@@ -3307,20 +3347,24 @@ function autoMark(i,j){
   if(!was) S.rest={until:Date.now()+Pf.rest*1000,total:Pf.rest};
   render(); maybeCelebrate();
 }
-document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.id==='cm2-in'){ e.preventDefault(); A['cm2-post'](); return; } if(e.key==='Enter'&&e.target.closest&&e.target.closest('.cmbox')){ e.preventDefault(); e.target.closest('.cmbox').querySelector('.cmpost').click(); } if(e.key==='Enter'&&e.target.id==='dm-in'){ e.preventDefault(); A['dm-send'](); } if(e.key==='Enter'&&e.target.id==='bw-today'){ e.preventDefault(); A['bw-today'](); } if(e.key==='Enter'&&e.target.dataset&&e.target.dataset.set) e.target.blur(); if(e.key==='Enter'&&e.target.id==='cl-new'){ e.preventDefault(); A['cl-add'](); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.id==='cm2-in'){ e.preventDefault(); A['cm2-post'](); return; } if(e.key==='Enter'&&e.target.closest&&e.target.closest('.cmbox')){ e.preventDefault(); e.target.closest('.cmbox').querySelector('.cmpost').click(); } if(e.key==='Enter'&&e.target.id==='dm-in'){ e.preventDefault(); A['dm-send'](); const t=document.getElementById('dm-in'); if(t) t.style.height=''; } if(e.key==='Enter'&&e.target.id==='bw-today'){ e.preventDefault(); A['bw-today'](); } if(e.key==='Enter'&&e.target.dataset&&e.target.dataset.set) e.target.blur(); if(e.key==='Enter'&&e.target.id==='cl-new'){ e.preventDefault(); A['cl-add'](); } });
 function onChange(e){
   const t=e.target;
   if(t.dataset.set){ const [i,j,k]=t.dataset.set.split('.'); if(k==='r') autoMark(+i,+j); return; }
   if(t.id==='pex'){ S.pex=t.value; render(); return; }
   if(t.id==='daypick'){ S.pick=t.value===dayKey(new Date())?null:t.value; render(); }
-  if(t.id==='photo-in'&&t.files.length&&S.photoFor==='newpost'&&S.np){ const room=5-(S.np.replaceAt!=null?4:(S.np.list||[]).length), files=[...t.files].slice(0,Math.max(1,room)); S.photoFor=null; t.value=''; t.multiple=false;
+  if(t.id==='photo-in'&&t.files.length&&S.photoFor==='newpost'&&S.np){ const room=S.np.replaceAt!=null?1:5-(S.np.list||[]).length, all=[...t.files], files=all.slice(0,Math.max(0,room)); if(all.length>files.length) toast(`Max 5 photos per post. The first ${files.length} were added.`); S.photoFor=null; t.value=''; t.multiple=false;
     boatLoading(true,'Loading pictures…'); (async()=>{ let small=0; for(const f of files){ try{ await npAdd(await readImage(f,{max:2400,q:.92,minSide:600})); }catch(e){ small++; } } boatLoading(false); if(small) toast(small===files.length?'Those photos are too low quality. Pick ones at least 600 pixels on the short side.':'Some photos were too low quality and were skipped.'); })(); return; }
   if((t.id==='photo-in'||t.id==='cam-in') && t.files[0]){
     const f=t.files[0], target=S.photoFor||'avatar'; S.photoFor=null; t.value='';
-    boatLoading(true,'Loading picture…'); readImage(f, target==='avatar'?{max:2400,q:.92,minSide:200}:{max:2400,q:.92,minSide:600}).then(url=>target==='avatar'||target==='newpost'?url:loadImg(url).then(im=>npRender(im,{x:.5,y:.5,z:1},1440))).finally(()=>boatLoading(false)).then(url=>{
+    boatLoading(true,'Loading picture…'); readImage(f, target==='dm'?{max:2400,q:.9}:target==='avatar'?{max:2400,q:.92,minSide:200}:{max:2400,q:.92,minSide:600}).then(url=>target==='avatar'||target==='newpost'||target==='dm'?url:loadImg(url).then(im=>npRender(im,{x:.5,y:.5,z:1},1440))).finally(()=>boatLoading(false)).then(url=>{
       if(target==='avatar'){ loadImg(url).then(im=>{ AVIMG=im; S.sheet={kind:'avcrop',x:.5,y:.5,z:1}; renderSheet(); setTimeout(avDraw,0); }); }
       else if(target==='active'){ if(Pf.active){ Pf.active.pump=url; Store.save(); render(); toast('Pump picture saved. It goes with this workout when you end it.'); } }
       else if(target==='newpost'){ if(S.np) npAdd(url); }
+      else if(target==='dm'){ (async()=>{ const u=S.chatWith; if(!u) return; const at=Date.now(), im=await loadImg(url), k=Math.min(1,1080/Math.max(im.width,im.height)), c=document.createElement('canvas'); c.width=Math.round(im.width*k); c.height=Math.round(im.height*k); c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+          let q=.85, big=c.toDataURL('image/jpeg',q); while(big.length>800000&&q>.5){ q-=.1; big=c.toDataURL('image/jpeg',q); } boatLoading(true,'Sending photo…');
+          try{ const d=Social.myDms(); let msg; if(window.boatsDmPhoto){ const id=await window.boatsDmPhoto.save(u,at,big); DMIMG[id]=big; msg={at,photo:id,text:''}; } else msg={at,pimg:await shrinkData(big,320,.6),text:''};
+            d.out[u]=[...(d.out[u]||[]),msg].slice(-60); Social.saveDms(d); const ch=document.getElementById('chat'); if(ch){ ch.innerHTML=chatMsgs(u); ch.scrollTop=ch.scrollHeight; } popCue(); }catch(e){ toast('Could not send that photo.'); } finally{ boatLoading(false); } })(); }
       else if(target==='finish'){ if(S.sheet&&S.sheet.kind==='finish'){ readTitle(); S.sheet.pump=url; renderSheet(); } }
       else { const w=Store.workouts.find(x=>x.id===target); if(w){ Store.updateWorkout(w,{pump:url}); render(); if(S.shareAfterPhoto===target){ S.shareAfterPhoto=null; A['wk-share'](target); } else toast('Pump picture added'); } }
     }).catch(e=>toast(e&&e.message==='small'?(target==='avatar'?'That picture is too small. Pick one that is at least 200 pixels wide.':'That photo is too low quality. Pick one that is at least 600 pixels on its shortest side.'):'That file is not an image Boats can read.'));

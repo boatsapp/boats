@@ -44,6 +44,13 @@ service cloud.firestore {
         && request.resource.data.n == get(/databases/$(database)/documents/meta/founders).data.next
         && getAfter(/databases/$(database)/documents/meta/founders).data.next == request.resource.data.n + 1;
     }
+    // Photos sent in DMs: only the sender and the recipient can see them.
+    match /dmphotos/{id} {
+      allow read: if signedIn() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
+      allow create: if signedIn() && request.resource.data.from == request.auth.uid && id == request.auth.uid + '_' + request.resource.data.to + '_' + string(request.resource.data.at)
+        && request.resource.data.d is string && request.resource.data.d.size() < 900000;
+      allow delete: if signedIn() && resource.data.from == request.auth.uid;
+    }
     // Usernames: first come, first served; only the holder can release one.
     match /usernames/{name} {
       allow get: if signedIn();

@@ -91,6 +91,11 @@ window.boatsSignOut = async () => { await signOut(auth); localStorage.clear(); l
 
 // Public: how many people are on BOATS (the next Founding Crew number minus one). Works before sign-in.
 window.boatsUserCount = async () => { try { const g = await getDoc(doc(fs, "meta", "founders")); return g.exists() ? Math.max(0, (g.data().next || 1) - 1) : 0; } catch(e) { return 0; } };
+// DM photos: dmphotos/{from}_{to}_{time}, readable only by the two people in the chat.
+window.boatsDmPhoto = {
+  save: async (to, at, dataUrl) => { const me = auth.currentUser.uid, id = `${me}_${to}_${at}`; await setDoc(doc(fs, "dmphotos", id), { from: me, to, d: dataUrl, at }); return id; },
+  get: async id => { const g = await getDoc(doc(fs, "dmphotos", id)); return g.exists() ? g.data().d : null; },
+};
 // ---- sign-in ----
 window.boatsSignIn = async kind => {
   const p = kind === "apple" ? new OAuthProvider("apple.com") : new GoogleAuthProvider();
