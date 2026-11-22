@@ -899,7 +899,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v120';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v121';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -2065,10 +2065,10 @@ function dmBody(m){ if(m.audio) return `<span class="vnote"><button class="vplay
 const DMIMG={}, DMASK={}; let VNA=null;
 function recLoop(){ const r=S.rec; if(!r) return; const t=(Date.now()-r.t0)/1000, el=document.getElementById('rect'), cv=document.getElementById('recwave');
   if(el) el.textContent=`0:${String(Math.floor(t)).padStart(2,'0')} / 0:30`;
-  const d=new Uint8Array(r.an.frequencyBinCount); r.an.getByteTimeDomainData(d); let pk=0; for(const v of d) pk=Math.max(pk,Math.abs(v-128)/128); r.peaks.push(pk); r.lvl=(r.lvl||[]).concat(pk).slice(-40);
+  let pk=0; if(r.an){ const d=new Uint8Array(r.an.frequencyBinCount); r.an.getByteTimeDomainData(d); for(const v of d) pk=Math.max(pk,Math.abs(v-128)/128); } r.peaks.push(pk); r.lvl=(r.lvl||[]).concat(pk).slice(-40);
   if(cv){ const x=cv.getContext('2d'), W=cv.width, H=cv.height, n=40, bw=W/n; x.clearRect(0,0,W,H); x.fillStyle='#fff'; r.lvl.forEach((v,k)=>{ const h=Math.max(4,Math.min(H,v*H*2.2)); x.fillRect(k*bw+2,(H-h)/2,bw-4,h); }); }
-  if(t>=30){ A['rec-stop'](); return; } requestAnimationFrame(recLoop); }
-async function recDone(){ const r=S.rec; S.rec=null; try{ r.stream.getTracks().forEach(t=>t.stop()); r.actx.close(); }catch(e){} if(r.cancel||!r.chunks.length){ render(); return; }
+  if(t>=30){ A['rec-stop'](); return; } if(r.mr.state==='inactive') return; requestAnimationFrame(recLoop); }
+async function recDone(){ const r=S.rec; S.rec=null; try{ r.stream.getTracks().forEach(t=>t.stop()); r.src&&r.src.disconnect(); }catch(e){} if(!r.cancel&&!r.user&&Date.now()-r.t0<1500){ render(); toast('The microphone stopped right away. Close other apps using it and try again.'); return; } if(r.cancel||!r.chunks.length){ render(); return; }
   const dur=Math.min(30,Math.max(1,Math.round((Date.now()-r.t0)/1000))), blob=new Blob(r.chunks,{type:r.chunks[0].type||'audio/mp4'});
   const url=await new Promise(res=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.readAsDataURL(blob); }); const n=24, step=Math.max(1,Math.floor(r.peaks.length/n)), peaks=Array.from({length:n},(_,k)=>Math.round(Math.min(1,Math.max(...r.peaks.slice(k*step,(k+1)*step),0)*2.2)*100)/100);
   const u=S.chatWith, at=Date.now(); render(); if(!u) return; boatLoading(true,'Sending voice note…');
@@ -3319,15 +3319,20 @@ const A = {
   'likers-open'(v){ S.sheet={kind:'likers',key:v}; renderSheet(); },
   'dm-photo'(){ S.photoFor='dm'; const inp=document.getElementById('photo-in'); inp.multiple=false; inp.click(); },
   'dm-cam'(){ S.photoFor='dm'; document.getElementById('cam-in').click(); },
-  async 'rec-start'(){ if(S.rec||S.recBusy) return; S.recBusy=true; let stream; try{ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder) throw Object.assign(new Error('x'),{name:'NoSupport'}); stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}); }catch(e){ S.recBusy=false; toast(e&&e.name==='NoSupport'?'Voice notes need a newer iOS or browser.':e&&e.name==='NotAllowedError'?'Microphone is blocked. Allow it for BOATS in Settings, then try again.':'Can’t use the microphone right now.'); return; }
+  async 'rec-start'(){ if(S.rec||S.recBusy) return; S.recBusy=true; const actx=ac(); let stream;
+    try{ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder) throw Object.assign(new Error('x'),{name:'NoSupport'}); stream=await navigator.mediaDevices.getUserMedia({audio:true}); }
+    catch(e){ S.recBusy=false; toast(e&&e.name==='NoSupport'?'Voice notes need a newer iOS or browser.':e&&e.name==='NotAllowedError'?'Microphone is blocked. Allow it for BOATS in Settings, then try again.':'Can’t use the microphone right now.'); return; }
     try{
-    const mime=['audio/mp4','audio/webm;codecs=opus','audio/webm'].find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m))||'';
-    let mr0; try{ mr0=new MediaRecorder(stream,mime?{mimeType:mime,audioBitsPerSecond:48000}:undefined); }catch(_){ mr0=new MediaRecorder(stream); }
-    const mr=mr0, chunks=[], actx=new (window.AudioContext||window.webkitAudioContext)(), src=actx.createMediaStreamSource(stream), an=actx.createAnalyser(); an.fftSize=256; src.connect(an);
-    S.rec={mr,chunks,stream,actx,an,t0:Date.now(),peaks:[],cancel:false}; mr.ondataavailable=e=>{ if(e.data&&e.data.size) chunks.push(e.data); }; mr.onstop=()=>recDone(); mr.start(250);
-    try{ actx.resume&&actx.resume(); }catch(_){}
-    const c=document.getElementById('chat'); if(c) S.rec.keep=c.scrollTop; render(); recLoop(); }catch(e){ try{ stream.getTracks().forEach(t=>t.stop()); }catch(_){} S.rec=null; render(); toast('Could not start recording.'); } finally{ S.recBusy=false; } },
-  'rec-stop'(){ const r=S.rec; if(r&&r.mr.state!=='inactive') r.mr.stop(); },
+      const mime=['audio/mp4','audio/webm;codecs=opus','audio/webm'].find(m=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m))||'';
+      let mr; try{ mr=new MediaRecorder(stream,mime?{mimeType:mime}:undefined); }catch(_){ mr=new MediaRecorder(stream); }
+      const chunks=[]; let src=null, an=null; try{ if(actx){ if(actx.state!=='running') actx.resume().catch(()=>{}); src=actx.createMediaStreamSource(stream); an=actx.createAnalyser(); an.fftSize=256; src.connect(an); } }catch(_){ src=null; an=null; }
+      S.rec={mr,chunks,stream,src,an,t0:Date.now(),peaks:[],cancel:false};
+      mr.ondataavailable=e=>{ if(e.data&&e.data.size) chunks.push(e.data); }; mr.onstop=()=>recDone(); mr.onerror=e=>{ toast('Recording error: '+((e&&e.error&&e.error.name)||'unknown')); };
+      try{ mr.start(250); }catch(_){ mr.start(); }
+      const c=document.getElementById('chat'); if(c) S.rec.keep=c.scrollTop; render(); recLoop(); }
+    catch(e){ try{ stream.getTracks().forEach(t=>t.stop()); }catch(_){} S.rec=null; render(); toast('Could not start recording ('+((e&&e.name)||'error')+').'); }
+    finally{ S.recBusy=false; } },
+  'rec-stop'(){ const r=S.rec; if(r){ r.user=true; if(r.mr.state!=='inactive') r.mr.stop(); } },
   'rec-cancel'(){ const r=S.rec; if(!r) return; r.cancel=true; if(r.mr.state!=='inactive') r.mr.stop(); },
   async 'vn-play'(v,el){ const b=el.closest('.vnote'); if(VNA&&VNA.id===v){ VNA.a.paused?VNA.a.play():VNA.a.pause(); return; } if(VNA){ VNA.a.pause(); VNA=null; }
     let url=DMIMG[v]; if(!url&&window.boatsDmPhoto){ try{ url=await window.boatsDmPhoto.get(v); DMIMG[v]=url; }catch(e){} } if(!url){ toast('Could not play that voice note.'); return; }
