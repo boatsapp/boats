@@ -149,6 +149,42 @@ svg.i.xs{width:14px;height:14px}
 .cmbox .input{height:42px;font-size:16px}
 .cmpost{font-weight:700;color:var(--accent)}
 .li.dimday{opacity:.45}
+.sheet.bottom:has(#ovc){height:92vh;max-height:92vh}
+.idrow .field{flex:1;min-width:0}
+.fabpost{transition:opacity .25s ease,transform .38s cubic-bezier(.2,.8,.2,1)}
+.fabpost.fadeaway{opacity:0;pointer-events:none;transform:scale(.85)}
+.fbk.insess{bottom:calc(var(--tab-h) + 14px + env(safe-area-inset-bottom,0px))}
+.fincard{padding:14px}
+.finpost{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.finbtn{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:14px;border-radius:18px;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-align:left}
+.finbtn .fi{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2,#2a2a28)}
+.finbtn b{display:block;font-size:16px}.finbtn small{display:block;color:var(--muted);font-size:12px;line-height:1.3;margin-top:2px}
+.finbtn.pub{background:linear-gradient(135deg,#1E7FC0,#3FB0E8);border-color:transparent;color:#fff}.finbtn.pub .fi{background:rgba(255,255,255,.2)}.finbtn.pub small{color:rgba(255,255,255,.85)}
+/* messages, Instagram-style */
+.chatwrap .chatpage{position:relative}
+.chathead{position:absolute;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 12px;background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 92%,transparent) 0%,color-mix(in srgb,var(--bg) 70%,transparent) 70%,transparent);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3)}
+.chback{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 70%,transparent)}
+.chathead .whobtn .av{width:44px;height:44px}
+.chwho{display:flex;flex-direction:column;align-items:flex-start;line-height:1.2}.chwho b{font-size:17px;display:flex;align-items:center}.chwho small{font-size:13px;color:var(--muted)}
+.chatwrap .chat{padding-top:calc(76px + env(safe-area-inset-top,0px))!important;gap:4px!important}
+.dsep{align-self:center;font-size:12px;letter-spacing:.04em;color:var(--muted);margin:14px 0 8px}
+.bub{max-width:76%!important;padding:10px 15px!important;border-radius:22px!important;font-size:17px!important;line-height:1.3!important;border:0!important;background:#262626!important;color:#fff}
+.bub.me{background:linear-gradient(135deg,#1E7FC0,#3FB0E8)!important;color:#fff}
+.bub.hasphoto{background:transparent!important;padding:0!important}
+.bub.hasphoto .dmphoto img{border-radius:18px;width:220px}
+.bub.hasphoto span:not(.dmphoto){background:#262626;border-radius:18px;margin-top:4px;padding:8px 12px!important}
+.bub.me.hasphoto span:not(.dmphoto){background:linear-gradient(135deg,#1E7FC0,#3FB0E8)}
+.brow{align-items:flex-end;gap:8px}
+.bav{width:28px;flex:none;align-self:flex-end}.bav .av{width:28px;height:28px;font-size:11px}
+.bub.liked{margin-bottom:14px!important}
+.blike{bottom:-14px!important;left:10px;right:auto!important;width:auto!important;height:22px!important;padding:0 6px;border-radius:999px!important;background:#262626!important;border:2px solid var(--bg)!important;font-size:12px;line-height:18px}
+.brow.me .blike{left:auto;right:10px!important}
+.chatbar{padding:8px 0 max(10px,env(safe-area-inset-bottom,0px))}
+.dmbox{flex:1;display:flex;align-items:flex-end;gap:10px;padding:6px 14px 6px 6px;border-radius:26px;background:#262626;border:0}
+.dmcam{flex:none;width:40px;height:40px;border-radius:50%;border:0;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#1E7FC0,#3FB0E8)}
+.dmcam svg{width:20px;height:20px}
+.dmbox textarea#dm-in{flex:1;min-height:40px;max-height:84px;border:0;background:transparent;color:var(--fg);font:inherit;font-size:17px;line-height:1.35;padding:9px 0;resize:none;outline:none}
+:root[data-theme="light"] .bub:not(.me){background:#EFEFEF!important;color:#111}:root[data-theme="light"] .dmbox{background:#EFEFEF}:root[data-theme="light"] .blike{background:#EFEFEF!important}
 .bseen{align-self:flex-end;font-size:11px;color:var(--muted);margin:-2px 4px 0 0}
 .bub.hasphoto{padding:4px;overflow:hidden}
 .dmphoto{display:block;line-height:0;cursor:pointer}
@@ -170,7 +206,7 @@ svg.i.xs{width:14px;height:14px}
 .sldots i{width:6px;height:6px;border-radius:50%;background:var(--faint);opacity:.6}
 .sldots i.on{background:var(--accent);opacity:1}
 .phwrap .ovwrap:has(.slides){overflow:visible}
-.npthumbs{display:flex;gap:8px;touch-action:none;flex-wrap:nowrap;overflow:visible}
+.npthumbs{display:flex;gap:8px;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;flex-wrap:nowrap;overflow:visible}
 .npthumbs button{transition:transform .18s ease;width:56px;height:70px;border-radius:10px;overflow:hidden;border:2px solid transparent;padding:0;background:var(--surface);flex:none}
 .npthumbs button.on{border-color:var(--accent)}
 .npthumbs button.dragging{transition:none;z-index:2;box-shadow:0 10px 24px rgba(0,0,0,.45)}
@@ -209,9 +245,9 @@ svg.i.xs{width:14px;height:14px}
 .cm2emoji{display:flex;justify-content:space-between}.cm2emoji button{border:0;background:none;font-size:24px;padding:2px}
 .cm2foot .av{width:36px;height:36px;font-size:14px}
 .avcropwrap{position:relative;width:min(78vw,320px);aspect-ratio:1}
-#avcv{width:100%;height:100%;border-radius:18px;background:#000;touch-action:none;cursor:grab;display:block}
+#avcv{width:100%;height:100%;border-radius:50%;background:transparent;touch-action:none;cursor:grab;display:block;box-sizing:border-box;border:3px solid #fff;box-shadow:0 10px 30px rgba(0,0,0,.35)}
 .avring{position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,.55);outline:2px solid #fff;pointer-events:none}
-.avcropwrap{overflow:hidden;border-radius:18px}
+.avcropwrap{padding:4px}
 .postnudge{margin-top:10px;display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(180deg,var(--surface),color-mix(in srgb,var(--surface) 80%,var(--bg)));color:var(--fg);text-align:left;box-shadow:0 10px 26px -14px rgba(0,0,0,.5)}
 .postnudge .av{width:40px;height:40px}
 .pn-t{flex:1;min-width:0;display:flex;flex-direction:column}.pn-t b{font-size:15px}.pn-t span{font-size:13px;color:var(--muted)}
@@ -231,9 +267,10 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .post .cap{margin-top:2px!important}
 .tabbar,.fbk,.fabpost{transition:transform .38s cubic-bezier(.2,.8,.2,1),opacity .3s ease}
 .tabbar nav{transition:transform .35s cubic-bezier(.2,.8,.2,1),height .35s cubic-bezier(.2,.8,.2,1),max-width .35s cubic-bezier(.2,.8,.2,1)}
-body.barmini .tabbar nav{height:52px;max-width:330px;transform:translateY(4px)}
-body.barmini .tabbar nav svg{transform:scale(.88)}
-body.barmini .tabbar .midic{transform:scale(.88)}
+body.barmini .tabbar nav{height:56px;max-width:376px}
+.tabbar nav svg,.tabbar .midic{transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+body.barmini .tabbar nav svg{transform:scale(.94)}
+body.barmini .tabbar .midic{transform:scale(.94)}
 .fabpost.limit{width:auto;height:40px;padding:0 14px 0 10px;border-radius:999px;gap:6px;display:flex;align-items:center;background:var(--surface);color:var(--muted);border:1px solid var(--line);box-shadow:none;font-size:13px;font-weight:600}
 .fabpost.limit svg{width:16px;height:16px;opacity:.5}
 .streakpill.solid{background:var(--streak);border-color:var(--streak);color:#fff;font-weight:800;height:28px;padding:0 11px;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
@@ -823,7 +860,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v112';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v113';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1372,12 +1409,14 @@ function townMsg(){ const t=String(dv('town')||'').trim(); if(!t) return '<span 
 function showTownSug(){ const i=document.getElementById('f-town'), box=document.getElementById('town-sug'); if(!i||!box) return; const m=placeValid(i.value)?[]:placeMatches(i.value);
   box.innerHTML=m.map(n=>`<button type="button" role="option" data-a="town-pick" data-v="${esc(n)}">${ic('pin','xs')}${esc(n)}</button>`).join(''); box.hidden=!m.length; i.setAttribute('aria-expanded',String(!!m.length)); }
 function privacyNote(){ return `<div class="card small" style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px">${ic('lock','sm')}<span>Everything here stays <b>private</b> until you make it public.</span></div>`; }
-function idFields(){
-  return `<div class="rowx" style="gap:16px">
+const BIOFIELD=()=>`<div class="field"><label for="f-bio">About the Captain</label><textarea class="input" id="f-bio" maxlength="130" rows="3" placeholder="In fewer than 3 lines" data-f="bio" style="height:auto;padding:12px 14px;resize:none">${esc(dv('bio'))}</textarea></div>`;
+function idFields(withBio){
+  return `<div class="rowx idrow" style="gap:16px;align-items:flex-start">
       <button data-a="photo" aria-label="Choose profile picture" style="position:relative">${avatar(Pf.username||'?',Pf.photo,null,true)}<span class="ico" style="position:absolute;right:-4px;bottom:-4px;width:30px;height:30px;border-radius:50%;border:3px solid var(--bg)">${ic('camera','xs')}</span></button>
-      <div class="field" style="flex:1;min-width:0"><label for="f-user">Create username</label><input class="input" id="f-user" maxlength="17" placeholder="e.g. jack.sparrow" autocapitalize="off" autocorrect="off" spellcheck="false" value="${esc(dv('username'))}" data-f="username" aria-describedby="u-msg" ${nameLocked()?'readonly':''}><div id="u-msg" class="small" aria-live="polite">${userMsg()}</div></div>
+      <div class="field" style="flex:1;min-width:0"><label for="f-user">Create username</label><input class="input" id="f-user" maxlength="17" placeholder="e.g. jack.sparrow" autocapitalize="off" autocorrect="off" spellcheck="false" value="${esc(dv('username'))}" data-f="username" aria-describedby="u-msg" ${nameLocked()?'readonly':''}><div id="u-msg" class="small" aria-live="polite">${userMsg()}</div>
+        <label for="f-name" style="margin-top:10px">Your name</label><input class="input" id="f-name" maxlength="40" placeholder="e.g. Jack Sparrow" autocomplete="off" autocorrect="off" value="${esc(dv('realName'))}" data-f="realName"></div>
     </div>
-    <div class="field"><label for="f-name">Your name</label><input class="input" id="f-name" maxlength="40" placeholder="e.g. Jack Sparrow" autocomplete="off" autocorrect="off" value="${esc(dv('realName'))}" data-f="realName"><span class="muted small">Shown small under your username so friends can find you.</span></div>
+    ${withBio?BIOFIELD():''}
     <div class="field"><label for="f-town">Town</label><div class="inwrap townwrap"><input class="input" id="f-town" maxlength="40" placeholder="Start typing" autocomplete="off" value="${esc(dv('town'))}" data-f="town" aria-describedby="t-msg" role="combobox" aria-autocomplete="list" aria-controls="town-sug" aria-expanded="false"><div class="sug" id="town-sug" role="listbox" hidden></div></div><div id="t-msg" class="small" aria-live="polite">${townMsg()}</div></div>`;
 }
 function goalCards(){
@@ -1521,7 +1560,7 @@ function vToday(){
         ${plan.length?'':`<div class="muted small">${type==='rest'?'Recovery day. You can still log a session.':'No exercises yet.'} <button class="link" data-a="edit-day" data-v="${dk}">Add exercises</button></div>`}
         ${dk!==tk?`<button class="link" style="align-self:center" data-a="pick" data-v="${tk}">Back to today's plan (${esc(workoutLabel(tk))})</button>`:''}`}
     </section>
-    ${nameAsk()}${realNameAsk()}${sexAsk()}${weighCard()}
+    ${nameAsk()}${sexAsk()}${weighCard()}
     ${vProgramCard()}
     ${vChecklist()}
     ${a?'':`<div class="beginbar"><button class="btn primary" data-a="start-at" data-v="0">${ic('play','sm')}${plan.length?'Begin workout':'Begin empty workout'}</button></div>`}
@@ -1960,25 +1999,27 @@ const DMIMG={}, DMASK={};
 function dmImgScan(){ if(!window.boatsDmPhoto) return; document.querySelectorAll('img[data-dmimg]').forEach(img=>{ const id=img.dataset.dmimg; if(DMIMG[id]){ img.src=DMIMG[id]; img.removeAttribute('data-dmimg'); return; } if(DMASK[id]) return; DMASK[id]=1;
   window.boatsDmPhoto.get(id).then(u=>{ if(!u) return; DMIMG[id]=u; document.querySelectorAll(`img[data-dmimg="${CSS.escape(id)}"]`).forEach(x=>{ x.src=u; x.removeAttribute('data-dmimg'); }); }).catch(()=>{}); }); }
 function chatMsgs(u){ const msgs=chatWith(u); if(!msgs.length) return `<div class="muted small" style="text-align:center;margin:30px 0">Say hi to ${esc(Social.nameOf(u))}.</div>`;
-  const tm=t=>new Date(t).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}); let out='', gStart=null;
+  const tm=t=>new Date(t).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}), dsep=t=>{ const d=new Date(t), today=new Date(); return (sameDay(t,Date.now())?'TODAY':d.toLocaleDateString(undefined,{month:'short',day:'numeric'}).toUpperCase())+' AT '+tm(t).toUpperCase(); };
+  let out='', gStart=null;
   msgs.forEach((m,i)=>{ const prev=msgs[i-1], next=msgs[i+1];
+    if(!prev||m.at-prev.at>60*60000) out+=`<div class="dsep">${dsep(m.at)}</div>`;
     if(m.me&&!(prev&&prev.me&&m.at-prev.at<=5*60000)) gStart=m.at;
-    const editing=m.me&&S.msgEdit===gStart, liked=m.lkMe||m.lkThem;
-    out+=`<div class="brow ${m.me?'me':''}">${editing?`<button class="bdel" data-a="msg-del" data-v="${m.at}" aria-label="Delete this message">${ic('x','xs')}</button>`:''}<div class="bub ${m.me?'me':''} ${liked?'liked':''} ${m.photo||m.pimg?'hasphoto':''}" data-a="msg-tap" data-dbl="msg-like" data-v="${m.me?1:0}|${m.at}">${dmBody(m)}${liked?`<span class="blike" aria-label="Liked">${ic('heart','xs')}</span>`:''}</div><span class="bt">${tm(m.at)}</span></div>`;
+    const editing=m.me&&S.msgEdit===gStart, liked=m.lkMe||m.lkThem, lastOfRun=!next||next.me!==m.me||next.at-m.at>60*60000;
+    out+=`<div class="brow ${m.me?'me':''}">${!m.me?`<span class="bav">${lastOfRun?avatar(Social.nameOf(u),Social.photoOf(u),null):''}</span>`:''}${editing?`<button class="bdel" data-a="msg-del" data-v="${m.at}" aria-label="Delete this message">${ic('x','xs')}</button>`:''}<div class="bub ${m.me?'me':''} ${liked?'liked':''} ${m.photo||m.pimg?'hasphoto':''}" data-a="msg-tap" data-dbl="msg-like" data-v="${m.me?1:0}|${m.at}">${dmBody(m)}${liked?`<span class="blike" aria-label="Liked">❤️</span>`:''}</div><span class="bt">${tm(m.at)}</span></div>`;
     if(m.me&&!next&&seenBy(u)>=m.at) out+=`<div class="bseen">Seen</div>`;
     if(m.me&&!(next&&next.me&&next.at-m.at<=5*60000)) out+=`<div class="bfoot"><button class="link" data-a="msg-edit" data-v="${gStart}">${editing?'Done':'Delete'}</button></div>`; });
   return out; }
 function vChat(){ const u=S.chatWith, msgs=chatWith(u), req=dmThreads().find(t=>t.u===u&&t.req);
   return `<div class="chatwrap"><div class="screen actpage chatpage">
-    <div class="rowx" style="gap:8px;margin:-4px 0 -4px -8px"><button class="iconbtn" data-a="dm-back" aria-label="Back">${ic('back')}</button><button class="whobtn" data-a="person" data-v="${esc(u)}">${avatar(Social.nameOf(u),Social.photoOf(u),null)}<b>${esc(Social.nameOf(u))}</b></button><span class="spacer"></span>${Pf.friends.includes(u)?`<button class="fpill on" data-a="follow-tog" data-v="${esc(u)}" aria-label="Following ${esc(Social.nameOf(u))}, tap to unfollow">${ic('check','xs')}Following</button>`:`<button class="fpill" data-a="follow-tog" data-v="${esc(u)}">${ic('plus','xs')}Follow</button>`}</div>
+    <div class="chathead"><button class="iconbtn chback" data-a="dm-back" aria-label="Back">${ic('back')}</button><button class="whobtn" data-a="person" data-v="${esc(u)}">${avatar(Social.nameOf(u),Social.photoOf(u),null)}<span class="chwho"><b>${esc(Social.nameOf(u))}${fbadge(u)}</b><small>${esc(((Social.people||{})[u]||{}).name||'')}</small></span></button><span class="spacer"></span>${Pf.friends.includes(u)?`<button class="fpill on" data-a="follow-tog" data-v="${esc(u)}" aria-label="Following ${esc(Social.nameOf(u))}, tap to unfollow">${ic('check','xs')}Following</button>`:`<button class="fpill" data-a="follow-tog" data-v="${esc(u)}">${ic('plus','xs')}Follow</button>`}</div>
     <div class="chat" id="chat">${chatMsgs(u)}</div>
     ${req?`<div class="card stack" style="gap:8px"><span class="small"><b>${esc(Social.nameOf(u))}</b> wants to message you.</span><div class="rowx" style="gap:8px"><button class="btn sm" style="flex:1" data-a="dm-hide" data-v="${esc(u)}">Delete</button><button class="btn sm fbbtn" style="flex:1" data-a="dm-accept" data-v="${esc(u)}">Accept</button></div></div>`
-      :`<div class="chatbar"><button class="iconbtn dmcam" data-a="dm-photo" aria-label="Send a photo">${ic('camera')}</button><textarea class="input" id="dm-in" maxlength="200" rows="1" placeholder="Message…" autocomplete="off" enterkeyhint="send"></textarea><button class="btn primary" style="width:auto;flex:none" data-a="dm-send">${ic('send','sm')}</button></div>`}
+      :`<div class="chatbar"><div class="dmbox"><button class="dmcam" data-a="dm-photo" aria-label="Send a photo">${ic('camera')}</button><textarea id="dm-in" maxlength="200" rows="1" placeholder="Message…" autocomplete="off" enterkeyhint="send"></textarea></div></div>`}
   </div></div>`; }
 function npKeep(){ const c=document.getElementById('np-cap'); if(c&&S.np) S.np.cap=c.value; }
 function npCur(){ const np=S.np; return np&&np.list&&np.list[np.i||0]; }
 function vNewPost(){ const np=S.np||{}, list=np.list||[], cur=npCur(), cr=cur&&cur.crop;
-  const photo=!list.length?`<button class="btn npick" data-a="np-pick">${ic('grid','sm')}Choose photos<span class="muted small" style="font-weight:500">Up to 5, from your library</span></button>`
+  const photo=!list.length?`<button class="btn npick" data-a="np-pick">${ic('grid','sm')}Add photos<span class="muted small" style="font-weight:500">Camera or library · up to 5</span></button>`
     :np.editing?`<div class="stack" style="gap:12px"><canvas class="cropcv" id="cropcv" width="800" height="1000" aria-label="Drag to move the photo"></canvas>
         <div class="rowx" style="gap:10px">${ic('search','sm')}<input type="range" id="np-zoom" min="1" max="3" step="0.01" value="${cr.z}" aria-label="Zoom" style="flex:1"></div>
         <span class="muted small" style="text-align:center">Drag to move · slide to zoom</span>
@@ -2237,8 +2278,7 @@ function vSettings(){
     <div class="rowx"><div class="stack" style="gap:4px"><span class="eyebrow">Profile</span><h1 class="h1">Settings</h1></div><span class="spacer"></span>${window.boatsAdmin?`<button class="iconbtn admbtn" data-a="admin" aria-label="Data center">${ic('chart')}</button>`:''}</div>
     ${isStandalone()?'':`<button class="btn primary instbtn" data-a="install">${ic('dl','sm')}Download App to Phone</button>`}
     ${privacyNote()}
-    ${idFields()}
-    <div class="field"><label for="f-bio">About the Captain</label><textarea class="input" id="f-bio" maxlength="130" rows="3" placeholder="In fewer than 3 lines" data-f="bio" style="height:auto;padding:12px 14px;resize:none">${esc(dv('bio'))}</textarea></div>
+    ${idFields(true)}
     <div class="field"><label for="f-link">Link</label><input class="input" id="f-link" type="url" inputmode="url" maxlength="120" placeholder="yourwebsite.com" autocapitalize="off" autocorrect="off" spellcheck="false" value="${esc(dv('link'))}" data-f="link"><span class="muted small">One link, shown on your profile.</span></div>
     <button class="btn primary" id="idsave" data-a="id-save" ${draftDirty()?'':'disabled'}>Save profile</button>
     <div class="stack" style="gap:8px"><span class="flabel">What others can see</span>
@@ -2362,7 +2402,8 @@ function pickerList(){
 function stepper(f,val,mini){ return `<div class="stepper ${mini?'mini':''}"><button data-a="dstep" data-f="${f}" data-d="-1">−</button><input class="input num" id="d-${f}" inputmode="numeric" value="${val}" data-d="${f}"><button data-a="dstep" data-f="${f}" data-d="1">+</button></div>`; }
 function vSheet(){
   const sh=S.sheet; if(!sh) return '';
-  const wrap=(head,body)=>`<div class="scrim ${S.sheetFull?'fullscrim':''} ${S.sheetBottom?'botscrim':''}" data-a="close-sheet"><div class="sheet ${S.sheetFull?'full':''} ${S.sheetBottom?'bottom':''}" data-stop><div class="sheet-head"><span class="grab"></span>${head}${head.includes('data-a="close-sheet"')?'':`<button class="iconbtn sheetx" data-a="close-sheet" aria-label="Close">${ic('x')}</button>`}</div><div class="sheet-body" id="sbody">${body}</div></div></div>`;
+  const BOT=sh.kind==='comments'||sh.kind==='finish';
+  const wrap=(head,body)=>`<div class="scrim ${S.sheetFull?'fullscrim':''} ${BOT?'botscrim':''}" data-a="close-sheet"><div class="sheet ${S.sheetFull?'full':''} ${BOT?'bottom':''}" data-stop><div class="sheet-head"><span class="grab"></span>${head}${head.includes('data-a="close-sheet"')?'':`<button class="iconbtn sheetx" data-a="close-sheet" aria-label="Close">${ic('x')}</button>`}</div><div class="sheet-body" id="sbody">${body}</div></div></div>`;
   if(sh.kind==='calday'){ const ws=Store.workouts.filter(w=>dateKey(new Date(w.startedAt))===sh.day).sort((a,b)=>a.startedAt-b.startedAt), d=new Date(ws[0]?ws[0].startedAt:Date.now());
     return wrap(`<span class="h2">${d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})}</span>`,`<div class="list">${ws.map(w=>`<button class="li" data-a="wk-open" data-v="${esc(w.id)}"><span class="ico">${ic(typeIcon(w.type))}</span><span class="grow"><span class="t">${esc(w.title||dayWord(w.type))}</span><br><span class="s">${new Date(w.startedAt).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})} · ${fmtDur(durOf(w))}${countsForStreak(w)?' · streak credit':''}</span></span>${ic('right','sm')}</button>`).join('')}</div>`); }
   if(sh.kind==='comments'){ const key=sh.key, [owner]=key.split(':'), all=Social.comments(key), top=all.filter(c=>!c.re).sort((a,b)=>Social.likes(ckOf(key,b))-Social.likes(ckOf(key,a))||a.at-b.at), kids=c=>all.filter(x=>x.re===c.at).sort((a,b)=>a.at-b.at), me=Social.me();
@@ -2381,7 +2422,7 @@ function vSheet(){
          <div class="rowx" style="gap:10px">${avatar(Pf.username||'?',Pf.photo,null)}<div class="cmfield mfield" style="flex:1"><input class="input" id="cm2-in" maxlength="150" placeholder="Add a comment for ${esc(Social.nameOf(owner))}" value="${esc(S.cmDraft||'')}" enterkeyhint="send" autocomplete="off"><button class="cmpost" data-a="cm2-post">Post</button></div></div>
        </div>`); }
   if(sh.kind==='avcrop'){ return wrap(`<span class="h2">Profile picture</span>`,`<div class="stack" style="gap:14px;align-items:center">
-      <div class="avcropwrap"><canvas id="avcv" width="600" height="600" aria-label="Drag to move your picture"></canvas><div class="avring" aria-hidden="true"></div></div>
+      <div class="avcropwrap"><canvas id="avcv" width="600" height="600" aria-label="Drag to move your picture"></canvas></div>
       <div class="rowx" style="gap:10px;width:100%">${ic('search','sm')}<input type="range" id="av-zoom" min="1" max="3" step="0.01" value="${sh.z}" aria-label="Zoom" style="flex:1"></div>
       <span class="muted small">Drag to move · slide to zoom. The circle is how it shows on your profile.</span>
       <div class="rowx" style="gap:8px;width:100%"><button class="btn" style="flex:1" data-a="close-sheet">Cancel</button><button class="btn primary" style="flex:1" data-a="av-done">Use photo</button></div></div>`); }
@@ -2416,7 +2457,7 @@ function vSheet(){
     const a=Pf.active, marked=a.items.flatMap(it=>it.sets.filter(s=>s.st));
     const v=a.items.reduce((t,it)=>it.cardio?t:t+it.sets.filter(s=>s.st).reduce((x,s)=>x+num(s.w)*num(s.r),0),0);
     const sc=streakCheck(a,elapsed(a)), lv=(LEVELS[Pf.level]||'Beginner')+' minimum';
-    return wrap(`<div class="rowx"><span class="h2" style="flex:1">End workout</span><button class="sbadge ${sc.ok?'on':''}" data-a="streak-info" aria-label="${sc.ok?'Counts toward your streak':'Does not count toward your streak yet'}">${ic('flame','sm')}${sc.ok?'Counts':'Not yet'}</button><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>`,
+    return wrap(`<div class="rowx"><span class="h2" style="flex:1">End workout</span><button class="sbadge ${sc.ok?'on':''}" data-a="streak-info" aria-label="${sc.ok?'Counts toward your streak':'Does not count toward your streak yet'}">${ic('flame','sm')}${sc.ok?'Counts':'Not yet'}</button></div>`,
       `<div class="small ${sc.ok?'':'muted'}" style="margin-top:-6px">${sc.ok?`${ic('check','xs')} Counts toward your Voyage Streak.`:sc.cardioOnly?'Log a set or cardio to count toward your streak.':`${sc.missing.join(' · ')} needed for streak credit.`} <span class="muted">${sc.cardioOnly?'':`${lv} · ${sc.R.min} min + ${sc.R.sets} working sets across 2 exercises, or ${sc.R.sets+1} in one.`}</span></div>
       <div class="stats"><div class="stat"><div class="k">Time</div><div class="v num">${fmtDur(elapsed(a))}</div></div><div class="stat"><div class="k">Sets</div><div class="v num">${marked.filter((_,k)=>true).length}</div></div><div class="stat"><div class="k">Volume</div><div class="v num" style="white-space:nowrap">${fmtBig(v)}</div></div></div>
         <div class="card stack" style="gap:6px"><div class="rowx"><span class="h2" style="font-size:16px">Overview</span><span class="spacer"></span><span class="tag accent num">~${workoutKcal(a,Date.now())} kcal</span></div>
@@ -2424,15 +2465,15 @@ function vSheet(){
           <span class="muted small">Calories are an estimate from your body weight, lifting time and cardio settings.</span></div>
         ${sh.pump?`<div class="stack" style="gap:10px"><div class="rowx"><span class="h2" style="font-size:18px;flex:1">Share workout</span><button class="link small" data-a="pump-clear">Remove picture</button></div>
           <div class="ovstage photo"><canvas id="ovc" width="1080" height="1920" aria-label="Story preview"></canvas></div>
-          <div class="field"><span class="flabel">Style</span>${chipRow('ov-style',String(sh.style||0),{0:'Weight',1:'Time',2:'Carried',3:'Rowboats'})}</div>
-          <div class="field"><span class="flabel">Text</span>${seg('ov-tone',sh.tone||'light',{light:'White',dark:'Black'})}</div></div>`
+          <div class="card stack fincard" style="gap:12px"><div class="field"><span class="flabel">Style</span>${chipRow('ov-style',String(sh.style||0),{0:'Weight',1:'Time',2:'Carried',3:'Rowboats'})}</div>
+          <div class="field"><span class="flabel">Text</span>${seg('ov-tone',sh.tone||'light',{light:'White',dark:'Black',none:'None'})}</div></div></div>`
           :`<button class="btn" data-a="pump-finish">${ic('camera','sm')}Add pump picture</button>`}
-        <div class="field"><label for="f-cap">Comment</label><input class="input" id="f-cap" maxlength="200" placeholder="How did it go? (optional)" value="${esc(sh.caption||'')}"></div>
-        ${sh.pump?`${Social.postedToday()?`<div class="muted small">You’ve shared 3 posts today, so this one is saved privately.</div>`:''}<button class="btn primary" data-a="fin-share">${ic('share','sm')}Ship off</button><button class="btn" data-a="post-nofilter">Post without filter</button><span class="muted small" style="text-align:center;margin-top:-4px">Your post on BOATS is the photo in portrait, without the overlay.</span>`:''}
+        ${sh.pump?'<div class="card stack fincard" style="gap:12px">':''}<div class="field"><label for="f-cap">Comment</label><input class="input" id="f-cap" maxlength="200" placeholder="How did it go? (optional)" value="${esc(sh.caption||'')}"></div>
+        ${sh.pump?`${Social.postedToday()?`<div class="muted small">You’ve shared 3 posts today, so this one is saved privately.</div>`:''}<div class="finpost"><button class="finbtn pub" data-a="fin-share"><span class="fi">${ic('send')}</span><span><b>Public</b><small>Post it and share your story</small></span></button><button class="finbtn" data-a="save-private"><span class="fi">${ic('lock')}</span><span><b>Private</b><small>Only you can see it</small></span></button></div><span class="muted small" style="text-align:center;margin-top:-4px">Your BOATS post is the photo in portrait, without the overlay.</span></div>`:''}
         ${sh.pump?'':Social.postedToday()?`<div class="muted small">You’ve shared 3 workouts today, the daily limit.</div>`:!sh.pump?`<div class="muted small">${ic('camera','xs')} Add a pump picture to share this to the feed. Without one it’s saved privately to your profile.</div>`
           :`<button class="li" style="padding:6px 0" data-a="share-tog"><span class="grow"><span class="t">Post voyage</span><br><span class="s">${sh.share?'Public: friends see it in their feed':'Private: saved to your profile, only you see it'}</span></span><span class="toggle ${sh.share?'on':''}"></span></button>`}
         ${sh.pump?'':`<button class="btn primary" data-a="save-workout">End workout</button>`}
-        ${sh.pump?`<button class="btn" data-a="save-private">Save privately</button>`:`<button class="btn" data-a="close-sheet">Not done</button>`}
+        ${sh.pump?'':`<button class="btn" data-a="close-sheet">Not done</button>`}
         <button class="btn ghost danger" data-a="discard">Discard workout</button>`);
   }
   if(sh.kind==='pump'){
@@ -2674,13 +2715,13 @@ function render(){ document.body.classList.toggle('chatopen',S.route==='app'&&S.
   const c2=document.getElementById('car');
   if(c2){ c2.scrollLeft = sl!=null ? sl : (Pf.active.idx||0)*(c2.querySelector('.ex-card').offsetWidth+10); c2.addEventListener('scroll',onCarScroll,{passive:true}); }
   window.scrollTo(0,wy);
-  if(S.route!=='splash'&&!(S.route==='app'&&S.tab==='friends'&&S.fview==='chat')) app.insertAdjacentHTML('beforeend',`<button class="fbk ${S.route==='app'?'intab':''}" data-a="feedback" aria-label="Send beta feedback">${ic('chat','sm')}<span>Feedback</span></button>`);
+  if(S.route!=='splash'&&!(S.route==='app'&&S.tab==='friends'&&S.fview==='chat')) app.insertAdjacentHTML('beforeend',`<button class="fbk ${S.route==='app'||S.route==='session'?'intab':''} ${S.route==='session'?'insess':''}" data-a="feedback" aria-label="Send beta feedback">${ic('chat','sm')}<span>Feedback</span></button>`);
   if(PREVIEW) app.insertAdjacentHTML('beforeend',devPanel());
   renderSheet();
   { const lb=document.querySelector('.livebar'); document.documentElement.style.setProperty('--live-h',(lb?lb.offsetHeight+14:0)+'px'); }
   const vk=S.route+'|'+S.tab+'|'+(S.meView||'')+'|'+(S.pview||'');
   if(vk!==render._vk){ render._vk=vk; revealCards(); }
-  hqScan(); watchSeen(); dmImgScan();
+  hqScan(); watchSeen(); dmImgScan(); setTimeout(fabCheck,50);
 }
 let RIO=null, DBL=null;
 document.addEventListener('dragstart',e=>{ if(e.target.closest&&e.target.closest('img,a,button')) e.preventDefault(); });
@@ -2690,8 +2731,9 @@ if(window.visualViewport){ const kb=()=>{ const v=visualViewport, r=document.doc
 // In a chat the page itself never moves: only a message list that's long enough to scroll can be dragged.
 document.addEventListener('touchmove',e=>{ if(!document.body.classList.contains('chatopen')) return; const c=e.target.closest&&e.target.closest('#chat'); if(!c||c.scrollHeight<=c.clientHeight+1){ if(e.cancelable) e.preventDefault(); } },{passive:false});
 let PSW=null;
-document.addEventListener('touchstart',e=>{ if(!S.personId||S.sheet||S.route!=='app'||e.target.closest('.slides,.pgrid3,input,textarea')) return; PSW={x:e.touches[0].clientX,y:e.touches[0].clientY}; },{passive:true});
-document.addEventListener('touchend',e=>{ if(!PSW) return; const t=e.changedTouches[0], dx=t.clientX-PSW.x, dy=t.clientY-PSW.y; PSW=null; if(dx>80&&Math.abs(dy)<60&&S.personId){ S.noClick=Date.now(); A['person-back'](); } },{passive:true});
+document.addEventListener('touchstart',e=>{ if(S.sheet||document.getElementById('ask').innerHTML||S.route!=='app'&&S.route!=='onboard') return; if(e.target.closest('.slides,.carousel,#car,input,textarea,[data-sw],.npthumbs,#cropcv,#avcv,.chat,.seg,.chips')) return; PSW={x:e.touches[0].clientX,y:e.touches[0].clientY}; },{passive:true});
+document.addEventListener('touchend',e=>{ if(!PSW) return; const t=e.changedTouches[0], dx=t.clientX-PSW.x, dy=t.clientY-PSW.y; PSW=null; if(dx<80||Math.abs(dy)>60) return;
+  const back=[...document.querySelectorAll('#app [aria-label="Back"], #app [data-a="profile"], #app [data-a="settings"].link')].find(b=>b.offsetParent!==null); if(back){ S.noClick=0; back.click(); } },{passive:true});
 let TSW=null;
 document.addEventListener('touchstart',e=>{ const c=e.target.closest('#chat'); if(!c) return; TSW={c,x:e.touches[0].clientX,y:e.touches[0].clientY,on:false}; },{passive:true});
 document.addEventListener('touchmove',e=>{ if(!TSW) return; const dx=TSW.x-e.touches[0].clientX, dy=e.touches[0].clientY-TSW.y; if(!TSW.on){ if(Math.abs(dx)<10) return; if(Math.abs(dy)>Math.abs(dx)){ TSW=null; return; } TSW.on=true; TSW.c.classList.add('dragging'); } TSW.c.style.setProperty('--tx',Math.max(0,Math.min(72,dx))+'px'); },{passive:true});
@@ -2705,7 +2747,9 @@ document.addEventListener('pointermove',e=>{ if(XLP&&Math.hypot(e.clientX-XLP.x0
 ['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,()=>{ if(XLP){ clearTimeout(XLP.t); XLP.b.classList.remove('holding'); XLP=null; } if(S.holdFired){ S.holdFired=false; S.noClick=Date.now(); } if(S.dmDirty&&!SWD&&!document.querySelector('[data-sw].open')){ S.dmDirty=false; setTimeout(()=>{ if(S.fview==='dms') render(); },250); } }));
 // pull to refresh on the feed, like Instagram
 let PTR=null, BARY=0, BARDIR=0;
-window.addEventListener('scroll',()=>{ const y=window.scrollY, d=y-BARY; if(Math.abs(d)<6) return; const mini=d>0&&y>60; if(mini!==document.body.classList.contains('barmini')) document.body.classList.toggle('barmini',mini); BARY=y; },{passive:true});
+function fabCheck(){ const f=document.querySelector('.fabpost'); if(!f) return; const fr=f.getBoundingClientRect(); const hit=[...document.querySelectorAll('.postnudge,.invitecard,.feedempty,#feed .card.empty')].some(el=>{ const r=el.getBoundingClientRect(); return r.bottom>fr.top-12&&r.top<fr.bottom+12; }); f.classList.toggle('fadeaway',hit); }
+window.addEventListener('scroll',fabCheck,{passive:true});
+window.addEventListener('scroll',()=>{ const y=window.scrollY; if(y<=0||PTR){ if(document.body.classList.contains('barmini')) document.body.classList.remove('barmini'); BARY=Math.max(0,y); return; } const d=y-BARY; if(Math.abs(d)<8) return; const mini=d>0&&y>80; if(mini!==document.body.classList.contains('barmini')) document.body.classList.toggle('barmini',mini); BARY=y; },{passive:true});
 window.addEventListener('scroll',()=>{ if(S.route!=='app'||S.tab!=='friends'||S.fview||S.personId) return; const m=document.getElementById('feedmore'); if(!m||m.getBoundingClientRect().top>innerHeight+700) return; S.feedN=(S.feedN||10)+10; const f=document.getElementById('feed'); if(f) morphFeed(f,feedList()); },{passive:true});
 // one wave period = 30px; the strip slides exactly one period, so the loop is seamless
 function waveSvg(){ return `<span class="pwave"><svg viewBox="0 0 120 10" width="120" height="10" aria-hidden="true"><path d="M0 5 Q7.5 0 15 5 T30 5 T45 5 T60 5 T75 5 T90 5 T105 5 T120 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>`; }
@@ -3013,11 +3057,11 @@ const A = {
   's-add'(){ openPicker({mode:'session'},Pf.active.type); },
   'rest-add'(){ if(S.rest){ S.rest.until+=15000; S.rest.total+=15; tick(); } },
   'rest-skip'(){ S.rest=null; render(); },
-  finish(){ const a=Pf.active; S.sheet={kind:'finish',style:0,tone:'light',bg:'photo',pump:a.pump||'',title:`${DAYN[a.day]} ${a.type==='rest'?'Session':TYPES[a.type]}`,share:Pf.autoShare!==false&&!Social.postedToday()}; renderSheet(); },
+  finish(){ const a=Pf.active; S.sheetBottom=true; S.sheet={kind:'finish',style:0,tone:'light',bg:'photo',pump:a.pump||'',title:`${DAYN[a.day]} ${a.type==='rest'?'Session':TYPES[a.type]}`,share:Pf.autoShare!==false&&!Social.postedToday()}; renderSheet(); },
   'share-tog'(){ readTitle(); S.sheet.share=!S.sheet.share; renderSheet(); },
   'post-nofilter'(){ const sh=S.sheet; if(!sh) return; readTitle(); sh.share=true; sh.storyDone=true; return A['save-workout'](); },
   'save-private'(){ const sh=S.sheet; if(!sh) return; readTitle(); sh.share=false; sh.storyDone=true; return A['save-workout'](); },
-  async 'fin-share'(){ const sh=S.sheet; if(!sh||!Pf.active||S.saving) return; readTitle(); const b=await overlayBlob(); if(b){ try{ const f=new File([b],`boats-story-${dateKey()}.png`,{type:'image/png'}); if(navigator.canShare&&navigator.canShare({files:[f]})) await navigator.share({files:[f]}); else await shareOrSave(b,false); }catch(e){} } if(S.sheet!==sh) S.sheet=sh; sh.share=true; sh.storyDone=true; return A['save-workout'](); },
+  async 'fin-share'(){ const sh=S.sheet; if(!sh||!Pf.active||S.saving) return; readTitle(); const b=sh.tone==='none'?null:await overlayBlob(); if(b){ try{ const f=new File([b],`boats-story-${dateKey()}.png`,{type:'image/png'}); if(navigator.canShare&&navigator.canShare({files:[f]})) await navigator.share({files:[f]}); else await shareOrSave(b,false); }catch(e){} } if(S.sheet!==sh) S.sheet=sh; sh.share=true; sh.storyDone=true; return A['save-workout'](); },
   async 'fin-dl'(){ const sh=S.sheet; readTitle(); const b=await overlayBlob(); if(b) await shareOrSave(b,false); sh.share=true; sh.storyDone=true; return A['save-workout'](); },
   async 'save-workout'(){
     if(!Pf.active||S.saving) return; S.saving=true; try{ await saveWorkoutNow(); } finally{ S.saving=false; } },
@@ -3379,6 +3423,7 @@ async function drawOverlayInto(c){
   try{ await Promise.all([document.fonts.load('900 100px "Inter Tight"'),document.fonts.load('700 40px "Inter Tight"'),document.fonts.load('600 30px "Inter"')]); }catch(e){}
   const x=c.getContext('2d'), W=1080, H=1920; x.clearRect(0,0,W,H);
   if(sh.bg==='photo'&&w.pump){ try{ const im=await loadImg(w.pump); const sc=Math.max(W/im.width,H/im.height), iw=im.width*sc, ih=im.height*sc; x.drawImage(im,Math.floor((W-iw)/2)-1,Math.floor((H-ih)/2)-1,Math.ceil(iw)+2,Math.ceil(ih)+2); }catch(e){} }
+  if(sh.kind==='finish'&&sh.tone==='none'&&w.pump){ try{ const im=await loadImg(w.pump); const sc=Math.max(W/im.width,H/im.height), iw=im.width*sc, ih=im.height*sc; x.drawImage(im,(W-iw)/2,(H-ih)/2,iw,ih); }catch(e){} return; }
   const light=sh.tone!=='dark', fg=light?'#ffffff':'#111111', sub=fg, acc=fg;
   const D='"Inter Tight","Inter",system-ui,sans-serif', T='"Inter",system-ui,sans-serif';
   const {v}=volume(w), unit=w.unit||Pf.unit, st=streak(), dur=fmtDur(durOf(w)), day=dayWord(w.type), date=longDate(w.startedAt), wt=fmtN(Math.round(v));
