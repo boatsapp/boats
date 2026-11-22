@@ -170,6 +170,19 @@ svg.i.xs{width:14px;height:14px}
 .cmbox .input{height:42px;font-size:16px}
 .cmpost{font-weight:700;color:var(--accent)}
 .li.dimday{opacity:.45}
+.dmicon{position:relative}
+.nbadge{position:absolute;top:2px;right:0;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#ff3b4e;color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;border:2px solid var(--bg);line-height:1}
+.pact.pcount{padding-left:0;margin-left:-6px}
+.likerlist{padding-top:4px}
+.notebar{position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));z-index:90;transform:translate(-50%,-140%);transition:transform .32s cubic-bezier(.2,.8,.2,1);display:flex;align-items:center;gap:10px;width:min(94vw,460px);padding:10px 12px;border-radius:18px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);color:var(--fg);text-align:left;box-shadow:0 16px 40px rgba(0,0,0,.4)}
+.notebar.in{transform:translate(-50%,0)}
+.notebar .av{width:36px;height:36px;flex:none}
+.nb-t{flex:1;min-width:0;font-size:14px;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.notebar img{width:40px;height:50px;object-fit:cover;border-radius:6px;flex:none}
+body.swipeback{background:radial-gradient(120% 80% at 0% 50%,color-mix(in srgb,var(--surface) 80%,var(--bg)),var(--bg))}
+body.swipeback #app .screen,body.swipeback #app .chatwrap{box-shadow:-18px 0 40px rgba(0,0,0,.45)}
+.slidein{animation:slidein .3s cubic-bezier(.2,.8,.2,1)}
+@keyframes slidein{from{transform:translateX(-14%);opacity:.6;filter:blur(2px)}}
 .sheet.bottom:has(#ovc){height:92vh;max-height:92vh}
 .idrow .field{flex:1;min-width:0}
 .fabpost{transition:opacity .25s ease,transform .38s cubic-bezier(.2,.8,.2,1)}
@@ -881,7 +894,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v113';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v114';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1163,7 +1176,12 @@ const Store = {
       for(const a in this.profiles) if(!profiles[a]){ try{ await col.doc(this.docId(a)).set(clone(this.profiles[a])); profiles[a]=this.profiles[a]; }catch(e){} }
       const have=new Set(all.map(w=>w.id));
       for(const w of this.all) if(!have.has(w.id)){ try{ await col.doc(w.id).set(w); all.push(w); }catch(e){} }
+      for(const a in profiles){ const loc=(this.profiles||{})[a], cl=profiles[a]; if(loc&&cl&&!cl.friendsMerged&&Array.isArray(loc.friends)){ const add=loc.friends.filter(f=>!(cl.friends||[]).includes(f)); if(add.length){ cl.friends=[...(cl.friends||[]),...add]; cl.followedAt={...(loc.followedAt||{}),...(cl.followedAt||{})}; } cl.friendsMerged=1; try{ await col.doc(this.docId(a)).set(clone(cl)); }catch(e){} } }
       this.profiles=profiles; this.all=all; this.cache();
+      // keep this device in sync with your other devices (newest save wins)
+      try{ col.onSnapshot(sn=>{ sn.docs.forEach(d=>{ const x=d.data(); if(!x) return; const a=d.id==='profile'?'main':d.id.startsWith('profile_')?d.id.slice(8):null;
+        if(a){ if(a!==this.acct||!this.profile) return; if((x.updatedAt||0)>(this.profile.updatedAt||0)+500&&!S.draft){ const keep=this.profile.active; const nx=clone(x); if(keep&&(!nx.active||(keep.lastAct||keep.startedAt||0)>(nx.active.lastAct||nx.active.startedAt||0))) nx.active=keep; Object.keys(this.profile).forEach(k=>{ if(!(k in nx)) delete this.profile[k]; }); Object.assign(this.profile,nx); this.profiles[a]=this.profile; this.cache(); try{ rebuildEx(); render(); }catch(e){} } }
+        else if(x.kind==='workout'&&!this.all.some(w=>w.id===x.id)){ const w={...clone(x),acct:x.acct||'main'}; this.all.unshift(w); if(w.acct===this.acct){ this.workouts.unshift(w); this.workouts.sort((p,q)=>q.startedAt-p.startedAt); } this.cache(); } }); },()=>{}); }catch(e){}
     }catch(e){ this.mode='local'; this.col=null; this.note=e&&e.message==='timeout'?'Server did not answer':'Could not reach the server'; }
   },
   accounts(){ return Object.entries(this.profiles).map(([id,p])=>({id,p,n:this.all.filter(w=>w.acct===id).length})).sort((a,b)=>a.id==='main'?-1:b.id==='main'?1:(a.p.createdAt||0)-(b.p.createdAt||0)); },
@@ -1175,7 +1193,7 @@ const Store = {
     lsSet('boats.acct',a); Pf=this.profile; rebuildEx(); applyTheme();
   },
   create(){ const a=Object.keys(this.profiles).length?'a'+uid():'main'; const p=defaultProfile(); p.createdAt=Date.now(); this.profiles[a]=p; this.use(a); this.save(true); return a; },
-  save(now){
+  save(now){ if(this.profile) this.profile.updatedAt=Date.now();
     this.profiles[this.acct]=this.profile; this.cache();
     Social.publish();
     if(!this.col) return;
@@ -1230,7 +1248,7 @@ const Social = {
     const sh=Pf.show, last=Store.workouts[0];
     return { username:(Pf.username||'Lifter').slice(0,40), bio:(Pf.bio||'').slice(0,150), link:linkOf(Pf.link), name:String(Pf.realName||'').trim().slice(0,40), photo: Pf.photo||'', photoHq: Pf.photoHq||0, town: sh.town&&placeValid(Pf.town)?Pf.town.trim():'', goal: sh.goal?Pf.goal:'', wcount: sh.status?Store.workouts.length:null, following:(Pf.friends||[]).slice(0,500), splitPub:Pf.shareSplit?splitPayload():null, followedAt:Object.fromEntries(Object.entries(Pf.followedAt||{}).filter(([k])=>(Pf.friends||[]).includes(k))),
       height: sh.height?heightStr():'', weight: sh.weight&&Pf.bodyweight?`${Pf.bodyweight} ${Pf.unit}`:'',
-      status: sh.status?{ activeSince:Pf.active?Pf.active.startedAt:0, lastAt:last?last.startedAt:0, lastTitle:last?last.title:'', streak:streak() }:null };
+      status: sh.status?{ activeSince:Pf.active&&!Pf.active.pausedAt&&Date.now()-(Pf.active.lastAct||Pf.active.startedAt||0)<IDLE_PAUSE?Pf.active.startedAt:0, liveAt:Pf.active?(Pf.active.lastAct||Pf.active.startedAt||0):0, lastAt:last?last.startedAt:0, lastTitle:last?last.title:'', streak:streak() }:null };
   },
   publish(){ if(!this.ok||!Pf||!Pf.onboarded) return; clearTimeout(this.t); this.t=setTimeout(()=>this._pub(),700); },
   async _pub(){
@@ -1268,7 +1286,17 @@ function watchSeen(){ if(!('IntersectionObserver' in window)) return; if(!SEENIO
 function morphFeed(f,html){ const t=document.createElement('div'); t.innerHTML=html;
   t.querySelectorAll('article[data-key]').forEach(a=>{ const old=f.querySelector(`article[data-key="${CSS.escape(a.dataset.key)}"] .ovwrap`), nw=a.querySelector('.ovwrap'); if(old&&nw) nw.replaceWith(old); });
   f.replaceChildren(...t.childNodes); hqScan(); watchSeen(); }
-function refreshSocial(){
+const NOTE={ready:false,seen:new Set(),since:Date.now()};
+function notifyCheck(){ if(!Social.loaded||!Pf||!Pf.onboarded||!Social.ok&&!PREVIEW) return; const ev=[];
+  for(const a of myActivity()){ const id=a.kind==='like'?`l|${a.uid}|${a.key}`:a.kind==='comment'?`c|${a.uid}|${a.key}|${a.at}`:`f|${a.uid}|${a.at}`;
+    if(NOTE.seen.has(id)) continue; NOTE.seen.add(id); if(!NOTE.ready) continue; if(a.kind!=='like'&&a.at<NOTE.since) continue; ev.push(a); }
+  for(const t of dmThreads()){ for(const m of t.msgs){ if(m.me) continue; const id=`d|${t.u}|${m.at}`; if(NOTE.seen.has(id)) continue; NOTE.seen.add(id); if(!NOTE.ready||m.at<NOTE.since||t.req) continue; if(S.fview==='chat'&&S.chatWith===t.u) continue; ev.push({kind:'dm',uid:t.u,at:m.at,text:m.photo||m.pimg?'sent a photo':m.text}); } }
+  NOTE.ready=true; if(ev.length) showNote(ev[ev.length-1],ev.length); }
+function showNote(e,n){ const who=esc(Social.nameOf(e.uid)), txt=e.kind==='like'?'liked your post':e.kind==='comment'?`commented: ${esc(String(e.text||'').slice(0,60))}`:e.kind==='follow'?'joined your crew':`<span class="muted">${esc(String(e.text||'').slice(0,70))}</span>`;
+  document.getElementById('notebar')?.remove(); const el=document.createElement('button'); el.id='notebar'; el.className='notebar'; el.dataset.a='note-open'; el.dataset.v=JSON.stringify({k:e.kind,u:e.uid,key:e.key||''});
+  el.innerHTML=`${avatar(Social.nameOf(e.uid),Social.photoOf(e.uid),null)}<span class="nb-t"><b>${who}</b> ${e.kind==='dm'?'<br>':''}${txt}${n>1?` <span class="muted">· +${n-1} more</span>`:''}</span>${e.photo?`<img src="${esc(e.photo)}" alt="">`:''}`;
+  document.body.appendChild(el); requestAnimationFrame(()=>el.classList.add('in')); clearTimeout(showNote.t); showNote.t=setTimeout(()=>{ el.classList.remove('in'); setTimeout(()=>el.remove(),300); },4500); try{ popCue(); }catch(_){} }
+function refreshSocial(){ setTimeout(notifyCheck,0);
   if(S.route==='app'&&S.tab==='friends'&&S.fview==='chat'&&document.getElementById('chat')){ const c=document.getElementById('chat'), html=chatMsgs(S.chatWith); if(!document.hidden) markSeen(S.chatWith); if(c.innerHTML!==html){ const atEnd=c.scrollHeight-c.scrollTop-c.clientHeight<80; c.innerHTML=html; if(atEnd) c.scrollTop=c.scrollHeight; } return; }
   if(S.route==='app'&&S.tab==='friends'&&S.fview==='dms'){ if(SWD||XLP||document.querySelector('[data-sw].open')){ S.dmDirty=true; return; } const h=vDms(); if(h===S._dmHtml) return; S._dmHtml=h; render(); return; }
   if(S.route==='app'&&S.tab==='friends'&&S.fview){ render(); return; }
@@ -1378,7 +1406,7 @@ function streak(){
 }
 function statusOf(st){
   if(!st) return {cls:'',label:'Status hidden'};
-  if(st.activeSince && Date.now()-st.activeSince<4*3600e3) return {cls:'gym',label:'At the gym now'};
+  if(st.activeSince && Date.now()-st.activeSince<4*3600e3 && Date.now()-(st.liveAt||st.activeSince)<20*60000) return {cls:'gym',label:'At the gym now'};
   if(st.lastAt && sameDay(st.lastAt,Date.now())) return {cls:'done',label:'Trained today'};
   return {cls:'',label:'Not at the gym yet today'};
 }
@@ -1489,12 +1517,12 @@ function vOnboard(){
     </div></div>`;
 }
 
-function homeTab(){ if(!Store.workouts.length) return 'friends'; const u=Pf.usage||{}; return (u.lift||0)>(u.feed||0)?'today':'friends'; }
+function homeTab(){ if(!Store.workouts.length) return 'friends'; const u=lsGet('boats.usage')||{}; return (u.lift||0)>(u.feed||0)?'today':'friends'; }
 // Only reopen a workout in progress if it's actually live (started in the last 3 hours)
 const liveWorkout = () => !!(Pf.active&&Date.now()-(Pf.active.startedAt||0)<3*3600e3);
 // Time spent on the feed vs. the workout side (Lift, Plan, Progress, a workout), counted on this phone
 setInterval(()=>{ if(document.hidden||!Pf||!Pf.onboarded||S.route==='splash'||S.route==='onboard') return; const k=S.route==='session'||(S.route==='app'&&['today','plan','progress'].includes(S.tab))?'lift':(S.route==='app'&&S.tab==='friends')?'feed':null; if(!k) return;
-  Pf.usage={...(Pf.usage||{})}; Pf.usage[k]=(Pf.usage[k]||0)+15; if(!(Pf.usage[k]%60)) Store.save(); },15000);
+  const u=lsGet('boats.usage')||{}; u[k]=(u[k]||0)+15; lsSet('boats.usage',u); },15000);
 function liveBar(){ const a=Pf.active; if(!a||S.route==='session') return ''; const r=S.rest;
   return `<button class="livebar ${r?'resting':''}" data-a="resume">${r?`<span class="eyebrow" style="color:inherit">Rest</span><b class="num" data-rest>${fmtClock(r.until-Date.now())}</b>`:a.pausedAt?`<span class="eyebrow" style="color:inherit">Paused</span><b class="num">${fmtUp(elapsed(a))}</b>`:`<span class="eyebrow" style="color:inherit">Workout</span><b class="num" data-timer>${a.startedAt?fmtUp(elapsed(a)):'0:00'}</b>`}<span class="lbgo">${ic('right','sm')}</span></button>`; }
 function tabbar(){
@@ -1591,7 +1619,7 @@ function vPlan(){
   if(S.planDay) return vPlanDay(S.planDay);
   return `<div class="screen">
     <div class="stack" style="gap:4px"><span class="eyebrow">Weekly split</span><h1 class="h1">Your week</h1></div>
-    ${DAYS.some(([k])=>Pf.split[k]!=='rest'&&!(Pf.plans[k]||[]).length)?`<div class="card rowx" style="gap:12px;padding:14px 16px"><span class="ico">${ic('clock','sm')}</span><div style="flex:1;min-width:0"><b>About a 5–10 minute setup</b><div class="muted small">Build your week once and you never have to again. Tap a day to add its exercises.</div></div></div>`:''}
+    ${DAYS.some(([k])=>Pf.split[k]!=='rest'&&!(Pf.plans[k]||[]).length)?`<div class="card rowx" style="gap:12px;padding:14px 16px"><span class="ico">${ic('clock','sm')}</span><div style="flex:1;min-width:0"><b>Set up once and never have to again.</b><div class="muted small">Tap a day to add its exercises. 5–10 min total setup.</div></div></div>`:''}
     <div class="list">${DAYS.map(([k,l])=>{const t=Pf.split[k],n=(Pf.plans[k]||[]).length;return `<button class="li ${t!=='rest'&&!n?'dimday':''}" data-a="edit-day" data-v="${k}"><span class="ico">${ic(typeIcon(t))}</span><span class="grow"><span class="t">${l}</span><br><span class="s">${TYPES[t]}${variantOf(k)?` <span class="vtag">${variantOf(k)}</span>`:''}${t!=='rest'||n?` · ${n} exercise${n===1?'':'s'}`:''}</span></span>${ic('right','sm')}</button>`}).join('')}</div>
     <p class="muted small" style="margin:0">Tap a day to set its type and add exercises from the library.</p>
     <div class="stack" style="gap:8px;margin-top:12px"><div class="rowx" style="gap:6px"><span class="eyebrow">Training block</span><span class="tag">Optional</span></div>${blockCard()}<span class="muted small">Skip it and your weeks just stay the same.</span></div>
@@ -1853,7 +1881,11 @@ function friendsList(){
       :!q?`<div class="card empty"><div class="h2" style="color:var(--fg);margin-bottom:6px">No friends yet</div>Search a username above, or send your link to a friend.</div>`:''}
     ${q?`<div class="stack" style="gap:8px"><span class="flabel">People</span>${rest.length?`<div class="list">${rest.map(([id,p])=>personRow(id,p,false)).join('')}</div>`:`<div class="card muted small">No one called “${esc(S.fq)}” yet.</div>`}</div>`:''}`;
 }
-function gymBubbles(){ const me=Social.me(); const ppl=Object.entries(Social.people||{}).filter(([id,c])=>id!==me&&isShipmate(id)&&statusOf(c.status).cls==='gym');
+function closeness(id){ const me=Social.me(), mine=Social.reacts[me]||{}, theirs=Social.reacts[id]||{}; let n=0;
+  for(const k of Object.keys(mine.likes||{})) if(k.startsWith(id+':')) n+=1; for(const [k,l] of Object.entries(mine.comments||{})) if(k.startsWith(id+':')) n+=2*l.length;
+  for(const k of Object.keys(theirs.likes||{})) if(k.startsWith(me+':')) n+=1; for(const [k,l] of Object.entries(theirs.comments||{})) if(k.startsWith(me+':')) n+=2*l.length;
+  n+=chatWith(id).length*1.5; return n; }
+function gymBubbles(){ const me=Social.me(); const ppl=Object.entries(Social.people||{}).filter(([id,c])=>id!==me&&isShipmate(id)&&statusOf(c.status).cls==='gym').sort((a,b)=>closeness(b[0])-closeness(a[0]));
   if(!ppl.length) return '';
   return `<div class="gymrow">${ppl.map(([id,c])=>`<button class="gymb" data-a="person" data-v="${esc(id)}"><span class="ring">${avatar(c.username,c.photo,null)}</span><span class="gn">${esc(c.username)}</span></button>`).join('')}</div>`; }
 function myActivity(){ const me=Social.me(), out=[];
@@ -1864,7 +1896,7 @@ function myActivity(){ const me=Social.me(), out=[];
 function actUnread(){ const a=myActivity(); return a.some(x=>x.at>(Pf.actSeen||0)); }
 function likersOf(key){ return Object.entries(Social.reacts||{}).filter(([,r])=>r&&r.likes&&r.likes[key]).map(([u])=>u).sort((a,b)=>followersOf(b)-followersOf(a)); }
 function likedLine(key){ const ls=likersOf(key); if(!ls.length) return '<div class="likedline"></div>'; const nm=u=>`<button class="link" data-a="${u===Social.me()?'tab':'person'}" data-v="${u===Social.me()?'me':esc(u)}"><b>${esc(Social.nameOf(u))}</b></button>`;
-  return `<div class="small likedline">Liked by ${nm(ls[0])}${ls.length===2?` and ${nm(ls[1])}`:ls.length>2?` and <b>${ls.length-1} others</b>`:''}</div>`; }
+  return `<div class="small likedline">Liked by ${nm(ls[0])}${ls.length===2?` and ${nm(ls[1])}`:ls.length>2?` and <button class="link" data-a="likers-open" data-v="${esc(key)}"><b>${ls.length-1} others</b></button>`:''}</div>`; }
 function cmTree(key,max){ const all=Social.comments(key), top=all.filter(c=>!c.re), kids=c=>all.filter(x=>x.re===c.at);
   const line=(c,sub)=>`<div class="cmline ${sub?'sub':''}"><button class="link" data-a="${c.uid===Social.me()?'tab':'person'}" data-v="${c.uid===Social.me()?'me':esc(c.uid)}"><b>${esc(Social.nameOf(c.uid))}</b></button> ${esc(c.text)}</div>`;
   return top.slice(-max).map(c=>line(c)+kids(c).slice(0,2).map(k=>line(k,true)).join('')).join(''); }
@@ -1902,7 +1934,7 @@ function postCard(uid,p,mine,suggest){
       ${mine?`<button class="iconbtn" data-a="post-edit" data-v="${esc(p.id)}" aria-label="Edit caption">${ic('edit','sm')}</button><button class="iconbtn" data-a="post-del" data-v="${esc(p.id)}" aria-label="Delete post">${ic('trash','sm')}</button>`:''}${suggest&&!Pf.friends.includes(uid)?`<button class="btn sm primary" style="width:auto;flex:none" data-a="follow-sug" data-v="${esc(uid)}">Follow</button>`:''}</div>
     ${p.photo?`<div class="phwrap"><div class="ovwrap" data-pk="${esc(key)}">${slides(uid,p)}<div class="holdstats">${p.kind==='photo'?`<div><b class="num">${fmtK(likes)}</b><span>like${likes===1?'':'s'}</span></div><div><b class="num">${fmtK(cm.length)}</b><span>comment${cm.length===1?'':'s'}</span></div>`:`<div><b class="num">${fmtN(p.vol||0)}</b><span>${Pf.unit} lifted</span></div><div><b class="num">${esc(p.time||'')}</b><span>time</span></div><div><b class="num">${esc(String(p.sets??''))}</b><span>sets</span></div>${p.kcal?`<div><b class="num">~${p.kcal}</b><span>kcal</span></div>`:''}`}</div><i class="burst">${ic('heart')}</i></div>`:''}
     <div class="stats" ${p.photo?'hidden':''}><div class="stat"><div class="k">Time</div><div class="v num">${esc(p.time||'')}</div></div><div class="stat"><div class="k">Sets</div><div class="v num">${esc(String(p.sets??''))}</div></div><div class="stat"><div class="k">${p.kcal?'Calories':'Volume'}</div><div class="v num">${p.kcal?'~'+p.kcal:fmtN(p.vol||0)}</div></div></div>
-    ${`<div class="pacts"><button class="pact ${liked?'liked':''}" data-a="post-like" data-v="${esc(key)}" aria-pressed="${liked}" aria-label="${liked?'Unlike':'Like'}">${ic('heart')}${likes?`<span class="num">${fmtK(likes)}</span>`:''}</button><button class="pact" data-a="cm-open" data-v="${esc(key)}" aria-label="Comment">${ic('chat')}${cm.length?`<span class="num">${fmtK(cm.length)}</span>`:''}</button><span class="spacer"></span>${dayTag(p.type)}</div>`}
+    ${`<div class="pacts"><button class="pact ${liked?'liked':''}" data-a="post-like" data-v="${esc(key)}" aria-pressed="${liked}" aria-label="${liked?'Unlike':'Like'}">${ic('heart')}</button>${likes?`<button class="pact pcount" data-a="likers-open" data-v="${esc(key)}" aria-label="See who liked this"><span class="num">${fmtK(likes)}</span></button>`:''}<button class="pact" data-a="cm-open" data-v="${esc(key)}" aria-label="Comment">${ic('chat')}${cm.length?`<span class="num">${fmtK(cm.length)}</span>`:''}</button><span class="spacer"></span>${dayTag(p.type)}</div>`}
     ${likedLine(key)}
     ${p.caption?`<p class="cap"><button class="link" ${go}><b>${esc(Social.nameOf(uid))}</b></button> ${mentionHtml(p.caption)}</p>`:''}
     ${(()=>{ const top=topComment(key); return top?`<p class="cap"><button class="link" data-a="${top.uid===Social.me()?'tab':'person'}" data-v="${top.uid===Social.me()?'me':esc(top.uid)}"><b>${esc(Social.nameOf(top.uid))}</b></button> ${mentionHtml(top.text)}</p>`:''; })()}
@@ -1958,7 +1990,7 @@ function feedList(){
   shown.forEach((x,i)=>{ if(sess.invite&&i===at) html+=invite; html+=postCard(x.id,x.p,x.id===Social.me(),x.sug); });
   if(sess.invite&&at>=shown.length&&shown.length<=n) html+=invite;
   if(items.length>n) html+=`<div id="feedmore" class="muted small" style="text-align:center;padding:14px">Loading more…</div>`;
-  else if(items.length&&!(sess.invite&&at>=items.length)) html+=(Social.postedToday()?'':`<button class="postnudge" data-a="np-open">${avatar(Pf.username||'?',Pf.photo,null)}<span class="pn-t"><b>Post here for some motion</b><span>Share a gym pic. Your crew sees it first.</span></span><span class="pn-plus">${ic('plus')}</span></button>`)+`<div class="muted small" style="text-align:center;padding:14px 0 4px">That’s everything for now. Pull down to refresh.</div>`;
+  else if(items.length&&!(sess.invite&&at>=items.length)) html+=(Social.postedToday()?'':`<button class="postnudge" data-a="np-open">${avatar(Pf.username||'?',Pf.photo,null)}<span class="pn-t"><b>Post here for some motion</b><span>Share a gym, food, or lifestyle pic for all sailors to discover. Your crew sees it first.</span></span><span class="pn-plus">${ic('plus')}</span></button>`)+`<div class="muted small" style="text-align:center;padding:14px 0 4px">That’s everything for now. Pull down to refresh.</div>`;
   return html;
 }
 function myPostsList(){ const ps=Social.myPosts(); return ps.length?ps.map(p=>postCard(Social.me(),p,true)).join(''):`<div class="card muted small">Share a workout when you end it and it shows here. Up to 3 posts a day.</div>`; }
@@ -1993,6 +2025,7 @@ function dmThreads(){ const me=Social.me(), ids=new Set(Object.keys((Social.dms[
   for(const [u,d] of Object.entries(Social.dms||{})) if(u!==me&&d&&d.out&&d.out[me]&&d.out[me].length) ids.add(u);
   return [...ids].map(u=>{ const msgs=chatWith(u); const iSent=msgs.some(m=>m.me); const req=!iSent&&!Pf.friends.includes(u)&&!(Pf.dmOk||[]).includes(u); return {u,msgs,last:msgs[msgs.length-1],req}; })
     .filter(t=>{ const h=Pf.dmHidden||{}; const hid=Array.isArray(h)?(h.includes(t.u)?Infinity:0):(h[t.u]||0); return t.last&&t.last.at>hid; }).sort((a,b)=>{ const pa=(Pf.dmPins||[]).indexOf(a.u), pb=(Pf.dmPins||[]).indexOf(b.u); if((pa>=0)!==(pb>=0)) return pa>=0?-1:1; if(pa>=0) return pa-pb; return b.last.at-a.last.at; }); }
+function dmUnreadCount(){ const seen=Pf.dmSeen||{}; return dmThreads().filter(t=>!t.req).reduce((n,t)=>n+t.msgs.filter(m=>!m.me&&m.at>(seen[t.u]||0)).length,0); }
 function dmUnread(){ const seen=Pf.dmSeen||{}; return dmThreads().some(t=>!t.req&&!t.last.me&&t.last.at>(seen[t.u]||0)); }
 function dmResults(){ const q=(S.dmQ||'').trim().toLowerCase(); if(!q) return ''; const me=Social.me();
   const ids=[...new Set([...Pf.friends,...Object.entries(Social.people||{}).filter(([id,c])=>id!==me&&c&&Array.isArray(c.following)&&c.following.includes(me)).map(([id])=>id)])].filter(id=>Social.people[id]&&pm(Social.people[id],q));
@@ -2082,7 +2115,7 @@ function vFriends(){
   if(S.fview==='chat') return vChat();
   if(S.fview==='newpost') return vNewPost();
   return `<div class="screen">
-    <div class="rowx fhead"><span class="wordmark">BOATS<sup class="betatag sm">BETA</sup></span><span class="spacer"></span><button class="iconbtn ${dmUnread()?'dot':''}" data-a="dms" aria-label="Messages">${ic('send')}</button><button class="iconbtn ${actUnread()?'dot':''}" data-a="activity" aria-label="Activity: new followers and comments">${ic('heart')}</button></div>
+    <div class="rowx fhead"><span class="wordmark">BOATS<sup class="betatag sm">BETA</sup></span><span class="spacer"></span><button class="iconbtn dmicon" data-a="dms" aria-label="Messages${dmUnreadCount()?`, ${dmUnreadCount()} unread`:''}">${ic('send')}${dmUnreadCount()?`<span class="nbadge">${dmUnreadCount()>99?'99+':dmUnreadCount()}</span>`:''}</button><button class="iconbtn ${actUnread()?'dot':''}" data-a="activity" aria-label="Activity: new followers and comments">${ic('heart')}</button></div>
     ${gymBubbles()}
     <div class="stack" id="feed" style="gap:14px">${feedList()}</div>
 
@@ -2422,7 +2455,7 @@ function pickerList(){
 function stepper(f,val,mini){ return `<div class="stepper ${mini?'mini':''}"><button data-a="dstep" data-f="${f}" data-d="-1">−</button><input class="input num" id="d-${f}" inputmode="numeric" value="${val}" data-d="${f}"><button data-a="dstep" data-f="${f}" data-d="1">+</button></div>`; }
 function vSheet(){
   const sh=S.sheet; if(!sh) return '';
-  const BOT=sh.kind==='comments'||sh.kind==='finish';
+  const BOT=sh.kind==='comments'||sh.kind==='finish'||sh.kind==='likers';
   const wrap=(head,body)=>`<div class="scrim ${S.sheetFull?'fullscrim':''} ${BOT?'botscrim':''}" data-a="close-sheet"><div class="sheet ${S.sheetFull?'full':''} ${BOT?'bottom':''}" data-stop><div class="sheet-head"><span class="grab"></span>${head}${head.includes('data-a="close-sheet"')?'':`<button class="iconbtn sheetx" data-a="close-sheet" aria-label="Close">${ic('x')}</button>`}</div><div class="sheet-body" id="sbody">${body}</div></div></div>`;
   if(sh.kind==='calday'){ const ws=Store.workouts.filter(w=>dateKey(new Date(w.startedAt))===sh.day).sort((a,b)=>a.startedAt-b.startedAt), d=new Date(ws[0]?ws[0].startedAt:Date.now());
     return wrap(`<span class="h2">${d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})}</span>`,`<div class="list">${ws.map(w=>`<button class="li" data-a="wk-open" data-v="${esc(w.id)}"><span class="ico">${ic(typeIcon(w.type))}</span><span class="grow"><span class="t">${esc(w.title||dayWord(w.type))}</span><br><span class="s">${new Date(w.startedAt).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})} · ${fmtDur(durOf(w))}${countsForStreak(w)?' · streak credit':''}</span></span>${ic('right','sm')}</button>`).join('')}</div>`); }
@@ -2441,6 +2474,8 @@ function vSheet(){
          ${rp?`<div class="cm2rp muted small">Replying to <b>${esc(rp.n)}</b> <button class="link" data-a="cm2-noreply">Cancel</button></div>`:''}
          <div class="rowx" style="gap:10px">${avatar(Pf.username||'?',Pf.photo,null)}<div class="cmfield mfield" style="flex:1"><input class="input" id="cm2-in" maxlength="150" placeholder="Add a comment for ${esc(Social.nameOf(owner))}" value="${esc(S.cmDraft||'')}" enterkeyhint="send" autocomplete="off"><button class="cmpost" data-a="cm2-post">Post</button></div></div>
        </div>`); }
+  if(sh.kind==='likers'){ const ls=likersOf(sh.key), me=Social.me();
+    return wrap(`<span class="h2" style="flex:1;text-align:center">Likes</span>`,`<div class="list likerlist">${ls.map(u=>{ const c=u===me?Social.card():(Social.people[u]||{}); return `<div class="li"><button class="whobtn" style="flex:1;min-width:0" data-a="${u===me?'tab':'person'}" data-v="${u===me?'me':esc(u)}">${avatar(c.username||'?',c.photo,null)}<span style="flex:1;min-width:0;text-align:left"><b>${esc(c.username||'Lifter')}</b>${fbadge(u)}${c.name?`<br><span class="muted small">${esc(c.name)}</span>`:''}</span></button>${u===me?'':`<button class="btn sm ${Pf.friends.includes(u)?'':'primary'}" style="width:auto;flex:none" data-a="plist-follow" data-v="${esc(u)}">${Pf.friends.includes(u)?'Following':'Follow'}</button>`}</div>`; }).join('')||'<div class="muted" style="text-align:center;padding:30px 0">No likes yet.</div>'}</div>`); }
   if(sh.kind==='avcrop'){ return wrap(`<span class="h2">Profile picture</span>`,`<div class="stack" style="gap:14px;align-items:center">
       <div class="avcropwrap"><canvas id="avcv" width="600" height="600" aria-label="Drag to move your picture"></canvas></div>
       <div class="rowx" style="gap:10px;width:100%">${ic('search','sm')}<input type="range" id="av-zoom" min="1" max="3" step="0.01" value="${sh.z}" aria-label="Zoom" style="flex:1"></div>
@@ -2751,9 +2786,16 @@ if(window.visualViewport){ const kb=()=>{ const v=visualViewport, r=document.doc
 // In a chat the page itself never moves: only a message list that's long enough to scroll can be dragged.
 document.addEventListener('touchmove',e=>{ if(!document.body.classList.contains('chatopen')) return; const c=e.target.closest&&e.target.closest('#chat'); if(!c||c.scrollHeight<=c.clientHeight+1){ if(e.cancelable) e.preventDefault(); } },{passive:false});
 let PSW=null;
-document.addEventListener('touchstart',e=>{ if(S.sheet||document.getElementById('ask').innerHTML||S.route!=='app'&&S.route!=='onboard') return; if(e.target.closest('.slides,.carousel,#car,input,textarea,[data-sw],.npthumbs,#cropcv,#avcv,.chat,.seg,.chips')) return; PSW={x:e.touches[0].clientX,y:e.touches[0].clientY}; },{passive:true});
-document.addEventListener('touchend',e=>{ if(!PSW) return; const t=e.changedTouches[0], dx=t.clientX-PSW.x, dy=t.clientY-PSW.y; PSW=null; if(dx<80||Math.abs(dy)>60) return;
-  const back=[...document.querySelectorAll('#app [aria-label="Back"], #app [data-a="profile"], #app [data-a="settings"].link')].find(b=>b.offsetParent!==null); if(back){ S.noClick=0; back.click(); } },{passive:true});
+document.addEventListener('touchstart',e=>{ if(S.sheet||document.getElementById('ask').innerHTML||S.route!=='app'&&S.route!=='onboard') return; if(e.target.closest('.slides,.carousel,#car,input,textarea,[data-sw],.npthumbs,#cropcv,#avcv,.chat,.seg,.chips')) return;
+  const back=[...document.querySelectorAll('#app [aria-label="Back"], #app [data-a="profile"], #app [data-a="settings"].link')].find(b=>b.offsetParent!==null); if(!back) return;
+  const pg=document.querySelector('#app .chatwrap')||document.querySelector('#app .screen'); PSW={x:e.touches[0].clientX,y:e.touches[0].clientY,back,pg,on:false}; },{passive:true});
+document.addEventListener('touchmove',e=>{ if(!PSW) return; const dx=e.touches[0].clientX-PSW.x, dy=e.touches[0].clientY-PSW.y;
+  if(!PSW.on){ if(Math.abs(dx)<10) return; if(dx<0||Math.abs(dy)>Math.abs(dx)){ PSW=null; return; } PSW.on=true; document.body.classList.add('swipeback'); if(PSW.pg) PSW.pg.style.transition='none'; }
+  if(PSW.pg){ const d=Math.max(0,dx); PSW.pg.style.transform=`translateX(${d}px)`; PSW.pg.style.opacity=String(1-Math.min(.35,d/innerWidth*.5)); } },{passive:true});
+document.addEventListener('touchend',e=>{ if(!PSW) return; const {on,pg,back}=PSW, dx=e.changedTouches[0].clientX-PSW.x; PSW=null; if(!on) return;
+  if(pg) pg.style.transition='transform .22s cubic-bezier(.2,.8,.2,1),opacity .22s';
+  if(dx>innerWidth*.28){ if(pg){ pg.style.transform=`translateX(${innerWidth}px)`; pg.style.opacity='0'; } setTimeout(()=>{ document.body.classList.remove('swipeback'); S.noClick=0; back.click(); const np=document.querySelector('#app .chatwrap')||document.querySelector('#app .screen'); if(np){ np.classList.add('slidein'); setTimeout(()=>np.classList.remove('slidein'),320); } },200); }
+  else { if(pg){ pg.style.transform=''; pg.style.opacity=''; } setTimeout(()=>document.body.classList.remove('swipeback'),230); } },{passive:true});
 let TSW=null;
 document.addEventListener('touchstart',e=>{ const c=e.target.closest('#chat'); if(!c) return; TSW={c,x:e.touches[0].clientX,y:e.touches[0].clientY,on:false}; },{passive:true});
 document.addEventListener('touchmove',e=>{ if(!TSW) return; const dx=TSW.x-e.touches[0].clientX, dy=e.touches[0].clientY-TSW.y; if(!TSW.on){ if(Math.abs(dx)<10) return; if(Math.abs(dy)>Math.abs(dx)){ TSW=null; return; } TSW.on=true; TSW.c.classList.add('dragging'); } TSW.c.style.setProperty('--tx',Math.max(0,Math.min(72,dx))+'px'); },{passive:true});
@@ -3186,7 +3228,7 @@ const A = {
   async 'text-invite'(){ const txt=inviteText()+'\n'+ARTIFACT_URL; if(navigator.share){ try{ await navigator.share({text:txt}); return; }catch(e){ if(e&&e.name==='AbortError') return; } } try{ await navigator.clipboard.writeText(txt); toast('Invite copied. Paste it in a text.'); }catch(e){ toast('Copy failed. Long-press the message above to copy it.'); } if(matchMedia('(pointer:coarse)').matches) location.href='sms:?&body='+encodeURIComponent(txt); },
   'copy-invite'(){ const txt=inviteText()+'\n'+ARTIFACT_URL, box=document.getElementById('invite-msg'); const sel=()=>{ const r=document.createRange(); r.selectNodeContents(box); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast('Text selected. Copy it to send.'); };
     try{ navigator.clipboard.writeText(txt).then(()=>toast('Invite copied. Paste it in a text.'),sel); }catch(e){ sel(); } },
-  person(v){ S.backComments=S.sheet&&S.sheet.kind==='comments'?S.sheet.key:null; S.sheetBottom=false; S.plist=null; S.postsOf=null; S.sheet=null; S.sheetFull=false; renderSheet(); if(v===Social.me()){ S.personId=null; A.tab('me'); return; } S.personFrom=window.scrollY; S.personId=v; S.unfAsk=false; S.route='app'; window.scrollTo(0,0); render(); },
+  person(v){ S.backComments=S.sheet&&(S.sheet.kind==='comments')?S.sheet.key:null; S.backLikers=S.sheet&&S.sheet.kind==='likers'?S.sheet.key:null; S.sheetBottom=false; S.plist=null; S.postsOf=null; S.sheet=null; S.sheetFull=false; renderSheet(); if(v===Social.me()){ S.personId=null; A.tab('me'); return; } S.personFrom=window.scrollY; S.personId=v; S.unfAsk=false; S.route='app'; window.scrollTo(0,0); render(); },
   'split-view'(v){ S.sheet={kind:'splitview',id:v}; renderSheet(); },
   'split-copy-ask'(){ S.sheet.confirm=true; renderSheet(); },
   'split-copy-no'(){ S.sheet.confirm=false; renderSheet(); },
@@ -3205,7 +3247,7 @@ const A = {
     S.sheet.sent=true; renderSheet(); popCue(); },
   'posts-open'(v){ const [uid]=v.split(':'); S.sheet=null; renderSheet(); S.postsFrom=window.scrollY; S.postsOf=uid; S.route='app'; render(); requestAnimationFrame(()=>{ const a=document.querySelector(`article[data-key="${CSS.escape(v)}"]`); window.scrollTo(0,a?a.getBoundingClientRect().top+window.scrollY-12:0); }); },
   'posts-back'(){ S.postsOf=null; render(); window.scrollTo(0,S.postsFrom||0); },
-  'person-back'(){ S.personId=null; render(); window.scrollTo(0,S.personFrom||0); if(S.backComments){ const k=S.backComments; S.backComments=null; A['cm-open'](k); } },
+  'person-back'(){ S.personId=null; render(); window.scrollTo(0,S.personFrom||0); if(S.backComments){ const k=S.backComments; S.backComments=null; A['cm-open'](k); } else if(S.backLikers){ const k=S.backLikers; S.backLikers=null; A['likers-open'](k); } },
   async 'pdf-export'(){ boatLoading(true,'Making your PDF…'); try{ const blob=await buildPdf(); const name=`boats-${(Pf.username||'workouts').replace(/[^a-z0-9._-]/gi,'')}-${dateKey()}.pdf`;
       const dl=window.claude&&claude.use?await claude.use('downloads').catch(()=>null):null;
       if(dl){ try{ await dl.save({filename:name,data:blob}); popCue(); }catch(e){ if(e&&e.code!=='declined') toast('Could not save the PDF here.'); } }
@@ -3225,12 +3267,14 @@ const A = {
     if(re){ const parent=Social.comments(v).find(c=>c.at===re); if(parent) S.repOpen={...(S.repOpen||{}),[ckOf(v,parent)]:true}; S.replyTo=null; } else { S.cmShow={...(S.cmShow||{}),[v]:Math.max(((S.cmShow||{})[v]||0),3)}; }
     patchPost(v); popCue(); },
   'follow-tog'(v,el,ok){ const i=Pf.friends.indexOf(v); if(i>=0&&!ok){ askConfirm('Unfollow '+Social.nameOf(v)+'?','Their workouts will leave your feed.','Unfollow',()=>A['follow-tog'](v,el,true)); return; } if(i>=0) Pf.friends.splice(i,1); else { Pf.friends.push(v); Pf.followedAt={...(Pf.followedAt||{}),[v]:Date.now()}; }
-    Store.save(); Social.publish(); const on=i<0; if(el){ el.classList.toggle('on',on); el.setAttribute('aria-pressed',on); el.setAttribute('aria-label',(on?'Unfollow ':'Follow ')+Social.nameOf(v)); } if(S.route==='chat'||S.chatWith||S.plist||S.personId) render(); popCue(); },
+    Store.save(); Social.publish(); const on=i<0; if(el){ el.classList.toggle('on',on); el.setAttribute('aria-pressed',on); el.setAttribute('aria-label',(on?'Unfollow ':'Follow ')+Social.nameOf(v)); } if(S.route==='chat'||S.chatWith||S.plist||S.personId) render(); if(S.sheet&&S.sheet.kind==='likers') renderSheet(); popCue(); },
   'unf-ask'(v){ S.unfAsk=!S.unfAsk; render(); },
   friend(v,el,ok){ const i=Pf.friends.indexOf(v); if(i>=0&&!ok){ askConfirm('Unfollow '+Social.nameOf(v)+'?','Their workouts will leave your feed.','Unfollow',()=>A.friend(v,el,true)); return; } if(i>=0) Pf.friends.splice(i,1); else { Pf.friends.push(v); Pf.followedAt={...(Pf.followedAt||{}),[v]:Date.now()}; } Store.save(); Social.publish(); S.unfAsk=false; if(S.personId) render(); else renderSheet(); popCue(); },
   erase(){ S.confirmErase=true; render(); },
   'dm-del-ask'(v){ askConfirm('Delete this conversation?','It’s removed from your messages for good.','Delete',()=>A['dm-hide'](v)); },
   'msg-tap'(){},
+  'note-open'(v){ document.getElementById('notebar')?.remove(); let o={}; try{ o=JSON.parse(v); }catch(e){} if(o.k==='dm') return A['dm-open'](o.u); if(o.k==='follow') return A.person(o.u); if(o.k==='comment'&&o.key){ A['posts-open'](o.key); setTimeout(()=>A['cm-open'](o.key),250); return; } if(o.key) return A['posts-open'](o.key); },
+  'likers-open'(v){ S.sheet={kind:'likers',key:v}; renderSheet(); },
   'dm-photo'(){ S.photoFor='dm'; const inp=document.getElementById('photo-in'); inp.multiple=false; inp.click(); },
   'dm-photo-view'(v,el){ const img=el.querySelector('img'); if(!img) return; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><img class="dmbig" src="${esc(img.src)}" alt="Photo" data-a="ask-no"></div>`; },
   'edit-save'(){ const t=document.getElementById('edit-in'), v=(t&&t.value||'').trim(), f=EDITFN; askEl.innerHTML=''; EDITFN=null; if(f) f(v); },
