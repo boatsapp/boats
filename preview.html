@@ -149,6 +149,8 @@ svg.i.xs{width:14px;height:14px}
 .cmbox .input{height:42px;font-size:16px}
 .cmpost{font-weight:700;color:var(--accent)}
 .li.dimday{opacity:.45}
+body.kbopen .chatbar{padding-bottom:6px!important}
+body.kbopen .chatwrap .chatpage{padding-bottom:0!important}
 #behind{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:var(--bg);transform:translateX(-22%);filter:blur(6px) brightness(.6)}
 #behind .bh-in{will-change:transform}
 body.swipeback #app{position:relative;z-index:1}
@@ -881,7 +883,7 @@ body.chatopen{position:fixed;inset:0;width:100%;overflow:hidden}
 <div id="app"></div>
 <div id="sheet"></div><div id="ask"></div>
 <div id="toast" class="toast" hidden></div>
-<input type="file" id="photo-in" accept="image/*" hidden><input type="file" id="cam-in" accept="image/*" capture="environment" hidden>
+<input type="file" id="photo-in" accept="image/*" hidden tabindex="-1"><input type="file" id="cam-in" accept="image/*" capture="environment" hidden tabindex="-1">
 
 <script>
 window.BOATS_PREVIEW=true;
@@ -897,7 +899,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v116';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v117';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -2807,7 +2809,7 @@ let RIO=null, DBL=null;
 document.addEventListener('dragstart',e=>{ if(e.target.closest&&e.target.closest('img,a,button')) e.preventDefault(); });
 setInterval(()=>{ if(askEl.querySelector('img[data-hq]')) hqScan(); },400);
 document.addEventListener('contextmenu',e=>{ if(e.target.tagName==='IMG') e.preventDefault(); });
-if(window.visualViewport){ const kb=()=>{ const v=visualViewport, r=document.documentElement.style; r.setProperty('--vvh',Math.round(v.height)+'px'); r.setProperty('--vvt',Math.round(v.offsetTop)+'px'); const c=document.getElementById('chat'); if(c&&S.fview==='chat'&&c.dataset.end!=='0') c.scrollTop=c.scrollHeight; }; visualViewport.addEventListener('resize',kb); visualViewport.addEventListener('scroll',kb); kb(); }
+if(window.visualViewport){ const kb=()=>{ const v=visualViewport, r=document.documentElement.style; r.setProperty('--vvh',Math.round(v.height)+'px'); r.setProperty('--vvt',Math.round(v.offsetTop)+'px'); document.body.classList.toggle('kbopen',innerHeight-v.height>150); const c=document.getElementById('chat'); if(c&&S.fview==='chat'&&c.dataset.end!=='0') c.scrollTop=c.scrollHeight; }; visualViewport.addEventListener('resize',kb); visualViewport.addEventListener('scroll',kb); kb(); }
 // In a chat the page itself never moves: only a message list that's long enough to scroll can be dragged.
 document.addEventListener('touchmove',e=>{ if(!document.body.classList.contains('chatopen')) return; const c=e.target.closest&&e.target.closest('#chat'); if(!c||c.scrollHeight<=c.clientHeight+1){ if(e.cancelable) e.preventDefault(); } },{passive:false});
 let PSW=null;
