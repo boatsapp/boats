@@ -91,16 +91,6 @@ window.boatsSignOut = async () => { await signOut(auth); localStorage.clear(); l
 
 // Public: how many people are on BOATS (the next Founding Crew number minus one). Works before sign-in.
 window.boatsUserCount = async () => { try { const g = await getDoc(doc(fs, "meta", "founders")); return g.exists() ? Math.max(0, (g.data().next || 1) - 1) : 0; } catch(e) { return 0; } };
-// Basic nudity check on a photo before it is shared. Runs on the phone; the model only downloads the first time.
-// Gym content is fine (shirtless, swimwear, tight clothes): only clear nudity is blocked.
-window.boatsNsfw = async url => {
-  try {
-    const { classify } = await import("/nsfw.js");
-    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
-    const r = await classify(img);
-    return !((r.Porn || 0) > 0.6 || (r.Hentai || 0) > 0.7 || ((r.Porn || 0) + (r.Hentai || 0)) > 0.75);
-  } catch(e) { return true; }
-};
 // ---- sign-in ----
 window.boatsSignIn = async kind => {
   const p = kind === "apple" ? new OAuthProvider("apple.com") : new GoogleAuthProvider();

@@ -2,12 +2,10 @@
   "name": "boats-web",
   "private": true,
   "scripts": {
-    "build": "esbuild shim.js --bundle --format=esm --minify --target=es2022 --outfile=public/shim.js && esbuild nsfw-entry.mjs --bundle --format=esm --minify --target=es2020 --outfile=public/nsfw.js"
+    "build": "esbuild shim.js --bundle --format=esm --minify --target=es2022 --outfile=public/shim.js"
   },
   "dependencies": {
-    "firebase": "10.14.1",
-    "nsfwjs": "4.4.0",
-    "@tensorflow/tfjs": "4.22.0"
+    "firebase": "10.14.1"
   },
   "devDependencies": {
     "esbuild": "0.24.0"
