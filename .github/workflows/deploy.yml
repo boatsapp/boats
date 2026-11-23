@@ -32,3 +32,4 @@ jobs:
           done
           echo "== sign-in handler on carrytheboats.app"; curl -sS -o /dev/null -w "%{http_code}\n" https://carrytheboats.app/__/auth/handler
           curl -sS -o /dev/null -w "%{http_code}\n" https://carrytheboats.app/__/firebase/init.json
+          echo "== search console file"; curl -sS https://carrytheboats.app/google4f9316b88d005ff8.html
