@@ -40,9 +40,9 @@ head='''<!doctype html>
 <meta property="og:type" content="website">
 <meta property="og:title" content="BOATS Beta">
 <meta property="og:description" content="A workout tracker you can use with your friends. Log your lifts, see your progress, and share workouts with your crew.">
-<meta property="og:image" content="https://carrytheboats.app/og.png">
+<meta property="og:image" content="https://carrytheboats.app/icon-512.png">
 <meta property="og:url" content="https://carrytheboats.app/">
-<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:card" content="summary">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon-192.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">

@@ -162,7 +162,7 @@ body.swipeback{background:var(--bg)!important;overflow:hidden;touch-action:none}
 .instwarn{font-size:13px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--streak) 14%,transparent);color:var(--fg)}
 .modbox{border-style:dashed}.modw summary{cursor:pointer;list-style:none}.modw .exline{padding:4px 0}.modmsg{padding:4px 0;border-top:1px solid var(--line);font-size:14px;word-break:break-word}
 .ckrow{display:flex;gap:10px;align-items:flex-start}.ckbox{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;margin-top:1px}.ckrow.ok .ckbox{background:var(--good);border-color:var(--good);color:#fff}
-.splitchips{display:grid;grid-template-columns:1fr 1fr;gap:8px}.splitchip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:inherit;text-align:left}.splitchip b{font-size:15px}.splitchip small{font-size:11.5px;color:var(--muted);line-height:1.3}.splitchip.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}.splitchip .rtag{font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
+.splitchips{display:grid;grid-template-columns:1fr 1fr;gap:8px}.splitchip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:inherit;text-align:left}.splitchip b{font-size:15px}.splitchip small{font-size:11.5px;color:var(--muted);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.splitchip.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}.splitchip .rtag{font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
 .reqtxt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;white-space:normal;word-break:break-word}
 .dmtools{display:flex;align-items:center;gap:14px;align-self:center;padding-right:2px}
 .dmtools button{border:0;background:none;padding:0;color:#fff;display:grid;place-items:center}
@@ -530,7 +530,7 @@ body.chatopen{position:fixed;inset:0;width:100%;overflow:hidden}
 @keyframes slin{from{transform:translateX(100%)}to{transform:none}}
 @keyframes slout{to{transform:translateX(100%)}}
 @keyframes slback{from{transform:translateX(-25%);opacity:.6}to{transform:none;opacity:1}}
-.fhead{margin:-4px 0 -6px}
+.fhead{margin:-4px 0 -6px}.fhead3{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}.fhead3>div:first-child{margin-left:-8px}.fhr{display:flex;justify-content:flex-end;align-items:center}
 .wordmark{font-family:var(--display);font-weight:900;font-size:26px;letter-spacing:-.04em}
 .iconbtn.dot{position:relative}
 .iconbtn.dot::after{content:'';position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--bad);border:2px solid var(--bg)}
@@ -553,6 +553,7 @@ body.chatopen{position:fixed;inset:0;width:100%;overflow:hidden}
 .ovwrap.liked .burst{animation:burst .8s ease forwards}
 @keyframes burst{0%{transform:translate(-50%,-50%) scale(0);opacity:0}15%{transform:translate(-50%,-50%) scale(1.15);opacity:1}30%{transform:translate(-50%,-50%) scale(.95)}70%{opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
 .card.streak.sm{padding:10px 14px}
+.card.streak.hot{background:var(--streak);border-color:var(--streak);color:#fff}.card.streak.hot .flame{background:rgba(255,255,255,.2);color:#fff}.card.streak.hot .muted{color:rgba(255,255,255,.85)!important}.card.streak.hot svg{color:#fff}
 .card.streak.sm .flame{width:38px;height:38px;border-radius:11px}
 .chkrow{display:flex;align-items:center}
 .chkrow .chk{flex:1;min-width:0}
@@ -875,7 +876,7 @@ body.chatopen{position:fixed;inset:0;width:100%;overflow:hidden}
 .streakpill.sm2{height:24px;padding:0 9px;font-size:12px}
 .pinfo>*{align-self:flex-start;text-align:left}
 .fby{display:flex;align-items:center;gap:8px;margin-top:6px;background:none;border:0;padding:0;color:var(--muted);font:inherit;font-size:13px;text-align:left}.fby b{color:var(--fg)}.fbyav{display:flex}.fbyav .av{width:22px!important;height:22px!important;border:2px solid var(--bg);font-size:10px}.fbyav .av+.av{margin-left:-8px}
-.pinforow{display:flex;gap:12px;align-items:flex-start}.pinforow .pinfo{flex:0 1 auto;min-width:0;max-width:72%}.pinforow .sring{flex:1 1 auto;align-self:center}
+.pinforow{display:flex;gap:0;align-items:flex-start}.pinforow .pinfo{flex:1 1 auto;min-width:0}.pinforow .sring{flex:none;width:var(--colw,33%);align-self:flex-start;margin-top:2px}
 .sring{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:0;color:var(--fg);font:inherit;min-width:72px}.srwrap{position:relative;display:block}.srwrap svg{display:block}.srin{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;color:var(--fg)}.srin svg{color:var(--streak);width:13px;height:13px}.srin b{font-family:var(--display);font-weight:900}.srl{font-size:11.5px;font-weight:700}.srs{font-size:10.5px;color:var(--muted)}
 .pbtns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.pbtns.three{grid-template-columns:repeat(3,minmax(0,1fr))}.pbtn{height:36px;border-radius:10px;border:0;background:var(--surface-2);color:var(--fg);font:inherit;font-size:14px;font-weight:700}.pbtn.primary{background:var(--accent);color:#0E0E0D;font-weight:800}
 .pstats{flex:1;display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
@@ -926,7 +927,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v133';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v134';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1543,10 +1544,10 @@ function splitList(){ const sel=S.splitDay||'mon';
   <div class="field"><span class="flabel">${DAYN[sel]}</span>${typeGrid('sp-type',ob&&!touched.has(sel)?'':Pf.split[sel])}</div>`; }
 // Popular splits: a recommendation for your level plus the three most common ones
 const SPLITS={
-  ppl:{n:'PPL',d:'6 days · push, pull, legs twice',days:['push','pull','legs','push','pull','legs','rest']},
-  ul:{n:'U/L',d:'4 days · upper, lower, rest, repeat',days:['push','legs','rest','pull','legs','rest','rest']},
-  bro:{n:'Bro',d:'5 days · one focus per day',days:['push','pull','legs','arms','full','rest','rest']},
-  full:{n:'Full body',d:'3 days · best start for beginners',days:['full','rest','full','rest','full','rest','rest']}};
+  ppl:{n:'PPL',d:'6 days · push, pull, legs ×2',days:['push','pull','legs','push','pull','legs','rest']},
+  ul:{n:'U/L',d:'4 days · upper and lower ×2',days:['push','legs','rest','pull','legs','rest','rest']},
+  bro:{n:'BRO',d:'5 days · one focus a day',days:['push','pull','legs','arms','full','rest','rest']},
+  full:{n:'FULL',d:'3 days · great for beginners',days:['full','rest','full','rest','full','rest','rest']}};
 function recSplit(){ return ({beginner:'full',intermediate:'ul',advanced:'ppl'})[Pf.level||'beginner']||'full'; }
 function curSplit(){ return Object.keys(SPLITS).find(k=>SPLITS[k].days.every((t,i)=>Pf.split[DAYS[i][0]]===t)&&(S.route!=='onboard'||(S.obSet&&S.obSet.size===7))); }
 function popularSplits(){ const r=recSplit(), cur=curSplit(), order=[r,...['ppl','ul','bro','full'].filter(k=>k!==r)];
@@ -1671,7 +1672,7 @@ function vToday(){
       <div class="stack" style="gap:4px;flex:1;min-width:0"><span class="eyebrow">${now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})}</span><h1 class="h1">${trainedToday&&!a?'Nice work today':'Ready to lift'}</h1></div>
       <button data-a="tab" data-v="me" aria-label="Your profile">${avatar(Pf.username,Pf.photo,myStatusCls())}</button>
     </div>
-    <button class="card streak sm" data-a="ranks" style="width:100%;text-align:left"><span class="flame ${st?'':'cold'}">${ic('flame','sm')}</span><div style="flex:1;min-width:0"><div class="h2 num" style="font-size:16px">${st} day streak</div><div class="muted small" ${streakGrace()&&st?'style="color:var(--bad);font-weight:600"':''}>${streakGrace()?(streakDaysLeft()===1?'Work out today to keep your streak':'Work out by tomorrow to keep your streak'):'Check leaderboards'}</div></div>${ic('right','sm')}</button>
+    <button class="card streak sm hot" data-a="ranks" style="width:100%;text-align:left"><span class="flame">${ic('flame','sm')}</span><div style="flex:1;min-width:0"><div class="h2 num" style="font-size:16px">${st} day streak</div><div class="muted small" ${streakGrace()&&st?'style="color:var(--bad);font-weight:600"':''}>${streakGrace()?(streakDaysLeft()===1?'Work out today to keep your streak':'Work out by tomorrow to keep your streak'):'Check leaderboards'}</div></div>${ic('right','sm')}</button>
     ${weekStrip()}
     <section class="card hero">
       ${a?`<div class="rowx"><span class="eyebrow" style="color:var(--good)">In progress</span><span class="spacer"></span><span class="num muted small" data-timer>${a.startedAt?fmtUp(elapsed(a)):'Not started'}</span></div>
@@ -2223,7 +2224,7 @@ function vFriends(){
   if(S.fview==='chat') return vChat();
   if(S.fview==='newpost') return vNewPost();
   return `<div class="screen">
-    <div class="rowx fhead"><span class="wordmark">BOATS<sup class="betatag sm">BETA</sup></span><span class="spacer"></span><button class="iconbtn dmicon" data-a="dms" aria-label="Messages${dmUnreadCount()?`, ${dmUnreadCount()} unread`:''}">${ic('send')}${dmUnreadCount()?`<span class="nbadge">${dmUnreadCount()>99?'99+':dmUnreadCount()}</span>`:''}</button><button class="iconbtn ${actUnread()?'dot':''}" data-a="activity" aria-label="Activity: new followers and comments">${ic('heart')}</button></div>
+    <div class="fhead fhead3"><div><button class="iconbtn" data-a="np-open" aria-label="New post">${ic('plus')}</button></div><span class="wordmark">BOATS<sup class="betatag sm">BETA</sup></span><div class="fhr"><button class="iconbtn dmicon" data-a="dms" aria-label="Messages${dmUnreadCount()?`, ${dmUnreadCount()} unread`:''}">${ic('send')}${dmUnreadCount()?`<span class="nbadge">${dmUnreadCount()>99?'99+':dmUnreadCount()}</span>`:''}</button><button class="iconbtn ${actUnread()?'dot':''}" data-a="activity" aria-label="Activity: new followers and comments">${ic('heart')}</button></div></div>
     ${gymBubbles()}
     <div class="stack" id="feed" style="gap:14px">${feedList()}</div>
 
@@ -2271,7 +2272,7 @@ function relInfo(id,tab){ const me=Social.me(), mine=new Set(Pf.friends||[]); if
 function vPeopleList(){ const {uid,tab}=S.plist, me=Social.me(), ok=id=>id===me||(Social.people||{})[id], q=(S.plq||'').trim().toLowerCase();
   let ids=(tab==='crew'?followerIds(uid):followingIds(uid)).filter(ok).map(id=>({id,r:relInfo(id,tab)})).sort((a,b)=>a.r.g-b.r.g||String(Social.nameOf(a.id)).localeCompare(String(Social.nameOf(b.id)))).map(x=>x.id);
   const total=ids.length; if(q) ids=ids.filter(id=>pm(cardOf(id),q));
-  const rowp=id=>{ const c=id===me?Social.card():Social.people[id], r=relInfo(id,tab); return `<div class="li"><button class="whobtn" style="flex:1;min-width:0" data-a="person" data-v="${esc(id)}">${avatar(c.username||'?',c.photo,null)}<span style="flex:1;min-width:0;text-align:left"><b>${esc(c.username||'Lifter')}${id===me?' (you)':''}</b>${fbadge(id)}${c.name?`<br><span class="muted small">${esc(c.name)}</span>`:''}${r.l?`<br><span class="small" style="color:var(--accent)">${r.l}</span>`:c.town?`<br><span class="muted small">${esc(c.town)}</span>`:''}</span></button>${id===me?'':`<button class="btn sm ${Pf.friends.includes(id)?'':'primary'}" style="width:auto;flex:none" data-a="plist-follow" data-v="${esc(id)}">${Pf.friends.includes(id)?'Following':'Follow'}</button>`}</div>`; };
+  const rowp=id=>{ const c=id===me?Social.card():Social.people[id], r=relInfo(id,tab); return `<div class="li"><button class="whobtn" style="flex:1;min-width:0" data-a="person" data-v="${esc(id)}">${avatar(c.username||'?',c.photo,null)}<span style="flex:1;min-width:0;text-align:left"><b>${esc(c.username||'Lifter')}</b>${fbadge(id)}${c.name?`<br><span class="muted small">${esc(c.name)}</span>`:''}${r.l?`<br><span class="small" style="color:var(--accent)">${r.l}</span>`:c.town?`<br><span class="muted small">${esc(c.town)}</span>`:''}</span></button>${id===me?'':`<button class="btn sm ${Pf.friends.includes(id)?'':'primary'}" style="width:auto;flex:none" data-a="plist-follow" data-v="${esc(id)}">${Pf.friends.includes(id)?'Following':'Follow'}</button>`}</div>`; };
   return `<div class="screen">
     <div class="rowx" style="gap:6px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="plist-back" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">${tab==='crew'?'Followers':'Following'} <span class="muted" style="font-weight:600">· ${total}</span></span></div>
     <span class="muted small" style="margin-top:-6px">${tab==='crew'?`People who follow ${esc(Social.nameOf(uid))}`:`People ${esc(Social.nameOf(uid))} follows`}</span>
@@ -2949,8 +2950,11 @@ function render(){ const oldHTML=app.innerHTML, oldY=window.scrollY, k=viewKey()
   const vk=S.route+'|'+S.tab+'|'+(S.meView||'')+'|'+(S.pview||'');
   app.querySelectorAll('.screen .tabbar, .screen .fabpost, .screen .invitebar, .session .tabbar').forEach(n=>app.appendChild(n));
   if(vk!==render._vk){ render._vk=vk; revealCards(); }
-  hqScan(); watchSeen(); dmImgScan(); setTimeout(fabCheck,50);
+  hqScan(); watchSeen(); dmImgScan(); setTimeout(fabCheck,50); colw();
 }
+// line the streak ring up under the "following" count
+function colw(){ document.querySelectorAll('.prof2').forEach(p=>{ const c=p.querySelector('.pstats>:last-child'); if(c) p.style.setProperty('--colw',c.getBoundingClientRect().width+'px'); }); }
+window.addEventListener('resize',()=>colw());
 let RIO=null, DBL=null;
 document.addEventListener('dragstart',e=>{ if(e.target.closest&&e.target.closest('img,a,button')) e.preventDefault(); });
 setInterval(()=>{ if(askEl.querySelector('img[data-hq]')) hqScan(); },400);
