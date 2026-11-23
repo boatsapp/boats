@@ -290,6 +290,8 @@ body.locked{position:fixed;left:0;right:0;overflow:hidden}
 .pgrid3 button{position:relative}
 .pgrid3 .multi{position:absolute;top:6px;right:6px;color:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
 .pgrid3 .multi svg{width:16px;height:16px}
+.pgrid3 .ppinned{position:absolute;top:6px;left:6px;color:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6));display:grid}.pgrid3 .ppinned svg{width:15px;height:15px}.pgrid3 button.holding{transform:scale(.96);transition:transform .2s}
+.pgrid3 img{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .anchorb{display:inline-grid;place-items:center;width:16px;height:16px;color:var(--fg);flex:none;margin-left:3px;vertical-align:middle}
 .igpost.hasphoto .who .anchorb{color:#fff}
 .anchorb svg{width:15px;height:15px;stroke-width:2.6}
@@ -946,7 +948,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v131';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v132';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1309,7 +1311,7 @@ const Social = {
   },
   card(){
     const sh=Pf.show, last=Store.workouts[0];
-    return { blocked:(Pf.blocked||[]).slice(-500), username:(Pf.username||'Lifter').slice(0,40), bio:(Pf.bio||'').slice(0,150), link:linkOf(Pf.link), name:String(Pf.realName||'').trim().slice(0,40), photo: Pf.photo||'', photoHq: Pf.photoHq||0, town: sh.town&&placeValid(Pf.town)?Pf.town.trim():'', goal: sh.goal?Pf.goal:'', wcount: sh.status?Store.workouts.length:null, following:(Pf.friends||[]).slice(0,500), splitPub:Pf.shareSplit?splitPayload():null, followedAt:Object.fromEntries(Object.entries(Pf.followedAt||{}).filter(([k])=>(Pf.friends||[]).includes(k))),
+    return { pins:(Pf.pinnedPosts||[]).slice(0,3), blocked:(Pf.blocked||[]).slice(-500), username:(Pf.username||'Lifter').slice(0,40), bio:(Pf.bio||'').slice(0,150), link:linkOf(Pf.link), name:String(Pf.realName||'').trim().slice(0,40), photo: Pf.photo||'', photoHq: Pf.photoHq||0, town: sh.town&&placeValid(Pf.town)?Pf.town.trim():'', goal: sh.goal?Pf.goal:'', wcount: sh.status?Store.workouts.length:null, following:(Pf.friends||[]).slice(0,500), splitPub:Pf.shareSplit?splitPayload():null, followedAt:Object.fromEntries(Object.entries(Pf.followedAt||{}).filter(([k])=>(Pf.friends||[]).includes(k))),
       height: sh.height?heightStr():'', weight: sh.weight&&Pf.bodyweight?`${Pf.bodyweight} ${Pf.unit}`:'',
       status: sh.status?{ activeSince:Pf.active&&!Pf.active.pausedAt&&(cardioRunning()||Date.now()-(Pf.active.lastAct||Pf.active.startedAt||0)<IDLE_PAUSE)?Pf.active.startedAt:0, liveAt:Pf.active?(cardioRunning()?Date.now():(Pf.active.lastAct||Pf.active.startedAt||0)):0, lastAt:last?last.startedAt:0, lastTitle:last?last.title:'', streak:streak() }:null };
   },
@@ -2271,12 +2273,12 @@ function vMyWorkouts(){ const ws=[...Store.workouts].sort((a,b)=>b.startedAt-a.s
       :`<div class="card empty" style="padding:28px 16px">${ic('star')}<div style="margin-top:6px">Finish a workout and it shows up here.</div></div>`}
   </div>${tabbar()}`; }
 function ownGrid(){
-  const view=S.pview||'grid', mine=Social.myPosts().filter(p=>p.photo);
+  const view=S.pview||'grid', mine=pinSort(Social.myPosts().filter(p=>p.photo),Pf.pinnedPosts);
   const tabs=`<div class="itabs" role="tablist"><button role="tab" aria-selected="${view==='grid'}" aria-label="Public posts" class="${view==='grid'?'on':''}" data-a="pview" data-v="grid">${ic('grid')}</button><button role="tab" aria-selected="${view==='list'}" aria-label="Private workout history" class="${view==='list'?'on':''}" data-a="pview" data-v="list">${ic('lock')}</button></div>`;
   if(view==='list') return tabs+`<p class="muted small rowx" style="margin:0;gap:6px">${ic('lock','xs')} Only you can see your workout history. Tap one to open it.</p>`+(Store.workouts.length?`<div class="pgrid3">${Store.workouts.map(w=>{ const pub=isShared(w.id), {v}=volume(w);
       return `<button data-a="wk-open" data-v="${esc(w.id)}" aria-label="${esc(dayWord(w.type))}, ${shortDate(w.startedAt)}, ${pub?'public':'private'}">${w.pump?`<img src="${esc(w.pump)}" alt="" loading="lazy">`:`<div class="tilefill">${ic(typeIcon(w.type),'sm')}<b class="num">${fmtN(Math.round(v))}</b><small>${w.unit||Pf.unit} · ${fmtDur(durOf(w))}</small></div>`}<i class="vis">${ic(pub?'eye':'lock','xs')}</i></button>`; }).join('')}</div>`
       :`<div class="card empty" style="padding:28px 16px">${ic('lock')}<div style="margin-top:6px">Finish a workout and it shows up here.</div></div>`);
-  return tabs+(mine.length?`<div class="pgrid3">${mine.map(p=>{ const key=Social.me()+':'+p.id, l=Social.likes(key), cm=Social.comments(key).length; return `<button data-a="posts-open" data-v="${esc(key)}" aria-label="${esc(dayWord(p.type))}, ${l} likes, ${cm} comments"><img src="${esc(p.photo)}" alt="" loading="lazy">${p.more?`<i class="multi">${ic('stack','xs')}</i>`:''}</button>`; }).join('')}</div>`
+  return tabs+(mine.length?`<div class="pgrid3">${mine.map(p=>{ const key=Social.me()+':'+p.id, l=Social.likes(key), cm=Social.comments(key).length; return `<button data-a="posts-open" data-v="${esc(key)}" data-ppin="${esc(p.id)}" aria-label="${esc(dayWord(p.type))}, ${l} likes, ${cm} comments. Hold to ${(Pf.pinnedPosts||[]).includes(p.id)?'unpin':'pin'}"><img src="${esc(p.photo)}" alt="" loading="lazy">${p.more?`<i class="multi">${ic('stack','xs')}</i>`:''}${pinIco((Pf.pinnedPosts||[]).includes(p.id))}</button>`; }).join('')}</div>${mine.length>1&&!(Pf.pinnedPosts||[]).length?'<p class="muted small" style="margin:6px 0 0;text-align:center">Hold a post to pin it to the top.</p>':''}`
     :`<div class="card empty" style="padding:28px 16px">${ic('camera')}<div style="margin-top:6px">Share a workout and make it public. Others can like and comment.</div></div>`);
 }
 function isShipmate(id){ const c=(Social.people||{})[id]; return Pf.friends.includes(id)&&!!(c&&Array.isArray(c.following)&&c.following.includes(Social.me())); }
@@ -2305,18 +2307,20 @@ function founderNo(uid){ const n=((Social.founders||{})[uid]); return n>=1&&n<=1
 function streakRing(uid,n,lines){ const M=[0,7,30,100,365,730], i=M.findIndex(m=>m>n), next=i<0?n+365:M[i], prev=i<0?n:M[i-1], f=Math.max(.04,Math.min(1,(n-prev)/Math.max(1,next-prev)));
   const sz=Math.max(52,Math.min(72,44+lines*7)), r=sz/2-4, C=2*Math.PI*r;
   return `<button class="sring" data-a="ranks" data-v="${esc(uid)}" data-top="5" aria-label="${n} day streak, ${next-n} days to ${next}"><span class="srwrap" style="width:${sz}px;height:${sz}px"><svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" aria-hidden="true"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="5"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="var(--streak)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(C*f).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 ${sz/2} ${sz/2})"/></svg><span class="srin">${ic('flame','xs')}<b class="num" style="font-size:${Math.round(sz*.3)}px">${n}</b></span></span><span class="srl">day streak</span><span class="srs">${next-n} to ${next}</span></button>`; }
+function pinSort(list,pins){ pins=(pins||[]).filter(id=>list.some(p=>p.id===id)).slice(0,3); return [...pins.map(id=>list.find(p=>p.id===id)),...list.filter(p=>!pins.includes(p.id)).sort((a,b)=>b.at-a.at)]; }
+const pinIco=on=>on?`<i class="ppinned" aria-label="Pinned">${ic('pin','xs')}</i>`:'';
 function taggedPosts(uid){ const u=String(((cardOf(uid)||{}).username)||'').toLowerCase(); if(!u) return []; const re=new RegExp('@'+u.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?![A-Za-z0-9._])','i'), out=[];
   for(const [id,doc] of Object.entries(Social.posts||{})) if(id!==uid&&!blockedWith(id)) for(const p of ((doc||{}).items||[])) if(p.photo&&re.test(String(p.caption||''))) out.push({uid:id,p}); return out.sort((a,b)=>b.p.at-a.p.at); }
 function followedBy(uid){ const me=Social.me(); return (Pf.friends||[]).filter(f=>f!==uid&&f!==me&&Social.people[f]&&(Social.people[f].following||[]).includes(uid)); }
 function profileBlock(uid,c,me){
-  c=c||{}; const st=statusOf(c.status), posts=((Social.posts[uid]||{}).items||[]), pics=posts.filter(p=>p.photo).sort((a,b)=>b.at-a.at);
+  c=c||{}; const st=statusOf(c.status), posts=((Social.posts[uid]||{}).items||[]), pics=pinSort(posts.filter(p=>p.photo),c.pins);
   const info=[c.town, c.height, c.weight, c.goal&&GOALS[c.goal]?({bulk:'Bulking',maintain:'Maintaining',cut:'Cutting'})[c.goal]:''].filter(Boolean).map(esc).join(' · ');
   const wk=me?Store.workouts.length:(c.wcount??'–'), fol=followersOf(uid), fing=me?(Pf.friends||[]).length:(Array.isArray(c.following)?c.following.length:'–');
   const stat=(n,l)=>{ const t=l==='crew'?'followers':l; return me?`<button data-a="my-friends" data-v="${l==='crew'?'crew':'following'}" aria-label="${n} ${t}"><b class="num">${n}</b><span>${t}</span></button>`:`<button data-a="plist" data-v="${esc(uid)}|${l==='crew'?'crew':'following'}" aria-label="See ${n} ${t}"><b class="num">${n}</b><span>${t}</span></button>`; };
   const streakN=me?(Pf.show.status?streak():0):(c.status?c.status.streak||0:0);
   const fb=me?[]:followedBy(uid), fol2=Pf.friends.includes(uid);
   const tagged=me?[]:taggedPosts(uid), tab=!me&&tagged.length&&S.ptabT===uid?'tagged':'posts';
-  const tile=(u,p)=>`<button data-a="posts-open" data-v="${esc(u+':'+p.id)}" aria-label="${esc(dayWord(p.type))}, ${shortDate(p.at)}"><img src="${esc(p.photo)}" alt="" loading="lazy">${p.more?`<i class="multi">${ic('stack','xs')}</i>`:''}</button>`;
+  const tile=(u,p)=>`<button data-a="posts-open" data-v="${esc(u+':'+p.id)}" aria-label="${esc(dayWord(p.type))}, ${shortDate(p.at)}"><img src="${esc(p.photo)}" alt="" loading="lazy">${p.more?`<i class="multi">${ic('stack','xs')}</i>`:''}${u===uid?pinIco((c.pins||[]).includes(p.id)):''}</button>`;
   return `<div class="prof prof2">
     <div class="rowx" style="gap:18px"><button class="avbtn" data-a="av-view" data-v="${esc(uid)}" aria-label="View profile picture">${avatar(c.username||'?',c.photo,c.status?st.cls:null,true)}</button>
       <div class="pstats">${me?`<button data-a="my-workouts" aria-label="See your ${wk} workouts"><b class="num">${wk}</b><span>workouts</span></button>`:`<div><b class="num">${wk}</b><span>workouts</span></div>`}${stat(fol,'crew')}${stat(fing,'following')}</div></div>
@@ -3004,8 +3008,8 @@ document.addEventListener('load',e=>{ const c=e.target&&e.target.closest&&e.targ
 document.addEventListener('scroll',e=>{ const c=e.target; if(c&&c.id==='chat') c.dataset.end=(c.scrollHeight-c.scrollTop-c.clientHeight<60)?'1':'0'; },true);
 // swipe a sheet: drag the top down to close, up to expand; dragging down from the top of its content closes too
 let XLP=null;
-document.addEventListener('pointerdown',e=>{ const b=e.target.closest('[data-own],[data-hold],[data-pin]'); if(!b) return; clearTimeout(XLP&&XLP.t); const x0=e.clientX,y0=e.clientY;
-  b.classList.add('holding'); XLP={b,x0,y0,t:setTimeout(()=>{ b.classList.remove('holding'); S.holdFired=true; S.noClick=Date.now()+6e4; try{ navigator.vibrate&&navigator.vibrate(15); }catch(_){} if(b.dataset.own) A['ex-del-ask'](b.dataset.own); else if(b.dataset.pin) A['dm-pin'](b.dataset.pin); else { S.clDel=b.dataset.hold; render(); } XLP=null; },550)}; });
+document.addEventListener('pointerdown',e=>{ const b=e.target.closest('[data-own],[data-hold],[data-pin],[data-ppin]'); if(!b) return; clearTimeout(XLP&&XLP.t); const x0=e.clientX,y0=e.clientY;
+  b.classList.add('holding'); XLP={b,x0,y0,t:setTimeout(()=>{ b.classList.remove('holding'); S.holdFired=true; S.noClick=Date.now()+6e4; try{ navigator.vibrate&&navigator.vibrate(15); }catch(_){} if(b.dataset.own) A['ex-del-ask'](b.dataset.own); else if(b.dataset.pin) A['dm-pin'](b.dataset.pin); else if(b.dataset.ppin) A['post-pin'](b.dataset.ppin); else { S.clDel=b.dataset.hold; render(); } XLP=null; },550)}; });
 document.addEventListener('pointermove',e=>{ if(XLP&&Math.hypot(e.clientX-XLP.x0,e.clientY-XLP.y0)>10){ clearTimeout(XLP.t); XLP.b.classList.remove('holding'); XLP=null; } });
 ['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,()=>{ if(XLP){ clearTimeout(XLP.t); XLP.b.classList.remove('holding'); XLP=null; } if(S.holdFired){ S.holdFired=false; S.noClick=Date.now(); } if(S.dmDirty&&!SWD&&!document.querySelector('[data-sw].open')){ S.dmDirty=false; setTimeout(()=>{ if(S.fview==='dms') render(); },250); } }));
 // pull to refresh on the feed, like Instagram
@@ -3561,6 +3565,7 @@ const A = {
     S.draft=null; Store.save(true); Social.publish(); S.meView=null; window.scrollTo(0,0); render(); popCue(); savedNote('Profile saved'); },
   'np-open'(){ if(Social.postedToday()) return A['np-limit'](); navPush(); S.np={list:[],i:0,cap:''}; S.fview='newpost'; S.tab='friends'; S.route='app'; window.scrollTo(0,0); render(); S.photoFor='newpost'; const inp=document.getElementById('photo-in'); inp.multiple=true; inp.click(); },
   'np-limit'(){ infoBox('Limit reached','<span class="muted small">You can share 3 posts a day. Come back tomorrow for more.</span>'); },
+  'post-pin'(v){ const P=(Pf.pinnedPosts||[]).filter(id=>Social.myPosts().some(p=>p.id===id)); if(P.includes(v)){ Pf.pinnedPosts=P.filter(x=>x!==v); savedNote('Unpinned'); } else { if(P.length>=3){ askInfo('Maximum of 3 pins','Hold a pinned post to unpin it, then pin this one.'); return; } Pf.pinnedPosts=[...P,v]; savedNote('Pinned to your profile'); } Store.save(); Social.publish(); render(); },
   'mod-mode'(){ Pf.modMode=!Pf.modMode; Store.save(); render(); },
   'np-close'(){ S.np=null; if(navBack()) return; S.fview=null; render(); },
   'np-trash'(){ npKeep(); const np=S.np; np.list.splice(np.i||0,1); np.i=Math.max(0,Math.min((np.i||0),np.list.length-1)); np.editing=false; render(); },
