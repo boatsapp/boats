@@ -9,7 +9,8 @@ import { firebaseConfig } from "./firebase-config.js";
 window.__bip = null;
 addEventListener("beforeinstallprompt", e => { e.preventDefault(); window.__bip = e; try { if(window.S && S.meView === "install") window.render(); } catch(_) {} });
 if("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("/sw.js").catch(() => {});
-const app = initializeApp(firebaseConfig);
+// On carrytheboats.app, Google sign-in runs through our own domain (carrytheboats.app/__/auth/handler), so Google shows it instead of the firebaseapp.com address.
+const app = initializeApp(location.hostname === "carrytheboats.app" ? { ...firebaseConfig, authDomain: "carrytheboats.app" } : firebaseConfig);
 const EMU = location.hostname === "localhost" && new URLSearchParams(location.search).has("emu");
 const auth = getAuth(app);
 const fs = initializeFirestore(app, { localCache: EMU ? memoryLocalCache() : persistentLocalCache() });
