@@ -851,6 +851,7 @@ body.chatopen{position:fixed;inset:0;width:100%;overflow:hidden}
 .prow.dragging{z-index:5;transition:none;box-shadow:0 10px 28px rgba(0,0,0,.18);border-radius:12px}
 .tagbtn{cursor:pointer;gap:3px;padding-right:6px;border:1px solid var(--line)}
 .tagbtn svg{opacity:.7}
+.sessline .tag{background:none!important;border:0!important;height:auto;padding:2px 4px;font-size:13px;font-weight:600;color:var(--muted)}.sessline .tag+.tag::before{content:'·';margin-right:6px;opacity:.6}
 .sets.bw{grid-template-columns:24px minmax(0,1fr) 44px 44px}
 .tag.bad{background:var(--bad-soft);color:var(--bad)}
 .hurtbtn{color:var(--faint)} .hurtbtn.on{color:var(--bad);background:var(--bad-soft)}
@@ -929,7 +930,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v136';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v137';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1366,10 +1367,13 @@ function ac(){ try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(
 let AU=false; document.addEventListener('pointerdown',()=>{ if(!Pf||!Pf.sound) return; const c=ac(); if(c&&!AU){ try{ const b=c.createBuffer(1,1,22050), s=c.createBufferSource(); s.buffer=b; s.connect(c.destination); s.start(0); AU=true; }catch(e){} } },true);
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&AC&&AC.state!=='running') AU=false; });
 function horn(){ if(!Pf.sound) return; const c=ac(); if(!c) return; const t=c.currentTime;
-  const out=c.createGain(); out.gain.value=0.9; const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=2400; lp.connect(out).connect(c.destination);
-  const note=(f,at,dur)=>{ for(const d of [-6,0,6]){ const o=c.createOscillator(), g=c.createGain(); o.type='sawtooth'; o.frequency.value=f; o.detune.value=d;
-    g.gain.setValueAtTime(0,at); g.gain.linearRampToValueAtTime(.12,at+0.04); g.gain.setValueAtTime(.12,at+dur-0.08); g.gain.exponentialRampToValueAtTime(0.0001,at+dur+0.25); o.connect(g).connect(lp); o.start(at); o.stop(at+dur+0.3); } };
-  note(392,t,0.18); note(392,t+0.2,0.12); note(523.25,t+0.36,0.22); note(659.25,t+0.6,0.2); note(783.99,t+0.82,0.9); }
+  // clean, bright victory: a quick rising arpeggio that lands on a warm major chord with a little shimmer
+  const comp=c.createDynamicsCompressor(); comp.threshold.value=-14; comp.ratio.value=3; const out=c.createGain(); out.gain.value=1.1; comp.connect(out).connect(c.destination);
+  const bell=(f,at,dur,g)=>{ for(const [m,gg,ty] of [[1,g,'triangle'],[2,g*.22,'sine'],[3,g*.06,'sine']]){ const o=c.createOscillator(), v=c.createGain(); o.type=ty; o.frequency.value=f*m; v.gain.setValueAtTime(0,at); v.gain.linearRampToValueAtTime(gg,at+0.012); v.gain.exponentialRampToValueAtTime(0.0001,at+dur); o.connect(v).connect(comp); o.start(at); o.stop(at+dur+0.05); } };
+  const pad=(f,at,dur,g)=>{ const o=c.createOscillator(), v=c.createGain(); o.type='sine'; o.frequency.value=f; v.gain.setValueAtTime(0,at); v.gain.linearRampToValueAtTime(g,at+0.08); v.gain.setValueAtTime(g,at+dur*.45); v.gain.exponentialRampToValueAtTime(0.0001,at+dur); o.connect(v).connect(comp); o.start(at); o.stop(at+dur+0.05); };
+  bell(523.25,t,.32,.32); bell(659.25,t+.11,.32,.32); bell(783.99,t+.22,.36,.34);
+  bell(1046.5,t+.36,1.5,.4); pad(523.25,t+.36,1.6,.12); pad(659.25,t+.36,1.6,.1); pad(783.99,t+.36,1.6,.1);
+  bell(2093,t+.44,.7,.07); bell(2637,t+.54,.6,.05); }
 function allLogged(a){ return a&&a.items.length&&a.items.every(it=>it.sets.length&&it.sets.every(s=>s.st)); }
 function maybeCelebrate(){ const a=Pf.active; if(!allLogged(a)||a.celebrated) return; a.celebrated=true; S.rest=null; Store.save(); horn(); if(Pf.flash) flashScreen(); S.sheet={kind:'done'}; setTimeout(()=>renderSheet(),60); }
 function buzz(){ try{ navigator.vibrate&&navigator.vibrate([250,120,250]); }catch(e){} }
@@ -2551,7 +2555,7 @@ function vSession(){
       <div class="rowx" style="align-items:center"><span class="eyebrow" style="flex:1">${i+1} of ${a.items.length}</span>
         <button class="iconbtn hurtbtn ${it.hurt?'on':''}" data-a="s-hurt" data-v="${i}" aria-pressed="${!!it.hurt}" aria-label="${it.hurt?'Marked as felt pain':'Mark this exercise as felt pain'}">${ic('bandage','sm')}</button><button class="iconbtn" data-a="s-swap" data-v="${i}" aria-label="Swap exercise">${ic('swap','sm')}</button><button class="iconbtn" data-a="s-remove" data-v="${i}" aria-label="Remove exercise">${ic('x','sm')}</button></div>
         <h2 class="extitle">${esc(e.n)}</h2>
-        <div class="rowx tagline" style="gap:6px;margin-top:-6px;justify-content:center">${it.cardio?'<span class="tag">Cardio</span>':`<button class="tag tagbtn" data-a="s-equip" data-v="${i}" aria-label="Change equipment, now ${it.equip}${it.attach?', '+it.attach:''}">${it.equip==='Plate'?'Plate loaded':it.equip}${it.attach?' · '+esc(it.attach):''}${ic('down','xs')}</button><button class="tag tagbtn" data-a="s-reps" data-v="${i}" aria-label="Change rep range, now ${it.repMin} to ${it.repMax}">Reps ${it.repMin}–${it.repMax}${ic('down','xs')}</button>${it.setting?`<span class="tag">Setting ${esc(it.setting)}</span>`:''}`}</div>
+        <div class="rowx tagline sessline" style="gap:6px;margin-top:-6px;justify-content:center">${it.cardio?'<span class="tag">Cardio</span>':`<button class="tag tagbtn" data-a="s-equip" data-v="${i}" aria-label="Change equipment, now ${it.equip}${it.attach?', '+it.attach:''}">${it.equip==='Plate'?'Plate loaded':it.equip}${it.attach?' · '+esc(it.attach):''}${ic('down','xs')}</button><button class="tag tagbtn" data-a="s-reps" data-v="${i}" aria-label="Change rep range, now ${it.repMin} to ${it.repMax}">Reps ${it.repMin}–${it.repMax}${ic('down','xs')}</button>${it.setting?`<span class="tag">Setting ${esc(it.setting)}</span>`:''}`}</div>
       ${it.swapped?`<div class="rowx" style="gap:6px;margin-top:-6px;justify-content:center"><span class="tag">Swapped for today</span></div>`:''}
       ${it.note?`<div class="small" style="margin-top:-6px">${esc(it.note)}</div>`:''}
       ${it.injAsk?`<div class="injask"><b>Still feeling it?</b><span class="small">Last week you marked pain here. If it’s better, go back to your normal ${fmtN(((Pf.injured||{})[keyOf(it.exId,it.equip)]||{}).w||0)} ${Pf.unit}.</span><div class="rowx" style="gap:8px"><button class="btn sm" style="flex:1" data-a="inj-still" data-v="${i}">Still injured</button><button class="btn sm primary" style="flex:1" data-a="inj-ok" data-v="${i}">I’m good</button></div></div>`:''}
