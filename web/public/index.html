@@ -935,6 +935,8 @@ body.chatopen{position:fixed;inset:0;width:100%;overflow:hidden}
 </style>
 
 <div id="app"></div>
+<p class="legal" id="sitefoot">BOATS is a workout tracker you use with friends. By continuing you agree to the <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>
+
 <div id="sheet"></div><div id="ask"></div>
 <div id="toast" class="toast" hidden></div>
 <input type="file" id="photo-in" accept="image/*" hidden tabindex="-1"><input type="file" id="cam-in" accept="image/*" capture="environment" hidden tabindex="-1">
@@ -952,7 +954,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v140';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v141';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1604,7 +1606,7 @@ function vSplash(){
       <div class="floatboat" aria-hidden="true"><span class="pboat">${ic('boat')}</span>${waveSvg()}</div>
       <p class="fine rowx" style="justify-content:center;gap:6px;margin:0"><i class="dotst ${!S.ready?'':Store.mode==='cloud'?'ok':'warn'}"></i>${esc(status)}${S.bootMs?` · ready in ${(S.bootMs/1000).toFixed(1)}s`:''} · ${BUILD}</p>
       ${S.userCount?`<p class="fine" style="text-align:center;margin:0">${S.userCount} ${S.userCount===1?'person':'people'} on BOATS</p>`:''}
-    </div><p class="legal">By continuing you agree to the <a href="/terms" target="_blank" rel="noopener">Terms</a> and <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</p></div>`;
+    </div>${document.getElementById('sitefoot')?'':`<p class="legal">By continuing you agree to the <a href="/terms" target="_blank" rel="noopener">Terms</a> and <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</p>`}</div>`;
 }
 function vOnboard(){
   const s=S.ob;
@@ -2977,6 +2979,7 @@ function render(){ const oldHTML=app.innerHTML, oldY=window.scrollY, k=viewKey()
   syncTypes();
   const car=document.getElementById('car'), sl=car?car.scrollLeft:null, wy=window.scrollY;
   if(S.route!=='splash'&&modBlocked()){ const m=modOf(Social.me()); app.innerHTML=`<div class="screen" style="min-height:80vh;justify-content:center;text-align:center;align-items:center"><div class="floatboat bigboat" aria-hidden="true"><span class="pboat">${ic('boat')}</span>${waveSvg()}</div><h1 class="h1">${m.status==='deleted'?'This account was removed':'Your account is suspended'}</h1><p class="muted" style="max-width:34ch">${m.status==='deleted'?'It was removed by the BOATS team.':m.until?'You can use BOATS again on '+new Date(m.until).toLocaleDateString(undefined,{month:'long',day:'numeric'})+'.':'The BOATS team paused this account.'}${m.reason?'<br><br>'+esc(m.reason):''}</p><button class="btn" data-a="feedback">${ic('chat','sm')}Contact the BOATS team</button></div>`; return; }
+  { const sf=document.getElementById('sitefoot'); if(sf) sf.hidden=S.route!=='splash'; }
   if(S.route==='splash') app.innerHTML=vSplash();
   else if(S.route==='onboard') app.innerHTML=vOnboard();
   else if(S.route==='session') app.innerHTML=vSession();

@@ -52,6 +52,9 @@ gate='''
 <script type="module" src="/shim.js"></script>
 </body></html>
 '''
+# Static footer in the page HTML so Google's verification check (which doesn't run JavaScript) sees what BOATS is and the policy links
+foot='<p class="legal" id="sitefoot">BOATS is a workout tracker you use with friends. By continuing you agree to the <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>\n'
+s=s.replace('<div id="app"></div>','<div id="app"></div>\n'+foot,1)
 s=head+'</head><body>\n'+s+gate
 os.makedirs(pub,exist_ok=True)
 open(os.path.join(pub,'index.html'),'w',encoding='utf-8').write(s)
