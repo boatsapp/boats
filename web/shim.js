@@ -138,6 +138,12 @@ window.boatsClaimFounder = async () => {
     });
   } catch(e) { return 0; }
 };
+// Moderation: moderation/{uid} = {status:'suspended'|'deleted', until, reason} (owner writes, everyone signed in reads);
+// notices/{uid} = {items:[{at,text}]} pop-up messages from BOATS (owner writes, only that person reads).
+window.boatsMod = {
+  watchAll: cb => authReady.then(u => { if(!u) return; onSnapshot(collection(fs, "moderation"), s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); cb(m); }, () => {}); }),
+  watchNotices: cb => authReady.then(u => { if(!u) return; onSnapshot(doc(fs, "notices", u.uid), s => cb(s.exists() ? (s.data().items || []) : []), () => {}); }),
+};
 // Record who has an account (email + dates) for the owner's Data center, then check owner access.
 // Who counts as the owner lives only in firestore.rules, so no email appears in this public code.
 let adminDone; window.boatsAdminReady = new Promise(r => { adminDone = r; });
@@ -157,6 +163,17 @@ authReady.then(async u => {
         const feedback = [];
         f.docs.forEach(d => { const x = unpack(d); ((x && x.items) || []).forEach(it => feedback.push({ ...it, uid: d.id })); });
         return { accounts, feedback };
+      },
+      // Owner only (enforced by rules): suspend / unsuspend / mark deleted, send a pop-up, wipe someone's data.
+      setStatus: async (uid, data) => { const r = doc(fs, "moderation", uid); if(!data) await deleteDoc(r); else await setDoc(r, { ...data, at: Date.now() }); },
+      notify: async (uid, text) => { const r = doc(fs, "notices", uid), g = await getDoc(r), items = g.exists() ? (g.data().items || []) : []; await setDoc(r, { items: [...items, { at: Date.now(), text: String(text).slice(0, 500) }].slice(-20) }); },
+      wipe: async uid => {
+        const del = async r => { try { await deleteDoc(r); } catch(e) {} };
+        const d = await getDocs(collection(fs, `users/${uid}/data`)); for(const x of d.docs) await del(x.ref);
+        for(const c of ["people", "posts", "reactions", "feedback"]) await del(doc(fs, c, uid));
+        const t = collection(fs, "threads"); for(const q of [query(t, where("from", "==", uid)), query(t, where("to", "==", uid))]) for(const x of (await getDocs(q)).docs) await del(x.ref);
+        const un = await getDocs(query(collection(fs, "usernames"), where("uid", "==", uid))); for(const x of un.docs) await del(x.ref);
+        await setDoc(doc(fs, "moderation", uid), { status: "deleted", at: Date.now() });
       },
       // Owner only (enforced by rules): moderation view of one person's saved workouts (public and private) and their DMs.
       userData: async uid => {

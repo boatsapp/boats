@@ -11,13 +11,18 @@ service cloud.firestore {
     match /users/{uid}/data/{docId} {
       allow read: if isMe(uid) || isAdmin();
       allow write: if isMe(uid);
+      allow delete: if isAdmin();
     }
+    // Moderation status (suspended / removed): everyone signed in can read it so the app hides those accounts; only the owner writes.
+    match /moderation/{uid} { allow read: if signedIn(); allow write: if isAdmin(); }
+    // Pop-up messages from BOATS to one person: only they read them; only the owner writes.
+    match /notices/{uid} { allow read: if isMe(uid) || isAdmin(); allow write: if isAdmin(); }
     // Public cards, posts, likes/comments: signed-in users read, only the owner writes.
-    match /people/{uid}    { allow read: if signedIn(); allow delete: if isMe(uid); allow create, update: if isMe(uid) && small(); }
-    match /posts/{uid}     { allow read: if signedIn(); allow delete: if isMe(uid); allow create, update: if isMe(uid) && small(); }
-    match /reactions/{uid} { allow read: if signedIn(); allow delete: if isMe(uid); allow create, update: if isMe(uid) && small(); }
+    match /people/{uid}    { allow read: if signedIn(); allow delete: if isMe(uid) || isAdmin(); allow create, update: if isMe(uid) && small(); }
+    match /posts/{uid}     { allow read: if signedIn(); allow delete: if isMe(uid) || isAdmin(); allow create, update: if isMe(uid) && small(); }
+    match /reactions/{uid} { allow read: if signedIn(); allow delete: if isMe(uid) || isAdmin(); allow create, update: if isMe(uid) && small(); }
     // Feedback: only you (the app owner reads it in the Firebase console).
-    match /feedback/{uid}  { allow read: if isMe(uid) || isAdmin(); allow delete: if isMe(uid); allow create: if isMe(uid) && small(); allow update: if (isMe(uid) || isAdmin()) && small(); }
+    match /feedback/{uid}  { allow read: if isMe(uid) || isAdmin(); allow delete: if isMe(uid) || isAdmin(); allow create: if isMe(uid) && small(); allow update: if (isMe(uid) || isAdmin()) && small(); }
     // Account list (email, name, join/last-seen dates): you write your own, only the owner reads all.
     match /accounts/{uid} {
       allow get: if isMe(uid) || isAdmin();
@@ -56,14 +61,14 @@ service cloud.firestore {
     match /usernames/{name} {
       allow get: if signedIn();
       allow create: if signedIn() && request.resource.data.uid == request.auth.uid && name.size() <= 20 && name == name.lower();
-      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+      allow delete: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
     }
     // Exercise library: read-only for the app; edit in the console.
     match /library/{id}    { allow read: if signedIn(); }
     // Direct messages: one doc per sender→recipient, readable only by those two.
     match /threads/{id} {
       allow read: if signedIn() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid || isAdmin());
-      allow delete: if signedIn() && resource.data.from == request.auth.uid;
+      allow delete: if signedIn() && (resource.data.from == request.auth.uid || isAdmin());
       allow create, update: if signedIn() && small()
         && request.resource.data.from == request.auth.uid
         && id == request.auth.uid + '_' + request.resource.data.to;
