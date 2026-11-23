@@ -890,6 +890,12 @@ body.chatopen{position:fixed;inset:0;width:100%;overflow:hidden}
 .done-badge svg{width:36px;height:36px;stroke-width:2.6}
 @keyframes ping{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--good) 45%,transparent)}100%{box-shadow:0 0 0 22px transparent}}
 .prof{display:flex;flex-direction:column;gap:14px}
+.phead2{gap:8px;align-items:center;min-height:44px}.ptop{font-family:var(--display);font-size:22px;font-weight:800;letter-spacing:-.02em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prof2{gap:12px}.pinfo{display:flex;flex-direction:column;gap:3px;min-width:0}.pname{font-size:15px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pmeta{font-size:13px;color:var(--muted)}
+.streakpill.sm2{height:24px;padding:0 9px;font-size:12px}
+.pinfo>*{align-self:flex-start;text-align:left}
+.fby{display:flex;align-items:center;gap:8px;margin-top:6px;background:none;border:0;padding:0;color:var(--muted);font:inherit;font-size:13px;text-align:left}.fby b{color:var(--fg)}.fbyav{display:flex}.fbyav .av{width:22px!important;height:22px!important;border:2px solid var(--bg);font-size:10px}.fbyav .av+.av{margin-left:-8px}
+.pbtns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.pbtns.three{grid-template-columns:repeat(3,minmax(0,1fr))}.pbtn{height:36px;border-radius:10px;border:0;background:var(--surface-2);color:var(--fg);font:inherit;font-size:14px;font-weight:700}.pbtn.primary{background:var(--accent);color:#0E0E0D;font-weight:800}
 .pstats{flex:1;display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
 .pstats b{display:block;font-family:var(--display);font-size:20px;font-weight:700}
 .pstats span{font-size:12px;color:var(--muted)}
@@ -938,7 +944,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v128';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v129';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1099,6 +1105,7 @@ const P = {
   friends:'<circle cx="9" cy="8.5" r="3.2"/><path d="M3 19.5c.9-3.2 3.3-4.6 6-4.6s5.1 1.4 6 4.6"/><path d="M15.5 5.6a3 3 0 0 1 0 5.8M17.5 14.9c1.8.5 3 1.9 3.5 4.1"/>',
   me:'<circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c1.2-3.6 4-5 7-5s5.8 1.4 7 5"/>',
   plus:'<path d="M12 5v14M5 12h14"/>',
+  menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
   check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
   x:'<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
   back:'<path d="M15 5l-7 7 7 7"/>',
@@ -1522,7 +1529,7 @@ function usernameIssue(u){ u=String(u||'').trim(); if(!u) return 'Pick a usernam
   return taken?`@${u} is already taken. Try another.`:''; }
 const NAME_WEEK=7*864e5, NAME_GRACE=10*60000;
 function nameLocked(){ const t=Pf.nameAt||0; return !!(Pf.onboarded&&t&&Date.now()-t<NAME_WEEK); }
-function dv(f){ return S.draft&&S.meView==='settings'&&S.route==='app'?S.draft[f]:(Pf[f]||''); }
+function dv(f){ return S.draft&&S.meView==='edit'&&S.route==='app'?S.draft[f]:(Pf[f]||''); }
 function draftDirty(){ const d=S.draft; return !!d&&['username','realName','town','bio','link'].some(f=>String(d[f]||'').trim()!==String(Pf[f]||'').trim()); }
 function userMsg(){ if(nameLocked()){ const days=Math.max(1,Math.ceil((NAME_WEEK-(Date.now()-Pf.nameAt))/864e5)); return `<span class="muted">You can change your username again in ${days} day${days===1?'':'s'}.</span>`; } const u=String(dv('username')||'').trim(); if(!u) return ''; if(S.draft&&S.meView==='settings'&&u.toLowerCase()===String(Pf.username||'').toLowerCase()) return ''; const x=usernameIssue(u); return x?`<span style="color:var(--bad)">${esc(x)}</span>`:`<span style="color:var(--good)">@${esc(u)} is available</span>`; }
 function townMsg(){ const t=String(dv('town')||'').trim(); if(!t) return '<span class="muted">Optional. US towns for now.</span>'; return placeValid(t)?`<span style="color:var(--good)">${ic('check','xs')} ${esc(t)}</span>`:'<span style="color:var(--bad)">Pick your town from the list so it\'s a real place.</span>'; }
@@ -1651,8 +1658,8 @@ function weighCard(){ const last=Pf.bwLog[Pf.bwLog.length-1], today=last&&sameDa
   return `<section class="card rowx weigh" style="gap:10px;padding:12px 14px"><span class="ico">${ic('scale','sm')}</span>
     ${today&&!S.bwEdit?`<span style="color:var(--good);display:inline-flex">${ic('check','sm')}</span><div style="flex:1;min-width:0"><b>${fmtN(last.w)} ${Pf.unit}</b> <span class="muted small">logged today</span></div><button class="link small" data-a="bw-edit">Update</button>`
     :`<div style="flex:1;min-width:0"><div class="inwrap"><input class="input num" id="bw-today" inputmode="decimal" placeholder="Weigh-in${last?' (last '+fmtN(last.w)+')':''}" style="height:44px"><span class="suf">${Pf.unit}</span></div></div><button class="btn sm primary" style="width:auto;flex:none;height:44px" data-a="bw-today">Log</button>`}</section>`; }
-function nameAsk(){ return S.nameTaken?`<section class="card stack" style="gap:8px;border-color:var(--bad)"><b>@${esc(Pf.username)} belongs to someone else</b><span class="muted small">Two accounts ended up with the same username. Pick a new one so friends can find you.</span><button class="btn primary" data-a="settings">Change username</button></section>`:''; }
-function realNameAsk(){ return Pf.onboarded&&!String(Pf.realName||'').trim()?`<section class="card stack" style="gap:8px"><b>Add your name</b><span class="muted small">Your name shows small under your username so friends can search for you.</span><button class="btn" data-a="settings">Add my name</button></section>`:''; }
+function nameAsk(){ return S.nameTaken?`<section class="card stack" style="gap:8px;border-color:var(--bad)"><b>@${esc(Pf.username)} belongs to someone else</b><span class="muted small">Two accounts ended up with the same username. Pick a new one so friends can find you.</span><button class="btn primary" data-a="edit-profile">Change username</button></section>`:''; }
+function realNameAsk(){ return Pf.onboarded&&!String(Pf.realName||'').trim()?`<section class="card stack" style="gap:8px"><b>Add your name</b><span class="muted small">Your name shows small under your username so friends can search for you.</span><button class="btn" data-a="edit-profile">Add my name</button></section>`:''; }
 function sexAsk(){ return Pf.onboarded&&!Pf.sex?`<section class="card stack" style="gap:10px"><b>One quick thing</b><span class="muted small">Boats uses sex to provide the most accurate information on calories. This is never shown on your profile.</span>${seg('sex','',{male:'Male',female:'Female'})}</section>`:''; }
 function vChecklist(){
   const tk=dayKey(new Date()), items=Pf.checklist.filter(c=>!c.days||c.days.includes(tk)); const tags=targetTags();
@@ -2292,27 +2299,34 @@ function followersOf(uid){ const me=Social.me(); return Object.entries(Social.pe
 function fbadgeN(uid){ const n=founderNo(uid); return n?`<span class="anchorb withn" title="Founding Crew #${String(n).padStart(3,'0')}">${ic('anchor','xs')}<i>${String(n).padStart(3,'0')}</i></span>`:''; }
 function fbadge(uid){ return founderNo(uid)?`<span class="anchorb" title="Founding Crew" aria-label="Founding Crew">${ic('anchor','xs')}</span>`:''; }
 function founderNo(uid){ const n=((Social.founders||{})[uid]); return n>=1&&n<=100?n:0; }
+function taggedPosts(uid){ const u=String(((cardOf(uid)||{}).username)||'').toLowerCase(); if(!u) return []; const re=new RegExp('@'+u.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?![A-Za-z0-9._])','i'), out=[];
+  for(const [id,doc] of Object.entries(Social.posts||{})) if(id!==uid&&!blockedWith(id)) for(const p of ((doc||{}).items||[])) if(p.photo&&re.test(String(p.caption||''))) out.push({uid:id,p}); return out.sort((a,b)=>b.p.at-a.p.at); }
+function followedBy(uid){ const me=Social.me(); return (Pf.friends||[]).filter(f=>f!==uid&&f!==me&&Social.people[f]&&(Social.people[f].following||[]).includes(uid)); }
 function profileBlock(uid,c,me){
-  c=c||{}; const st=statusOf(c.status), posts=((Social.posts[uid]||{}).items||[]), pics=posts.filter(p=>p.photo);
-  const tags=[c.town?`<span class="tag">${ic('pin','xs')}${esc(c.town)}</span>`:'', c.height?`<span class="tag">${esc(c.height)}</span>`:'', c.weight?`<span class="tag">${esc(c.weight)}</span>`:'', c.goal&&GOALS[c.goal]?`<span class="tag">${({bulk:'Bulking',maintain:'Maintaining',cut:'Cutting'})[c.goal]}</span>`:''].join('');
+  c=c||{}; const st=statusOf(c.status), posts=((Social.posts[uid]||{}).items||[]), pics=posts.filter(p=>p.photo).sort((a,b)=>b.at-a.at);
+  const info=[c.town, c.height, c.weight, c.goal&&GOALS[c.goal]?({bulk:'Bulking',maintain:'Maintaining',cut:'Cutting'})[c.goal]:''].filter(Boolean).map(esc).join(' · ');
   const wk=me?Store.workouts.length:(c.wcount??'–'), fol=followersOf(uid), fing=me?(Pf.friends||[]).length:(Array.isArray(c.following)?c.following.length:'–');
   const stat=(n,l)=>{ const t=l==='crew'?'followers':l; return me?`<button data-a="my-friends" data-v="${l==='crew'?'crew':'following'}" aria-label="${n} ${t}"><b class="num">${n}</b><span>${t}</span></button>`:`<button data-a="plist" data-v="${esc(uid)}|${l==='crew'?'crew':'following'}" aria-label="See ${n} ${t}"><b class="num">${n}</b><span>${t}</span></button>`; };
-  const gtag='';
-  const streakN=me?streak():(c.status?c.status.streak:0);
-  const fn=founderNo(uid), r=streakRank(uid), rl=rankLabel(r,5);
-  return `<div class="prof">
+  const streakN=me?(Pf.show.status?streak():0):(c.status?c.status.streak||0:0);
+  const fb=me?[]:followedBy(uid), fol2=Pf.friends.includes(uid);
+  const tagged=me?[]:taggedPosts(uid), tab=!me&&tagged.length&&S.ptabT===uid?'tagged':'posts';
+  const tile=(u,p)=>`<button data-a="posts-open" data-v="${esc(u+':'+p.id)}" aria-label="${esc(dayWord(p.type))}, ${shortDate(p.at)}"><img src="${esc(p.photo)}" alt="" loading="lazy">${p.more?`<i class="multi">${ic('stack','xs')}</i>`:''}</button>`;
+  return `<div class="prof prof2">
     <div class="rowx" style="gap:18px"><button class="avbtn" data-a="av-view" data-v="${esc(uid)}" aria-label="View profile picture">${avatar(c.username||'?',c.photo,c.status?st.cls:null,true)}</button>
       <div class="pstats">${me?`<button data-a="my-workouts" aria-label="See your ${wk} workouts"><b class="num">${wk}</b><span>workouts</span></button>`:`<div><b class="num">${wk}</b><span>workouts</span></div>`}${stat(fol,'crew')}${stat(fing,'following')}</div></div>
-    <div class="rowx" style="align-items:flex-start;gap:12px"><div class="stack" style="gap:4px;flex:1;min-width:0"><div class="rowx" style="gap:8px;flex-wrap:nowrap;min-width:0"><h2 class="h2" style="font-size:22px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.username||'Lifter')}</h2>${fbadge(uid)}${fn?`<button class="ftag" data-a="founder-info" data-v="${fn}" aria-label="Founding Crew member number ${fn}">#${String(fn).padStart(3,'0')}</button>`:''}</div>
-      ${c.name?`<span class="realname">${esc(c.name)}</span>`:''}
-      ${c.status?`<span class="small muted">${st.label}</span>`:''}</div>
-      <div class="stack" style="gap:6px;align-items:flex-end;flex:none">${me||c.status?`<button class="streakpill solid" data-a="ranks" data-v="${esc(uid)}" data-top="5" aria-label="${streakN} day streak${rl?', '+esc(rl):''}">${ic('flame','xs')}${rl?`<span>${esc(rl)}</span>`:`<span><span class="num">${streakN}</span> day streak</span>`}</button>`:''}${!me&&c.splitPub?`<button class="tag copytag" data-a="split-view" data-v="${esc(uid)}">${ic('clip','xs')}Copy split</button>`:''}</div></div>
-    ${!me&&S.unfAsk&&Pf.friends.includes(uid)?`<div class="card rowx" style="gap:8px;padding:10px 12px"><span style="flex:1;min-width:0">Unfollow ${esc(c.username||'')}?</span><button class="btn sm" style="width:auto" data-a="unf-ask">Cancel</button><button class="btn sm danger" style="width:auto" data-a="friend" data-v="${esc(uid)}">Unfollow</button></div>`:''}
-    ${c.bio?`<p class="bio2" style="margin:-6px 0 0;white-space:pre-line">${bioHtml(c.bio)}</p>`:me?`<button class="link" style="text-align:left;margin-top:-6px" data-a="settings">Add a bio</button>`:''}
-    ${c.link&&linkHtml(c.link)?`<div style="margin:-8px 0 0">${linkHtml(c.link)}</div>`:''}
-    ${tags?`<div class="tagline1 tagcenter">${tags}</div>`:''}
-    ${me?ownGrid():pics.length?`<div class="pgrid3">${pics.map(p=>`<button data-a="posts-open" data-v="${esc(uid+':'+p.id)}" aria-label="${esc(dayWord(p.type))}, ${shortDate(p.at)}"><img src="${esc(p.photo)}" alt="" loading="lazy">${p.more?`<i class="multi">${ic('stack','xs')}</i>`:''}</button>`).join('')}</div>`
-      :`<div class="card empty" style="padding:28px 16px">${ic('camera')}<div style="margin-top:6px">No posts yet.</div></div>`}
+    <div class="pinfo">
+      <div class="rowx" style="gap:8px;min-width:0">${c.name?`<b class="pname">${esc(c.name)}</b>`:''}${streakN>0?`<button class="streakpill solid sm2" data-a="ranks" data-v="${esc(uid)}" data-top="5" aria-label="${streakN} day streak">${ic('flame','xs')}<span><span class="num">${streakN}</span> day streak</span></button>`:''}</div>
+      ${info?`<span class="pmeta">${info}</span>`:''}
+      ${c.bio?`<p class="bio2" style="margin:2px 0 0;white-space:pre-line">${bioHtml(c.bio)}</p>`:me?`<button class="link" style="text-align:left" data-a="edit-profile">Add a bio</button>`:''}
+      ${c.link&&linkHtml(c.link)?`<div>${linkHtml(c.link)}</div>`:''}
+      ${fb.length?`<button class="fby" data-a="plist" data-v="${esc(uid)}|crew"><span class="fbyav">${fb.slice(0,2).map(f=>avatar(Social.nameOf(f),Social.photoOf(f),null)).join('')}</span><span>Followed by <b>${esc(Social.nameOf(fb[0]))}</b>${fb.length>1?` and ${fb.length-1} other${fb.length>2?'s':''}`:''}</span></button>`:''}
+    </div>
+    ${!me&&S.unfAsk&&fol2?`<div class="card rowx" style="gap:8px;padding:10px 12px"><span style="flex:1;min-width:0">Unfollow ${esc(c.username||'')}?</span><button class="btn sm" style="width:auto" data-a="unf-ask">Cancel</button><button class="btn sm danger" style="width:auto" data-a="friend" data-v="${esc(uid)}">Unfollow</button></div>`:''}
+    <div class="pbtns ${!me&&c.splitPub?'three':''}">${me?`<button class="pbtn" data-a="edit-profile">Edit profile</button><button class="pbtn" data-a="share-profile">Share profile</button>`
+      :`<button class="pbtn ${fol2?'':'primary'}" data-a="follow-tog" data-v="${esc(uid)}" aria-pressed="${fol2}">${fol2?'Following':'Follow'}</button><button class="pbtn" data-a="dm-open" data-v="${esc(uid)}">Message</button>${c.splitPub?`<button class="pbtn" data-a="split-view" data-v="${esc(uid)}">Copy split</button>`:''}`}</div>
+    ${me?ownGrid():`${tagged.length?`<div class="itabs" role="tablist"><button role="tab" aria-selected="${tab==='posts'}" aria-label="Posts" class="${tab==='posts'?'on':''}" data-a="ptagged" data-v="">${ic('grid')}</button><button role="tab" aria-selected="${tab==='tagged'}" aria-label="Tagged posts" class="${tab==='tagged'?'on':''}" data-a="ptagged" data-v="${esc(uid)}">${ic('me')}</button></div>`:''}
+      ${tab==='tagged'?`<div class="pgrid3">${tagged.map(x=>tile(x.uid,x.p)).join('')}</div>`
+        :pics.length?`<div class="pgrid3">${pics.map(p=>tile(uid,p)).join('')}</div>`:`<div class="card empty" style="padding:28px 16px">${ic('camera')}<div style="margin-top:6px">No posts yet.</div></div>`}`}
   </div>`;
 }
 function splitPayload(){ const types={}; for(const [k] of DAYS){ const t=Pf.split[k]; if(String(t).startsWith('x_')) types[t]=TYPES[t]; }
@@ -2324,19 +2338,20 @@ function vPosts(){ const uid=S.postsOf, ps=(((Social.posts[uid]||{}).items)||[])
   </div>${tabbar()}`; }
 function vPerson(){ const id=S.personId, p=Social.people[id];
   return `<div class="screen">
-    <div class="rowx phead" style="margin:-4px -4px -10px -8px"><button class="iconbtn" data-a="person-back" aria-label="Back">${ic('back')}</button><span class="ptitle"></span>${p&&!blockedWith(id)?`<button class="iconbtn" data-a="dm-open" data-v="${esc(id)}" aria-label="Message ${esc(p.username||'')}">${ic('send')}</button><button class="btn sm fbtn ${Pf.friends.includes(id)?'':'primary'}" data-a="follow-tog" data-v="${esc(id)}" aria-pressed="${Pf.friends.includes(id)}">${Pf.friends.includes(id)?'Unfollow':'Follow'}</button><button class="iconbtn" data-a="user-more" data-v="${esc(id)}" aria-label="More options">${ic('more','sm')}</button>`:''}</div>
+    <div class="rowx phead phead2" style="margin:-4px -4px -6px -8px"><button class="iconbtn" data-a="person-back" aria-label="Back">${ic('back')}</button><b class="ptop" style="font-size:20px">${esc((p&&p.username)||'')}</b>${p&&!blockedWith(id)?fbadge(id)+(founderNo(id)?`<button class="ftag" data-a="founder-info" data-v="${founderNo(id)}" aria-label="Founding Crew member number ${founderNo(id)}">#${String(founderNo(id)).padStart(3,'0')}</button>`:''):''}<span class="spacer"></span>${p?`<button class="iconbtn" data-a="user-more" data-v="${esc(id)}" aria-label="More options">${ic('more','sm')}</button>`:''}</div>
     ${(Pf.blocked||[]).includes(id)?`<div class="card stack" style="gap:10px;text-align:center"><b>You blocked ${esc((p&&p.username)||'this person')}</b><span class="muted small">You won’t see their posts, comments or messages, and they can’t see yours.</span><button class="btn" data-a="unblock" data-v="${esc(id)}">Unblock</button></div>`
       :blockedWith(id)||!p?`<div class="card muted">This profile isn’t available.</div>`:profileBlock(id,p,false)}
     ${window.boatsAdmin&&p?`<div class="card stack modbox" style="gap:8px"><span class="eyebrow">Moderator · only you see this</span><div class="rowx" style="gap:8px"><button class="btn sm" style="flex:1" data-a="mod-workouts" data-v="${esc(id)}">${ic('lock','xs')}Saved workouts</button><button class="btn sm" style="flex:1" data-a="mod-dms" data-v="${esc(id)}">${ic('chat','xs')}Messages</button></div></div>`:''}
   </div>${tabbar()}`; }
 function vMe(){
   if(S.meView==='settings') return vSettings();
+  if(S.meView==='edit') return vEditProfile();
   if(S.meView==='friends') return vFriendList();
   if(S.meView==='workouts') return vMyWorkouts();
   if(S.meView==='admin') return vAdmin();
   if(S.meView==='install') return vInstall();
   return `<div class="screen">
-    <div class="rowx"><span class="eyebrow">Your profile</span><span class="spacer"></span><button class="iconbtn" data-a="settings" aria-label="Settings">${ic('gear')}</button></div>
+    <div class="rowx phead2"><b class="ptop">${esc(Pf.username||'Lifter')}</b>${fbadge(Social.me())}${founderNo(Social.me())?`<button class="ftag" data-a="founder-info" data-v="${founderNo(Social.me())}" aria-label="Founding Crew member number ${founderNo(Social.me())}">#${String(founderNo(Social.me())).padStart(3,'0')}</button>`:''}<span class="spacer"></span><button class="iconbtn" data-a="np-open" aria-label="New post">${ic('plus')}</button><button class="iconbtn" data-a="settings" aria-label="Settings">${ic('menu')}</button></div>
     ${profileBlock(Social.me(),Social.card(),true)}
   </div>${tabbar()}`;
 }
@@ -2456,12 +2471,9 @@ let ISW=null;
 document.addEventListener('touchstart',e=>{ const c=e.target.closest('#istep'); if(!c) return; ISW={x:e.touches[0].clientX,y:e.touches[0].clientY}; },{passive:true});
 document.addEventListener('touchend',e=>{ if(!ISW) return; const t=e.changedTouches[0], dx=t.clientX-ISW.x, dy=t.clientY-ISW.y; ISW=null; if(Math.abs(dx)<50||Math.abs(dx)<Math.abs(dy)*1.3) return; S.noClick=Date.now(); A[dx<0?'inst-next':'inst-back'](); },{passive:true});
 window.addEventListener('appinstalled',()=>{ window.__bip=null; S.instDone='installed'; if(S.meView==='install') render(); });
-function vSettings(){
+function vEditProfile(){
   return `<div class="screen">
-    <div><button class="link rowx" style="gap:4px" data-a="profile">${ic('back','sm')}Profile</button></div>
-    <div class="rowx"><div class="stack" style="gap:4px"><span class="eyebrow">Profile</span><h1 class="h1">Settings</h1></div><span class="spacer"></span>${window.boatsAdmin?`<button class="iconbtn admbtn" data-a="admin" aria-label="Data center">${ic('chart')}</button>`:''}</div>
-    ${isStandalone()?'':`<button class="btn primary instbtn" data-a="install">${ic('dl','sm')}Download App to Phone</button>`}
-    ${privacyNote()}
+    <div class="rowx" style="gap:8px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="profile" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">Edit profile</span></div>
     ${idFields(true)}
     <div class="field"><label for="f-link">Link</label><input class="input" id="f-link" type="url" inputmode="url" maxlength="120" placeholder="yourwebsite.com" autocapitalize="off" autocorrect="off" spellcheck="false" value="${esc(dv('link'))}" data-f="link"><span class="muted small">One link, shown on your profile.</span></div>
     <button class="btn primary" id="idsave" data-a="id-save" ${draftDirty()?'':'disabled'}>Save profile</button>
@@ -2472,6 +2484,13 @@ function vSettings(){
         ${lockRow('height','Height',heightStr())}
         ${lockRow('weight','Body weight',Pf.bodyweight?Pf.bodyweight+' '+Pf.unit:'')}
       </div></div>
+  </div>${tabbar()}`; }
+function vSettings(){
+  return `<div class="screen">
+    <div><button class="link rowx" style="gap:4px" data-a="profile">${ic('back','sm')}Profile</button></div>
+    <div class="rowx"><div class="stack" style="gap:4px"><span class="eyebrow">Profile</span><h1 class="h1">Settings</h1></div><span class="spacer"></span>${window.boatsAdmin?`<button class="iconbtn admbtn" data-a="admin" aria-label="Data center">${ic('chart')}</button>`:''}</div>
+    ${isStandalone()?'':`<button class="btn primary instbtn" data-a="install">${ic('dl','sm')}Download App to Phone</button>`}
+    ${privacyNote()}
     <div class="stack" style="gap:8px"><span class="flabel">Sharing</span>
       <button class="li card" style="padding:12px 16px" data-a="show" data-v="status"><span class="grow"><span class="t">Gym status and streak</span><br><span class="s">Show if you’re at the gym, trained today, and your streak</span></span><span class="small muted" style="margin-right:6px">${Pf.show.status?'Public':'Private'}</span><span class="toggle ${Pf.show.status?'on':''}"></span></button>
       <button class="li card" style="padding:12px 16px" data-a="autoshare"><span class="grow"><span class="t">Share workouts by default</span><br><span class="s">"Share to feed" starts switched on when you end a workout</span></span><span class="toggle ${Pf.autoShare!==false?'on':''}"></span></button>
@@ -3384,7 +3403,10 @@ const A = {
   'cl-add'(){ const i=document.getElementById('cl-new'), t=i.value.trim(); if(!t) return; Pf.checklist.push({id:'c'+uid(),t:t.slice(0,60),days:null}); Store.save(); render(); },
   dev(){ S.sheet={kind:'dev'}; renderSheet(); },
   'dev-go'(v){ previewLoad(v); },
-  settings(){ S.nameOpen=Pf.username; S.draft={username:Pf.username||'',realName:Pf.realName||'',town:Pf.town||'',bio:Pf.bio||'',link:Pf.link||''}; S.meView='settings'; S.tab='me'; S.route='app'; S.sheet=null; window.scrollTo(0,0); render(); },
+  'edit-profile'(){ navPush(); S.nameOpen=Pf.username; S.draft={username:Pf.username||'',realName:Pf.realName||'',town:Pf.town||'',bio:Pf.bio||'',link:Pf.link||''}; S.meView='edit'; S.tab='me'; S.route='app'; S.sheet=null; window.scrollTo(0,0); render(); },
+  async 'share-profile'(){ const url=APP_URL.replace(/\/?$/,'/')+'?u='+encodeURIComponent(Social.me()), text='Follow @'+(Pf.username||'me')+' on BOATS'; try{ if(navigator.share){ await navigator.share({title:'BOATS',text,url}); return; } }catch(e){ if(e&&e.name==='AbortError') return; } try{ await navigator.clipboard.writeText(url); savedNote('Profile link copied'); }catch(e){ toast('Could not share right now.'); } },
+  ptagged(v){ S.ptabT=v||null; render(); },
+  settings(){ S.draft=null; S.meView='settings'; S.tab='me'; S.route='app'; S.sheet=null; window.scrollTo(0,0); render(); },
   'my-friends'(v){ S.flTab=v||'following'; S.fq=''; S.meView='friends'; S.tab='me'; S.route='app'; window.scrollTo(0,0); render(); },
   'my-workouts'(){ S.personId=null; S.plist=null; S.postsOf=null; S.meView='workouts'; S.tab='me'; S.route='app'; window.scrollTo(0,0); render(); },
   profile(){ S.meView=null; window.scrollTo(0,0); render(); },
@@ -3398,7 +3420,7 @@ const A = {
   async 'wk-share'(v){ if(Social.postedToday()){ toast('You’ve shared 3 workouts today, the daily limit.'); return; } const w=Store.workouts.find(x=>x.id===v); if(!w) return; if(!w.pump){ toast('Add a pump picture first. The feed is photos only.'); return; } S.menu=null; S.sheet=null; await shareWorkout(w); render(); renderSheet(); toast('Shared to your feed'); },
   async 'wk-unshare'(v){ S.menu=null; S.sheet=null; await Social.delPost(v); render(); renderSheet(); toast('Now private: only you can see it'); },
   'pick-day'(){ S.sheet={kind:'pickday'}; renderSheet(); },
-  'town-pick'(v){ if(S.draft&&S.meView==='settings'){ S.draft.town=v; const sb=document.getElementById('idsave'); if(sb) sb.disabled=!draftDirty(); } else { Pf.town=v; Store.save(); } const i=document.getElementById('f-town'); if(i) i.value=v; const b=document.getElementById('town-sug'); if(b){ b.hidden=true; b.innerHTML=''; } const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); },
+  'town-pick'(v){ if(S.draft&&S.meView==='edit'){ S.draft.town=v; const sb=document.getElementById('idsave'); if(sb) sb.disabled=!draftDirty(); } else { Pf.town=v; Store.save(); } const i=document.getElementById('f-town'); if(i) i.value=v; const b=document.getElementById('town-sug'); if(b){ b.hidden=true; b.innerHTML=''; } const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); },
   'rep-preset'(v){ const p=REP_PRESETS[+v]; Pf.repMin=p.min; Pf.repMax=p.max; Pf.defaultsTouched=true; S.obDefTouched=true; Store.save(); render(); },
   pick(v){ S.pick=v===dayKey(new Date())?null:v; S.sheet=null; render(); },
   ftab(v){ S.ftab=v; render(); },
@@ -3643,7 +3665,7 @@ function onInput(e){
     Store.save(); return; }
   if(t.id==='f-user'&&!window.boatsAdmin&&/[A-Z]/.test(t.value)){ const p=t.selectionStart; t.value=t.value.toLowerCase(); t.setSelectionRange(p,p); }
   if(t.id==='f-bio'){ let n=0; const v=t.value.replace(/\n/g,()=>++n<=2?'\n':' '); if(v!==t.value) t.value=v; }
-  if(t.dataset.f&&S.draft&&S.meView==='settings'&&S.route==='app'&&(t.dataset.f in S.draft)){ S.draft[t.dataset.f]=t.value; if(t.id==='f-town'){ showTownSug(); const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); } if(t.id==='f-user'){ const m=document.getElementById('u-msg'); if(m) m.innerHTML=userMsg(); } const b=document.getElementById('idsave'); if(b) b.disabled=!draftDirty(); return; }
+  if(t.dataset.f&&S.draft&&S.meView==='edit'&&S.route==='app'&&(t.dataset.f in S.draft)){ S.draft[t.dataset.f]=t.value; if(t.id==='f-town'){ showTownSug(); const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); } if(t.id==='f-user'){ const m=document.getElementById('u-msg'); if(m) m.innerHTML=userMsg(); } const b=document.getElementById('idsave'); if(b) b.disabled=!draftDirty(); return; }
   if(t.dataset.f && !t.closest('.stepper')){ Pf[t.dataset.f]=t.value; if(t.id==='f-town'){ showTownSug(); const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); } if(t.id==='f-user'){ const m=document.getElementById('u-msg'); if(m) m.innerHTML=userMsg(); } Store.save(); return; }
   if(t.dataset.f){ const n=parseInt(t.value); if(n>0){ Pf[t.dataset.f]=n; Store.save(); } }
 }
@@ -3775,6 +3797,7 @@ Store.init().catch(()=>{}).then(()=>{
     if(isOwner){ if(u.toLowerCase()==='swaizy'&&u!=='Swaizy'){ Pf.username='Swaizy'; Store.save(); Social.publish(); render(); } }
     else if(/[A-Z]/.test(u)){ Pf.username=u.toLowerCase(); Store.save(); Social.publish(); render(); } });
   try{ if(Pf&&isStandalone()&&!Pf.installedAt){ Pf.installedAt=Date.now(); Store.save(); } }catch(e){}
+  try{ const qu=new URLSearchParams(location.search).get('u'); if(qu&&Pf&&Pf.onboarded){ history.replaceState(null,'',location.pathname); let n=0; const t=setInterval(()=>{ if((Social.people||{})[qu]||++n>40){ clearInterval(t); if(qu!==Social.me()) A.person(qu); else A.tab('me'); } },250); } }catch(e){}
   if(Pf&&Pf.pinReload){ S.pinNow=Pf.pinReload; Pf.pinReload=null; Store.save(); }
   if(window.boatsClaimFounder&&Pf&&Pf.onboarded) window.boatsClaimFounder().then(n=>{ if(n&&!Social.founders[Social.me()]){ Social.founders={...Social.founders,[Social.me()]:n}; refreshSocial(); } });
   if(window.boatsClaimName&&Pf&&Pf.onboarded&&Pf.username&&Pf.nameClaimed!==Pf.username) window.boatsClaimName(Pf.username,Pf.nameClaimed).then(r=>{ if(r==='ok'){ Pf.nameClaimed=Pf.username; Store.save(); } else if(r==='taken'){ S.nameTaken=true; Pf.nameAt=0; render(); } });
