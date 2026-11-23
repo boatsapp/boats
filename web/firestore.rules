@@ -7,9 +7,10 @@ service cloud.firestore {
     function isAdmin() { return signedIn() && request.auth.token.email == 'swaizyofficial@gmail.com' && request.auth.token.email_verified == true; }
     function small() { return request.resource.data.j is string && request.resource.data.j.size() < 900000; }
 
-    // Your own profile and workouts: only you.
+    // Your own profile and workouts: only you (the app owner can read them to moderate).
     match /users/{uid}/data/{docId} {
-      allow read, write: if isMe(uid);
+      allow read: if isMe(uid) || isAdmin();
+      allow write: if isMe(uid);
     }
     // Public cards, posts, likes/comments: signed-in users read, only the owner writes.
     match /people/{uid}    { allow read: if signedIn(); allow delete: if isMe(uid); allow create, update: if isMe(uid) && small(); }
@@ -46,7 +47,7 @@ service cloud.firestore {
     }
     // Photos sent in DMs: only the sender and the recipient can see them.
     match /dmphotos/{id} {
-      allow read: if signedIn() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
+      allow read: if signedIn() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid || isAdmin());
       allow create: if signedIn() && request.resource.data.from == request.auth.uid && id == request.auth.uid + '_' + request.resource.data.to + '_' + string(request.resource.data.at)
         && request.resource.data.d is string && request.resource.data.d.size() < 900000;
       allow delete: if signedIn() && resource.data.from == request.auth.uid;
@@ -61,7 +62,7 @@ service cloud.firestore {
     match /library/{id}    { allow read: if signedIn(); }
     // Direct messages: one doc per sender→recipient, readable only by those two.
     match /threads/{id} {
-      allow read: if signedIn() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
+      allow read: if signedIn() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid || isAdmin());
       allow delete: if signedIn() && resource.data.from == request.auth.uid;
       allow create, update: if signedIn() && small()
         && request.resource.data.from == request.auth.uid

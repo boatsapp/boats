@@ -158,6 +158,16 @@ authReady.then(async u => {
         f.docs.forEach(d => { const x = unpack(d); ((x && x.items) || []).forEach(it => feedback.push({ ...it, uid: d.id })); });
         return { accounts, feedback };
       },
+      // Owner only (enforced by rules): moderation view of one person's saved workouts (public and private) and their DMs.
+      userData: async uid => {
+        const d = await getDocs(collection(fs, `users/${uid}/data`)); const workouts = [];
+        d.docs.forEach(x => { const v = unpack(x); if(v && v.kind === "workout") workouts.push(v); });
+        return { workouts };
+      },
+      userThreads: async uid => {
+        const c = collection(fs, "threads"); const [a, b] = await Promise.all([getDocs(query(c, where("from", "==", uid))), getDocs(query(c, where("to", "==", uid)))]);
+        return [...a.docs, ...b.docs].map(x => ({ from: x.data().from, to: x.data().to, msgs: unpack(x) || [] })).filter(t => t.msgs.length);
+      },
       // Owner only (enforced by rules): change one person's feedback list, e.g. delete an item or mark it for Claude.
       editFeedback: async (uid, fn) => {
         const ref = doc(fs, "feedback", uid), g = await getDoc(ref), x = g.exists() ? (unpack(g) || {}) : {};
