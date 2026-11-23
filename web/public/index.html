@@ -272,7 +272,7 @@ body.locked{position:fixed;left:0;right:0;overflow:hidden}
 .anchorb.withn i{font-style:normal;font-size:11.5px;font-weight:700;letter-spacing:.02em}
 #edit-in{margin-top:8px}
 .askbox textarea.input{width:100%}
-.slides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.slides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;touch-action:pan-x pan-y;will-change:scroll-position;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
 .slides::-webkit-scrollbar{display:none}
 .slides>img{flex:0 0 100%;width:100%;scroll-snap-align:center;scroll-snap-stop:always}
 .slcount{position:absolute;top:58px;right:12px;z-index:3;padding:4px 9px;border-radius:999px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;font-weight:600}
@@ -895,6 +895,8 @@ body.chatopen{position:fixed;inset:0;width:100%;overflow:hidden}
 .streakpill.sm2{height:24px;padding:0 9px;font-size:12px}
 .pinfo>*{align-self:flex-start;text-align:left}
 .fby{display:flex;align-items:center;gap:8px;margin-top:6px;background:none;border:0;padding:0;color:var(--muted);font:inherit;font-size:13px;text-align:left}.fby b{color:var(--fg)}.fbyav{display:flex}.fbyav .av{width:22px!important;height:22px!important;border:2px solid var(--bg);font-size:10px}.fbyav .av+.av{margin-left:-8px}
+.pinforow{display:flex;gap:12px;align-items:flex-start}.pinforow .pinfo{flex:1}
+.sring{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:0;color:var(--fg);font:inherit;min-width:72px}.srwrap{position:relative;display:block}.srwrap svg{display:block}.srin{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;color:var(--fg)}.srin svg{color:var(--streak);width:13px;height:13px}.srin b{font-family:var(--display);font-weight:900}.srl{font-size:11.5px;font-weight:700}.srs{font-size:10.5px;color:var(--muted)}
 .pbtns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.pbtns.three{grid-template-columns:repeat(3,minmax(0,1fr))}.pbtn{height:36px;border-radius:10px;border:0;background:var(--surface-2);color:var(--fg);font:inherit;font-size:14px;font-weight:700}.pbtn.primary{background:var(--accent);color:#0E0E0D;font-weight:800}
 .pstats{flex:1;display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
 .pstats b{display:block;font-family:var(--display);font-size:20px;font-weight:700}
@@ -944,7 +946,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v130';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v131';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -2039,7 +2041,7 @@ function postStreakBadge(uid){ const r=streakRank(uid), l=rankLabel(r,5); return
 function slides(uid,p){ const n=1+(p.more||0), first=`<img class="pump" src="${esc(hqSrc(uid,p))}" ${p.hq&&!HQ[uid+'_'+p.id]?`data-hq="${esc(uid+'_'+p.id)}"`:''} alt="${esc(Social.nameOf(uid))}'s photo. Double tap to like, hold to see stats" loading="lazy" draggable="false">`;
   if(n<2) return first;
   const rest=Array.from({length:n-1},(_,k)=>{ const id=`${uid}_${p.id}_${k+1}`; return `<img class="pump" src="${esc(HQ[id]||(p.mthumbs||[])[k]||p.photo)}" ${HQ[id]?'':`data-hq="${esc(id)}"`} alt="Photo ${k+2} of ${n}" loading="lazy" draggable="false">`; }).join('');
-  return `<div class="slides" data-n="${n}">${first}${rest}</div><span class="slcount">1/${n}</span><div class="sldots">${Array.from({length:n},(_,k)=>`<i class="${k?'':'on'}"></i>`).join('')}</div>`; }
+  return `<div class="slides" data-n="${n}">${first}${rest}</div><div class="sldots">${Array.from({length:n},(_,k)=>`<i class="${k?'':'on'}"></i>`).join('')}</div>`; }
 function topComment(key){ const top=Social.comments(key).filter(c=>!c.re); if(!top.length) return null; return top.sort((a,b)=>Social.likes(ckOf(key,b))-Social.likes(ckOf(key,a))||b.at-a.at)[0]; }
 function postCard(uid,p,mine,suggest){
   const key=uid+':'+p.id, likes=Social.likes(key), liked=Social.liked(key), cm=Social.comments(key), d=new Date(p.at), go=uid===Social.me()?'data-a="tab" data-v="me"':`data-a="person" data-v="${esc(uid)}"`;
@@ -2299,6 +2301,10 @@ function followersOf(uid){ const me=Social.me(); return Object.entries(Social.pe
 function fbadgeN(uid){ const n=founderNo(uid); return n?`<span class="anchorb withn" title="Founding Crew #${String(n).padStart(3,'0')}">${ic('anchor','xs')}<i>${String(n).padStart(3,'0')}</i></span>`:''; }
 function fbadge(uid){ return founderNo(uid)?`<span class="anchorb" title="Founding Crew" aria-label="Founding Crew">${ic('anchor','xs')}</span>`:''; }
 function founderNo(uid){ const n=((Social.founders||{})[uid]); return n>=1&&n<=100?n:0; }
+// Streak ring: fills toward the next milestone (7, 30, 100, 365 days); sized to sit beside the bio
+function streakRing(uid,n,lines){ const M=[0,7,30,100,365,730], i=M.findIndex(m=>m>n), next=i<0?n+365:M[i], prev=i<0?n:M[i-1], f=Math.max(.04,Math.min(1,(n-prev)/Math.max(1,next-prev)));
+  const sz=Math.max(52,Math.min(72,44+lines*7)), r=sz/2-4, C=2*Math.PI*r;
+  return `<button class="sring" data-a="ranks" data-v="${esc(uid)}" data-top="5" aria-label="${n} day streak, ${next-n} days to ${next}"><span class="srwrap" style="width:${sz}px;height:${sz}px"><svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" aria-hidden="true"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="5"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="var(--streak)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(C*f).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 ${sz/2} ${sz/2})"/></svg><span class="srin">${ic('flame','xs')}<b class="num" style="font-size:${Math.round(sz*.3)}px">${n}</b></span></span><span class="srl">day streak</span><span class="srs">${next-n} to ${next}</span></button>`; }
 function taggedPosts(uid){ const u=String(((cardOf(uid)||{}).username)||'').toLowerCase(); if(!u) return []; const re=new RegExp('@'+u.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?![A-Za-z0-9._])','i'), out=[];
   for(const [id,doc] of Object.entries(Social.posts||{})) if(id!==uid&&!blockedWith(id)) for(const p of ((doc||{}).items||[])) if(p.photo&&re.test(String(p.caption||''))) out.push({uid:id,p}); return out.sort((a,b)=>b.p.at-a.p.at); }
 function followedBy(uid){ const me=Social.me(); return (Pf.friends||[]).filter(f=>f!==uid&&f!==me&&Social.people[f]&&(Social.people[f].following||[]).includes(uid)); }
@@ -2314,13 +2320,13 @@ function profileBlock(uid,c,me){
   return `<div class="prof prof2">
     <div class="rowx" style="gap:18px"><button class="avbtn" data-a="av-view" data-v="${esc(uid)}" aria-label="View profile picture">${avatar(c.username||'?',c.photo,c.status?st.cls:null,true)}</button>
       <div class="pstats">${me?`<button data-a="my-workouts" aria-label="See your ${wk} workouts"><b class="num">${wk}</b><span>workouts</span></button>`:`<div><b class="num">${wk}</b><span>workouts</span></div>`}${stat(fol,'crew')}${stat(fing,'following')}</div></div>
-    <div class="pinfo">
-      <div class="rowx" style="gap:8px;min-width:0">${c.name?`<b class="pname">${esc(c.name)}</b>`:''}${streakN>0?`<button class="streakpill solid sm2" data-a="ranks" data-v="${esc(uid)}" data-top="5" aria-label="${streakN} day streak">${ic('flame','xs')}<span><span class="num">${streakN}</span> day streak</span></button>`:''}</div>
+    <div class="pinforow"><div class="pinfo">
+      ${c.name?`<b class="pname">${esc(c.name)}</b>`:''}
       ${info?`<span class="pmeta">${info}</span>`:''}
       ${c.bio?`<p class="bio2" style="margin:2px 0 0;white-space:pre-line">${bioHtml(c.bio)}</p>`:me?`<button class="link" style="text-align:left" data-a="edit-profile">Add a bio</button>`:''}
       ${c.link&&linkHtml(c.link)?`<div>${linkHtml(c.link)}</div>`:''}
       ${fb.length?`<button class="fby" data-a="plist" data-v="${esc(uid)}|crew"><span class="fbyav">${fb.slice(0,2).map(f=>avatar(Social.nameOf(f),Social.photoOf(f),null)).join('')}</span><span>Followed by <b>${esc(Social.nameOf(fb[0]))}</b>${fb.length>1?` and ${fb.length-1} other${fb.length>2?'s':''}`:''}</span></button>`:''}
-    </div>
+    </div>${streakN>0?streakRing(uid,streakN,(c.name?1:0)+(info?1:0)+(c.bio?String(c.bio).split('\n').length:0)+(c.link?1:0)):''}</div>
     ${!me&&S.unfAsk&&fol2?`<div class="card rowx" style="gap:8px;padding:10px 12px"><span style="flex:1;min-width:0">Unfollow ${esc(c.username||'')}?</span><button class="btn sm" style="width:auto" data-a="unf-ask">Cancel</button><button class="btn sm danger" style="width:auto" data-a="friend" data-v="${esc(uid)}">Unfollow</button></div>`:''}
     <div class="pbtns ${!me&&c.splitPub?'three':''}">${me?`<button class="pbtn" data-a="edit-profile">Edit profile</button><button class="pbtn" data-a="share-profile">Share profile</button>`
       :`<button class="pbtn ${fol2?'':'primary'}" data-a="follow-tog" data-v="${esc(uid)}" aria-pressed="${fol2}">${fol2?'Following':'Follow'}</button><button class="pbtn" data-a="dm-open" data-v="${esc(uid)}">Message</button>${c.splitPub?`<button class="pbtn" data-a="split-view" data-v="${esc(uid)}">Copy split</button>`:''}`}</div>
@@ -3041,8 +3047,8 @@ async function buildPdf(){ const M=50, W=612, H=792; const pages=[[]]; let y=H-M
   return makePdf(pages); }
 function boatLoading(on,label){ let el=document.getElementById('boatload'); if(on){ if(!el){ el=document.createElement('div'); el.id='boatload'; document.body.appendChild(el); } el.setAttribute('role','status'); el.innerHTML=`<div class="bl"><span class="pboat">${ic('boat')}</span>${waveSvg()}<span class="small">${esc(label||'Uploading…')}</span></div>`; el.hidden=false; } else if(el) el.hidden=true; }
 function ptrEl(){ let el=document.getElementById('ptr'); if(!el){ el=document.createElement('div'); el.id='ptr'; el.innerHTML=`<span class="pboat">${ic('boat')}</span>${waveSvg()}`; document.body.appendChild(el); } return el; }
-document.addEventListener('touchstart',e=>{ if(S.route!=='app'||S.sheet||window.scrollY>0||e.target.closest('.sheet,.tabbar,.invitebar')) return; PTR={y0:e.touches[0].clientY,dy:0,scr:document.querySelector('#app .screen')}; },{passive:true});
-document.addEventListener('touchmove',e=>{ if(!PTR) return; const dy=e.touches[0].clientY-PTR.y0; if(dy<=0||window.scrollY>0){ if(PTR.dy) { PTR.scr.style.transform=''; ptrEl().style.opacity=0; } PTR.dy=0; return; }
+document.addEventListener('touchstart',e=>{ if(S.route!=='app'||S.sheet||window.scrollY>0||e.target.closest('.sheet,.tabbar,.invitebar,.slides,.chips,.npthumbs')) return; PTR={x0:e.touches[0].clientX,y0:e.touches[0].clientY,dy:0,scr:document.querySelector('#app .screen')}; },{passive:true});
+document.addEventListener('touchmove',e=>{ if(!PTR) return; const dy=e.touches[0].clientY-PTR.y0, dx=e.touches[0].clientX-PTR.x0; if(!PTR.dy&&Math.abs(dx)>Math.abs(dy)){ PTR=null; return; } if(dy<=0||window.scrollY>0){ if(PTR.dy) { PTR.scr.style.transform=''; ptrEl().style.opacity=0; } PTR.dy=0; return; }
   const d=Math.min(110,dy*0.45); PTR.dy=d; PTR.scr.style.transition='none'; PTR.scr.style.transform=`translateY(${d}px)`; const el=ptrEl(); el.classList.remove('spin'); el.style.opacity=Math.min(1,d/60); el.style.transform=`translate(-50%,0) rotate(${Math.sin(d/8)*10}deg)`; if(e.cancelable) e.preventDefault(); },{passive:false});
 document.addEventListener('touchend',()=>{ if(!PTR) return; const {dy,scr}=PTR; PTR=null; if(!scr) return; const el=ptrEl(); scr.style.transition='transform .35s cubic-bezier(.2,.8,.2,1)';
   if(dy>=60){ scr.style.transform='translateY(64px)'; el.style.transform='translate(-50%,0)'; el.classList.add('spin');
@@ -3052,7 +3058,7 @@ document.addEventListener('touchend',()=>{ if(!PTR) return; const {dy,scr}=PTR; 
 // feed photos: double tap to like, press and hold to see the stats
 let DT={t:0,k:''}, PH=null;
 document.addEventListener('scroll',e=>{ const t=e.target; if(!t.classList||!t.classList.contains('slides')) return; const i=Math.round(t.scrollLeft/t.clientWidth), w=t.parentElement, n=+t.dataset.n;
-  const c=w.querySelector('.slcount'); if(c) c.textContent=`${i+1}/${n}`; w.querySelectorAll('.sldots i').forEach((d,k)=>d.classList.toggle('on',k===i)); },true);
+  w.querySelectorAll('.sldots i').forEach((d,k)=>d.classList.toggle('on',k===i)); },true);
 document.addEventListener('pointerdown',e=>{ const w=e.target.closest('.ovwrap[data-pk]'); if(!w) return; PH={w,x:e.clientX,y:e.clientY,t:setTimeout(()=>{ w.classList.add('showstats'); PH&&(PH.shown=true); },380)}; });
 document.addEventListener('pointermove',e=>{ if(PH&&!PH.shown&&Math.hypot(e.clientX-PH.x,e.clientY-PH.y)>10){ clearTimeout(PH.t); PH=null; } });
 ['pointerup','pointercancel','pointerleave'].forEach(t=>document.addEventListener(t,e=>{ if(!PH) return; clearTimeout(PH.t); const {w,shown}=PH; PH=null; w.classList.remove('showstats'); if(shown){ S.noClick=Date.now(); return; }
