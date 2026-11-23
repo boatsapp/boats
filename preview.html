@@ -157,12 +157,12 @@ body.kbopen .chatwrap .chatpage{padding-bottom:0!important}
 body.swipeback #app{position:relative;z-index:1}
 body.swipeback #app .screen,body.swipeback #app .chatwrap{background:var(--bg);min-height:100vh;min-height:100dvh}
 body.swipeback{background:var(--bg)!important;overflow:hidden;touch-action:none}html:has(body.swipeback){overflow:hidden}
-.wkrow{align-items:center}.wkthumb{width:44px;height:55px;object-fit:cover;border-radius:8px;flex:none}
+.popstar{font-size:12px;margin-left:4px}.wkrow{align-items:center}.wkflame{color:var(--streak);display:grid}.wkthumb{width:44px;height:55px;object-fit:cover;border-radius:8px;flex:none}
 .instchk{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:none;color:var(--fg);font:inherit;font-weight:600;text-align:left}.instchk.on{border-color:var(--good)}.instchk.on .ckbox{background:var(--good);border-color:var(--good);color:#fff}.instchk:disabled{opacity:.5}.instchk.nudge{animation:nudge .4s}@keyframes nudge{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .instwarn{font-size:13px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--streak) 14%,transparent);color:var(--fg)}
 .modbox{border-style:dashed}.modw summary{cursor:pointer;list-style:none}.modw .exline{padding:4px 0}.modmsg{padding:4px 0;border-top:1px solid var(--line);font-size:14px;word-break:break-word}
 .ckrow{display:flex;gap:10px;align-items:flex-start}.ckbox{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;margin-top:1px}.ckrow.ok .ckbox{background:var(--good);border-color:var(--good);color:#fff}
-.splitdays{font-size:11px;opacity:.85}.splitdays i{font-style:normal;font-weight:800;margin-right:2px}
+.splitchips{display:grid;grid-template-columns:1fr 1fr;gap:8px}.splitchip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:inherit;text-align:left}.splitchip b{font-size:15px}.splitchip small{font-size:11.5px;color:var(--muted);line-height:1.3}.splitchip.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}.splitchip .rtag{font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
 .reqtxt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;white-space:normal;word-break:break-word}
 .dmtools{display:flex;align-items:center;gap:14px;align-self:center;padding-right:2px}
 .dmtools button{border:0;background:none;padding:0;color:#fff;display:grid;place-items:center}
@@ -233,6 +233,9 @@ body.swipeback #app .screen,body.swipeback #app .chatwrap{box-shadow:-18px 0 40p
 .dmcam svg{width:20px;height:20px}
 .dmbox textarea#dm-in{flex:1;min-width:0;width:100%;min-height:40px;max-height:84px;border:0;background:transparent;color:var(--fg);font:inherit;font-size:17px;line-height:1.35;padding:9px 0;resize:none;outline:none}
 :root[data-theme="light"] .bub:not(.me){background:#EFEFEF!important;color:#111}:root[data-theme="light"] .dmbox{background:#EFEFEF}:root[data-theme="light"] .blike{background:#EFEFEF!important}
+body.chatopen .fbk.inchat{bottom:calc(var(--vvh,100dvh) - var(--vvh,100dvh) + 76px + env(safe-area-inset-bottom,0px));z-index:20}body.kbopen .fbk.inchat{display:none}
+body.locked{position:fixed;left:0;right:0;overflow:hidden}
+.bseen2{align-self:flex-end;font-size:11px;color:var(--muted);margin:0 2px 4px 0;flex:none}
 .bseen{align-self:flex-end;font-size:11px;color:var(--muted);margin:-2px 4px 0 0}
 .bub.hasphoto{padding:4px;overflow:hidden}
 .dmphoto{display:block;line-height:0;cursor:pointer}
@@ -440,7 +443,8 @@ textarea.input{font-family:inherit;font-size:16px;line-height:1.4}
 .followic svg{stroke-width:2.4}
 .chipbtn{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--muted)}
 .chipbtn.on{background:var(--fg);border-color:var(--fg);color:var(--bg)}
-.tag.copytag{height:28px;border:0;background:var(--fg);color:var(--bg);cursor:pointer}
+.tag.copytag{height:28px;padding:0 11px;border:0;border-radius:999px;background:var(--fg);color:var(--bg);cursor:pointer;font-size:13px;font-weight:800;letter-spacing:.01em}
+.streakpill.solid{border-radius:999px}
 .copybig{}
 .input:focus::placeholder,textarea:focus::placeholder{color:transparent}
 .followsm{width:auto;min-width:110px;height:36px}
@@ -913,7 +917,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v127';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v128';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1167,6 +1171,7 @@ function normalizeProfile(p){
   if(!p.username && p.name) p.username=p.name;
   for(const k in base) if(p[k]===undefined) p[k]=base[k];
   p.show=Object.assign({},base.show,p.show||{}); p.targets=Object.assign({},base.targets,p.targets||{});
+  { const OLD={x_upper:'push',x_chest:'push',x_back:'pull',x_shoulders:'push',x_chestback:'push',x_shoarms:'arms'}; if(p.customTypes) for(const k of Object.keys(OLD)) if(k in p.customTypes){ delete p.customTypes[k]; } if(p.split) for(const [d,t] of Object.entries(p.split)) if(OLD[t]) p.split[d]=OLD[t]; }
   for(const [k] of DAYS){ p.plans[k]=p.plans[k]||[]; p.split[k]=p.split[k]||'rest'; } if(p.onboarded&&p.defaultsTouched==null) p.defaultsTouched=true;
   if(p.v<2){ p.repMin=7; p.repMax=10; p.rest=90; if(p.onboarded) p.onboarded=false; p.v=2; }
   if(!p.bwLog.length && num(p.bodyweight)) p.bwLog.push({t:Date.now(),w:num(p.bodyweight)});
@@ -1528,14 +1533,14 @@ function splitList(){ const sel=S.splitDay||'mon';
   <div class="field"><span class="flabel">${DAYN[sel]}</span>${typeGrid('sp-type',ob&&!touched.has(sel)?'':Pf.split[sel])}</div>`; }
 // Popular splits: a recommendation for your level plus the three most common ones
 const SPLITS={
-  ppl:{n:'Push / Pull / Legs',d:'6 days · the most popular split for building muscle',days:['push','pull','legs','push','pull','legs','rest']},
-  ul:{n:'Upper / Lower',d:'4 days · strength and size with more recovery',days:['x_upper','legs','rest','x_upper','legs','rest','rest'],ct:{x_upper:'Upper'}},
-  bro:{n:'Bro split',d:'5 days · one muscle group per day',days:['x_chest','x_back','legs','x_shoulders','arms','rest','rest'],ct:{x_chest:'Chest',x_back:'Back',x_shoulders:'Shoulders'}},
-  full:{n:'Full body',d:'3 days · best start for beginners and busy weeks',days:['full','rest','full','rest','full','rest','rest']},
-  arnold:{n:'Arnold split',d:'6 days · chest/back, shoulders/arms, legs twice',days:['x_chestback','x_shoarms','legs','x_chestback','x_shoarms','legs','rest'],ct:{x_chestback:'Chest & Back',x_shoarms:'Shoulders & Arms'}}};
+  ppl:{n:'PPL',d:'6 days · push, pull, legs twice',days:['push','pull','legs','push','pull','legs','rest']},
+  ul:{n:'U/L',d:'4 days · upper, lower, rest, repeat',days:['push','legs','rest','pull','legs','rest','rest']},
+  bro:{n:'Bro',d:'5 days · one focus per day',days:['push','pull','legs','arms','full','rest','rest']},
+  full:{n:'Full body',d:'3 days · best start for beginners',days:['full','rest','full','rest','full','rest','rest']}};
 function recSplit(){ return ({beginner:'full',intermediate:'ul',advanced:'ppl'})[Pf.level||'beginner']||'full'; }
-function popularSplits(){ const r=recSplit(), order=[r,...['ppl','ul','bro','full'].filter(k=>k!==r)].slice(0,4);
-  return `<div class="stack" style="gap:8px"><span class="flabel">Popular splits</span><div class="list">${order.map(k=>{ const sp=SPLITS[k]; return `<button class="li" data-a="split-use" data-v="${k}"><span class="grow"><span class="t">${esc(sp.n)}${k===r?' <span class="tag accent" style="margin-left:4px">Recommended</span>':''}</span><br><span class="s">${esc(sp.d)}</span><br><span class="s splitdays">${DAYS.map(([d,l],i)=>`<i>${l.slice(0,1)}</i>${esc(sp.ct&&sp.ct[sp.days[i]]||TYPES[sp.days[i]]||'')}`).join(' ')}</span></span>${ic('right','sm')}</button>`; }).join('')}</div></div>`; }
+function curSplit(){ return Object.keys(SPLITS).find(k=>SPLITS[k].days.every((t,i)=>Pf.split[DAYS[i][0]]===t)&&(S.route!=='onboard'||(S.obSet&&S.obSet.size===7))); }
+function popularSplits(){ const r=recSplit(), cur=curSplit(), order=[r,...['ppl','ul','bro','full'].filter(k=>k!==r)];
+  return `<div class="stack" style="gap:8px"><span class="flabel">Popular splits</span><div class="splitchips">${order.map(k=>{ const sp=SPLITS[k]; return `<button class="splitchip ${k===cur?'on':''}" data-a="split-use" data-v="${k}" aria-pressed="${k===cur}"><b>${esc(sp.n)}</b>${k===r?'<span class="rtag">Recommended</span>':''}<small>${esc(sp.d)}</small></button>`; }).join('')}</div></div>`; }
 function splitShareRow(){ return `<button class="li card" style="padding:12px 16px" data-a="share-split"><span class="grow"><span class="t">Make my split public</span><br><span class="s">Others can view and copy it from your profile</span></span><span class="toggle ${Pf.shareSplit?'on':''}"></span></button>`; }
 
 /* ---------- views ---------- */
@@ -2003,7 +2008,7 @@ function hqScan(){ if(!Store.db) return; document.querySelectorAll('#app img[dat
   Store.db.collection('photos').doc(id).get().then(g=>{ const d=g&&g.data&&g.data(); if(d&&d.d){ HQ[id]=d.d; document.querySelectorAll(`img[data-hq="${CSS.escape(id)}"]`).forEach(x=>{ x.src=d.d; x.removeAttribute('data-hq'); }); } }).catch(()=>{}); }); }
 async function savePhotoHq(postId,dataUrl){ if(!Store.db||!Store.uid||!dataUrl) return false; try{ await Store.db.collection('photos').doc(Store.uid+'_'+postId).set({d:dataUrl}); HQ[Store.uid+'_'+postId]=dataUrl; return true; }catch(e){ return false; } }
 function rankLabel(r,top){ const g=r.g&&r.g<=top, c=r.c&&r.c<=top&&r.city; if(!g&&!c) return ''; return g&&(!c||r.g<=r.c)?`#${r.g} Global`:`#${r.c} in ${r.city}`; }
-function postStreakBadge(uid){ const r=streakRank(uid), l=rankLabel(r,3); return l?`<button class="pstreak" data-a="ranks" data-v="${esc(uid)}" data-top="3" aria-label="${esc(l)} streak">${ic('flame','xs')}${esc(l)}</button>`:''; }
+function postStreakBadge(uid){ const r=streakRank(uid), l=rankLabel(r,5); return l?`<button class="pstreak" data-a="ranks" data-v="${esc(uid)}" data-top="5" aria-label="${esc(l)} streak">${ic('flame','xs')}${esc(l)}</button>`:''; }
 function slides(uid,p){ const n=1+(p.more||0), first=`<img class="pump" src="${esc(hqSrc(uid,p))}" ${p.hq&&!HQ[uid+'_'+p.id]?`data-hq="${esc(uid+'_'+p.id)}"`:''} alt="${esc(Social.nameOf(uid))}'s photo. Double tap to like, hold to see stats" loading="lazy" draggable="false">`;
   if(n<2) return first;
   const rest=Array.from({length:n-1},(_,k)=>{ const id=`${uid}_${p.id}_${k+1}`; return `<img class="pump" src="${esc(HQ[id]||(p.mthumbs||[])[k]||p.photo)}" ${HQ[id]?'':`data-hq="${esc(id)}"`} alt="Photo ${k+2} of ${n}" loading="lazy" draggable="false">`; }).join('');
@@ -2121,7 +2126,7 @@ function vDms(){ const th=dmThreads(), reqs=th.filter(t=>t.req), main=th.filter(
     ${S.dmNew?`<div class="stack" style="gap:6px"><span class="flabel">New message to</span>${Pf.friends.length?`<div class="list">${Pf.friends.filter(u=>Social.people[u]).map(u=>`<button class="li" data-a="dm-open" data-v="${esc(u)}">${avatar(Social.nameOf(u),Social.photoOf(u),null)}<span class="grow"><span class="t">${esc(Social.nameOf(u))}</span></span>${ic('right','sm')}</button>`).join('')}</div>`:'<div class="card muted small">Follow people to message them.</div>'}</div>`:''}
     ${list.length?`<div class="stack" style="gap:2px">${list.map(t=>`<div class="swrap"><button class="swdel" data-a="dm-hide" data-v="${esc(t.u)}">Delete</button><div class="actrow dmrow" ${t.req?'':`data-sw="${esc(t.u)}"`}><button class="actmain" data-a="dm-open" data-dbl="dm-del-ask" data-v="${esc(t.u)}" data-pin="${esc(t.u)}">${avatar(Social.nameOf(t.u),Social.photoOf(t.u),null)}<span class="acttxt"><b>${esc(Social.nameOf(t.u))}</b><br><span class="${t.req?'reqtxt ':''}${!t.req&&!t.last.me&&t.last.at>(seen[t.u]||0)?'':'muted'}">${t.last.me?'You: ':''}${esc(t.req?t.last.text||'':t.last.text.slice(0,60))}${t.req?'':' · '+ago(t.last.at)}</span></span></button>${(Pf.dmPins||[]).includes(t.u)?`<span class="pinic" aria-label="Pinned">${ic('pin','xs')}</span>`:''}${t.req?`<button class="btn sm fbbtn" data-a="dm-accept" data-v="${esc(t.u)}">Accept</button><button class="btn sm" style="width:auto;flex:none" data-a="dm-hide" data-v="${esc(t.u)}">Delete</button>`:''}</div></div>`).join('')}</div>`
       :`<div class="card empty">${ic('send')}<div style="margin-top:6px">${tab==='req'?'No message requests.':'No messages yet. Tap + to message someone you follow.'}</div></div>`}
-    <p class="muted small" style="margin:0">Hold to pin, swipe left to delete.</p>
+    ${tab==='req'?'':`<p class="muted small" style="margin:0">Hold to pin, swipe left to delete.</p>`}
   </div>${tabbar()}`; }
 function mentionHtml(t){ return esc(t).replace(/@([A-Za-z0-9._]{3,20})/g,(m,u)=>{ const id=Object.keys(Social.people||{}).find(k=>String((Social.people[k]||{}).username||'').toLowerCase()===u.toLowerCase()); return !id?m:id===Social.me()?`<button class="link mention" data-a="tab" data-v="me">@${u}</button>`:`<button class="link mention" data-a="person" data-v="${esc(id)}">@${u}</button>`; }); }
 // Your messages sent within 5 minutes of each other stack as one group; under each group: time · Delete.
@@ -2151,13 +2156,12 @@ function chatMsgs(u){ const msgs=chatWith(u); if(!msgs.length) return `<div clas
     if(!prev||m.at-prev.at>60*60000) out+=`<div class="dsep">${dsep(m.at)}</div>`;
     if(m.me&&!(prev&&prev.me&&m.at-prev.at<=5*60000)) gStart=m.at;
     const editing=m.me&&S.msgEdit===gStart, liked=m.lkMe||m.lkThem, lastOfRun=!next||next.me!==m.me||next.at-m.at>60*60000;
-    out+=`<div class="brow ${m.me?'me':''}">${!m.me?`<span class="bav">${lastOfRun?avatar(Social.nameOf(u),Social.photoOf(u),null):''}</span>`:''}${editing?`<button class="bdel" data-a="msg-del" data-v="${m.at}" aria-label="Delete this message">${ic('x','xs')}</button>`:''}<div class="bub ${m.me?'me':''} ${liked?'liked':''} ${m.photo||m.pimg?'hasphoto':''}" data-a="msg-tap" data-dbl="msg-like" data-v="${m.me?1:0}|${m.at}">${dmBody(m)}${liked?`<span class="blike" aria-label="Liked">❤️</span>`:''}</div><span class="bt">${tm(m.at)}</span></div>`;
-    if(m.me&&!next&&seenBy(u)>=m.at) out+=`<div class="bseen">Seen</div>`;
+    out+=`<div class="brow ${m.me?'me':''}">${!m.me?`<span class="bav">${lastOfRun?avatar(Social.nameOf(u),Social.photoOf(u),null):''}</span>`:''}${editing?`<button class="bdel" data-a="msg-del" data-v="${m.at}" aria-label="Delete this message">${ic('x','xs')}</button>`:''}${m.me&&!next&&seenBy(u)>=m.at?'<span class="bseen2">Seen</span>':''}<div class="bub ${m.me?'me':''} ${liked?'liked':''} ${m.photo||m.pimg?'hasphoto':''}" data-a="msg-tap" data-dbl="msg-like" data-v="${m.me?1:0}|${m.at}">${dmBody(m)}${liked?`<span class="blike" aria-label="Liked">❤️</span>`:''}</div><span class="bt">${tm(m.at)}</span></div>`;
     if(m.me&&!(next&&next.me&&next.at-m.at<=5*60000)) out+=`<div class="bfoot"><button class="link" data-a="msg-edit" data-v="${gStart}">${editing?'Done':'Delete'}</button></div>`; });
   return out; }
 function vChat(){ const u=S.chatWith, msgs=chatWith(u), req=dmThreads().find(t=>t.u===u&&t.req);
   return `<div class="chatwrap"><div class="screen actpage chatpage">
-    <div class="chathead"><button class="iconbtn chback" data-a="dm-back" aria-label="Back">${ic('back')}</button><button class="whobtn" data-a="person" data-v="${esc(u)}">${avatar(Social.nameOf(u),Social.photoOf(u),null)}<span class="chwho"><b>${esc(Social.nameOf(u))}${fbadge(u)}</b><small>${esc(((Social.people||{})[u]||{}).name||'')}</small></span></button><span class="spacer"></span>${Pf.friends.includes(u)?`<button class="fpill on" data-a="follow-tog" data-v="${esc(u)}" aria-label="Following ${esc(Social.nameOf(u))}, tap to unfollow">${ic('check','xs')}Following</button>`:`<button class="fpill" data-a="follow-tog" data-v="${esc(u)}">${ic('plus','xs')}Follow</button>`}<button class="fpill chfb" data-a="feedback" aria-label="Send beta feedback">${ic('chat','xs')}Feedback</button></div>
+    <div class="chathead"><button class="iconbtn chback" data-a="dm-back" aria-label="Back">${ic('back')}</button><button class="whobtn" data-a="person" data-v="${esc(u)}">${avatar(Social.nameOf(u),Social.photoOf(u),null)}<span class="chwho"><b>${esc(Social.nameOf(u))}${fbadge(u)}</b><small>${esc(((Social.people||{})[u]||{}).name||'')}</small></span></button><span class="spacer"></span>${Pf.friends.includes(u)?`<button class="fpill on" data-a="follow-tog" data-v="${esc(u)}" aria-label="Following ${esc(Social.nameOf(u))}, tap to unfollow">${ic('check','xs')}Following</button>`:`<button class="fpill" data-a="follow-tog" data-v="${esc(u)}">${ic('plus','xs')}Follow</button>`}</div>
     <div class="chat" id="chat">${chatMsgs(u)}</div>
     ${req?`<div class="card stack" style="gap:8px"><span class="small"><b>${esc(Social.nameOf(u))}</b> wants to message you.</span><div class="rowx" style="gap:8px"><button class="btn sm" style="flex:1" data-a="dm-hide" data-v="${esc(u)}">Delete</button><button class="btn sm fbbtn" style="flex:1" data-a="dm-accept" data-v="${esc(u)}">Accept</button></div></div>`
       :`<div class="chatbar">${S.rec?`<div class="dmbox recbox"><button class="recx" data-a="rec-cancel" aria-label="Cancel recording">${ic('trash','sm')}</button><span class="recdot"></span><span class="rect num" id="rect">0:00</span><canvas id="recwave" width="400" height="60"></canvas><button class="recsend" data-a="rec-stop" aria-label="Send voice note">${ic('send','sm')}</button></div>`
@@ -2234,7 +2238,7 @@ function vMyWorkouts(){ const ws=[...Store.workouts].sort((a,b)=>b.startedAt-a.s
   return `<div class="screen">
     <div class="rowx" style="gap:6px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="profile" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">Workouts <span class="muted" style="font-weight:600">${ws.length}</span></span></div>
     ${ws.length?`<div class="list">${ws.map(w=>{ const {v,n}=volume(w), d=new Date(w.startedAt), pub=isShared(w.id);
-      return `<button class="li wkrow" data-a="wk-open" data-v="${esc(w.id)}">${w.pump?`<img class="wkthumb" src="${esc(w.pump)}" alt="" loading="lazy">`:`<span class="ico">${ic(typeIcon(w.type),'sm')}</span>`}<span class="grow"><span class="t">${esc(w.title||dayWord(w.type))}</span><br><span class="s">${d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:d.getFullYear()===new Date().getFullYear()?undefined:'numeric'})} · ${fmtDur(durOf(w))} · ${n} set${n===1?'':'s'}${v?' · '+fmtN(Math.round(v))+' '+(w.unit||Pf.unit):''}</span></span>${countsForStreak(w)?'<span title="Counted toward your streak">🔥</span>':''}<span class="muted">${ic(pub?'eye':'lock','xs')}</span></button>`; }).join('')}</div>`
+      return `<button class="li wkrow" data-a="wk-open" data-v="${esc(w.id)}">${w.pump?`<img class="wkthumb" src="${esc(w.pump)}" alt="" loading="lazy">`:`<span class="ico">${ic(typeIcon(w.type),'sm')}</span>`}<span class="grow"><span class="t">${d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:d.getFullYear()===new Date().getFullYear()?undefined:'numeric'})}</span><br><span class="s">${esc(w.title||dayWord(w.type))} · ${fmtDur(durOf(w))} · ${n} set${n===1?'':'s'}${v?' · '+fmtN(Math.round(v))+' '+(w.unit||Pf.unit):''}</span></span>${countsForStreak(w)?`<span class="wkflame" title="Counted toward your streak">${ic('flame','xs')}</span>`:''}<span class="muted">${ic(pub?'eye':'lock','xs')}</span></button>`; }).join('')}</div>`
       :`<div class="card empty" style="padding:28px 16px">${ic('star')}<div style="margin-top:6px">Finish a workout and it shows up here.</div></div>`}
   </div>${tabbar()}`; }
 function ownGrid(){
@@ -2545,8 +2549,8 @@ function popularFor(type){
   for(const [re,rx] of [[/chest/,/chest/i],[/back/,/lat|back|trap/i],[/shoulder/,/delt|shoulder/i],[/arm/,/bicep|tricep|forearm|brachialis/i],[/core|abs/,/abs|core|oblique/i],[/glute/,/glute/i]]) if(re.test(l)) res.push(...EX.filter(e=>e.c!=='cardio'&&rx.test(String(e.m).split('·')[0])).sort((a,b)=>a.p-b.p).slice(0,4));
   return [...new Map(res.map(e=>[e.id,e])).values()].slice(0,6);
 }
-function exRow(e){ if(e.own) return `<div class="li exown"><button class="exmain" data-a="pick-ex" data-v="${esc(e.id)}" data-own="${esc(e.id)}"><span class="ico">${ic(e.c==='cardio'?'feed':typeIcon(e.c==='core'?'full':e.c))}</span><span class="grow"><span class="t">${esc(e.n)}</span> <span class="tag">Yours</span><br><span class="s">${esc(e.m)}</span></span></button>${S.sheet&&S.sheet.cat==='mine'?`<button class="iconbtn" data-a="ex-del-ask" data-v="${esc(e.id)}" aria-label="Delete ${esc(e.n)}">${ic('trash','sm')}</button>`:''}<button class="iconbtn" data-a="pick-ex" data-v="${esc(e.id)}" aria-label="Add ${esc(e.n)}">${ic('plus','sm')}</button></div>`;
-  return `<button class="li" data-a="pick-ex" data-v="${esc(e.id)}"><span class="ico">${ic(e.c==='cardio'?'feed':typeIcon(e.c==='core'?'full':e.c))}</span><span class="grow"><span class="t">${esc(e.n)}</span>${e.own?' <span class="tag">Yours</span>':''}<br><span class="s">${esc(e.m)}</span></span>${ic('plus','sm')}</button>`; }
+function exRow(e,star){ if(star==null) star=!!(S.sheet&&S.sheet.kind==='picker'&&popularFor(S.sheet.type).some(x=>x.id===e.id)); const ST=star?'<span class="popstar" aria-label="Popular">⭐</span>':''; if(e.own) return `<div class="li exown"><button class="exmain" data-a="pick-ex" data-v="${esc(e.id)}" data-own="${esc(e.id)}"><span class="ico">${ic(e.c==='cardio'?'feed':typeIcon(e.c==='core'?'full':e.c))}</span><span class="grow"><span class="t">${esc(e.n)}</span>${ST} <span class="tag">Yours</span><br><span class="s">${esc(e.m)}</span></span></button>${S.sheet&&S.sheet.cat==='mine'?`<button class="iconbtn" data-a="ex-del-ask" data-v="${esc(e.id)}" aria-label="Delete ${esc(e.n)}">${ic('trash','sm')}</button>`:''}<button class="iconbtn" data-a="pick-ex" data-v="${esc(e.id)}" aria-label="Add ${esc(e.n)}">${ic('plus','sm')}</button></div>`;
+  return `<button class="li" data-a="pick-ex" data-v="${esc(e.id)}"><span class="ico">${ic(e.c==='cardio'?'feed':typeIcon(e.c==='core'?'full':e.c))}</span><span class="grow"><span class="t">${esc(e.n)}</span>${ST}${e.own?' <span class="tag">Yours</span>':''}<br><span class="s">${esc(e.m)}</span></span>${ic('plus','sm')}</button>`; }
 function pickerList(){
   const sh=S.sheet, q=sh.q.trim().toLowerCase();
   let list=EX.filter(e=>(sh.cat==='all'||(sh.cat==='mine'?e.own:e.c===sh.cat)||(sh.cat==='arms'&&isArms(e)))&&(!q||e.n.toLowerCase().includes(q)||e.m.toLowerCase().includes(q)||String(e.k||'').includes(q)));
@@ -2557,9 +2561,9 @@ function pickerList(){
   const del=sh.delEx&&exOf(sh.delEx), uses=del?DAYS.filter(([k])=>(Pf.plans[k]||[]).some(p=>p.exId===sh.delEx)).length:0;
   return `${del?`<div class="card stack" style="gap:10px"><b>Delete ${esc(del.n)}?</b><span class="muted small">${uses?`It comes out of ${uses} day${uses===1?'':'s'} in your plan. `:''}Workouts you already logged keep it.</span><div class="rowx" style="gap:8px"><button class="btn sm" style="flex:1;width:auto" data-a="ex-del-ask" data-v="">Cancel</button><button class="btn sm danger" style="flex:1;width:auto" data-a="ex-del" data-v="${esc(sh.delEx)}">Delete</button></div></div>`:''}
     ${sh.cat==='mine'&&!list.length&&!q?`<div class="card muted small">Exercises you create show up here. Search for one that isn't in the library to add it.</div>`:''}
-    ${rec.length?`<div class="stack" style="gap:8px"><span class="flabel">Recommended swaps</span><div class="list">${rec.map(exRow).join('')}</div></div>`:''}
-    ${pop.length?`<div class="stack" style="gap:8px"><span class="flabel">🔥 Popular for ${TYPES[sh.type]}</span><div class="list">${pop.map(exRow).join('')}</div></div>`:''}
-    <div class="stack" style="gap:8px"><span class="flabel">${q?'Results':'All exercises'}</span>${list.length?`<div class="list">${list.map(exRow).join('')}</div>`:`<div class="card muted small">No exercise matches “${esc(sh.q)}” yet.</div>`}</div>
+    ${rec.length?`<div class="stack" style="gap:8px"><span class="flabel">Recommended swaps</span><div class="list">${rec.map(e=>exRow(e)).join('')}</div></div>`:''}
+    ${pop.length?`<div class="stack" style="gap:8px"><span class="flabel">Popular for ${TYPES[sh.type]}</span><div class="list">${pop.map(e=>exRow(e,true)).join('')}</div></div>`:''}
+    <div class="stack" style="gap:8px"><span class="flabel">${q?'Results':'All exercises'}</span>${list.length?`<div class="list">${list.map(e=>exRow(e)).join('')}</div>`:`<div class="card muted small">No exercise matches “${esc(sh.q)}” yet.</div>`}</div>
     ${q&&!EX.some(e=>e.n.toLowerCase()===q)?`<button class="btn" data-a="new-ex">${ic('plus','sm')}Add “${esc(sh.q.trim())}” as a new exercise</button>`:''}`;
 }
 function stepper(f,val,mini){ return `<div class="stepper ${mini?'mini':''}"><button data-a="dstep" data-f="${f}" data-d="-1">−</button><input class="input num" id="d-${f}" inputmode="numeric" value="${val}" data-d="${f}"><button data-a="dstep" data-f="${f}" data-d="1">+</button></div>`; }
@@ -2586,8 +2590,7 @@ function vSheet(){
        </div>`); }
   if(sh.kind==='pmore'||sh.kind==='umore'){ const u=sh.uid, n=esc(Social.nameOf(u)), bl=(Pf.blocked||[]).includes(u), mu=isMuted(u);
     return wrap(`<span class="h2" style="flex:1">${sh.kind==='pmore'?'Post options':'@'+n}</span>`,`<div class="list">
-      ${sh.kind==='pmore'?`<button class="li" data-a="post-hide" data-v="${esc(sh.key)}"><span class="ico">${ic('eye','sm')}</span><span class="grow"><span class="t">Hide this post</span><br><span class="s">Removes it from your feed</span></span></button>`:''}
-      <button class="li" data-a="user-mute" data-v="${esc(u)}"><span class="ico">${ic('sound','sm')}</span><span class="grow"><span class="t">${mu?'Show':'Hide'} @${n}’s posts</span><br><span class="s">${mu?'Their posts come back to your feed':'You stay following. They aren’t told.'}</span></span></button>
+      <button class="li" data-a="user-mute" data-v="${esc(u)}"><span class="ico">${ic('eye','sm')}</span><span class="grow"><span class="t">${mu?'Show':'Hide'} @${n}’s posts</span><br><span class="s">${mu?'Their posts come back to your feed':'You stay following. They aren’t told.'}</span></span></button>
       <button class="li" data-a="report-open" data-v="${esc(u)}|${esc(sh.key||'')}"><span class="ico" style="color:var(--bad)">${ic('bolt','sm')}</span><span class="grow"><span class="t" style="color:var(--bad)">Report ${sh.kind==='pmore'?'post':'@'+n}</span><br><span class="s">Sent privately to the BOATS team</span></span></button>
       <button class="li" data-a="${bl?'unblock':'block-ask'}" data-v="${esc(u)}"><span class="ico" style="color:var(--bad)">${ic('x','sm')}</span><span class="grow"><span class="t" style="color:var(--bad)">${bl?'Unblock':'Block'} @${n}</span><br><span class="s">${bl?'You’ll see each other again':'Neither of you sees the other’s posts, comments, profile or messages'}</span></span></button></div>`); }
   if(sh.kind==='report'){ const R=['Spam or scam','Nudity or sexual content','Harassment or bullying','Hate speech','Violence or threats','Fake account','Something else'];
@@ -2644,7 +2647,7 @@ function vSheet(){
     const a=Pf.active, marked=a.items.flatMap(it=>it.sets.filter(s=>s.st));
     const v=a.items.reduce((t,it)=>it.cardio?t:t+it.sets.filter(s=>s.st).reduce((x,s)=>x+num(s.w)*num(s.r),0),0);
     const sc=streakCheck(a,elapsed(a)), lv=(LEVELS[Pf.level]||'Beginner')+' minimum';
-    return wrap(`<div class="rowx"><span class="h2" style="flex:1">End workout</span><button class="sbadge ${sc.ok?'on':''}" data-a="streak-info" aria-label="${sc.ok?'Counts toward your streak':'Does not count toward your streak yet'}. Tap for details">🔥 ${sc.ok?'Counts':'Doesn’t count'}</button></div>`,
+    return wrap(`<div class="rowx"><span class="h2" style="flex:1">End workout</span><button class="sbadge ${sc.ok?'on':''}" data-a="streak-info" aria-label="${sc.ok?'Counts toward your streak':'Does not count toward your streak yet'}. Tap for details">${ic('flame','sm')}${sc.ok?'Counts':'Doesn’t count'}</button></div>`,
       `<div class="stats"><div class="stat"><div class="k">Time</div><div class="v num">${fmtDur(elapsed(a))}</div></div><div class="stat"><div class="k">Sets</div><div class="v num">${marked.filter((_,k)=>true).length}</div></div><div class="stat"><div class="k">Volume</div><div class="v num" style="white-space:nowrap">${fmtBig(v)}</div></div></div>
         <div class="card stack" style="gap:6px"><div class="rowx"><span class="h2" style="font-size:16px">Overview</span><span class="spacer"></span><span class="tag accent num">~${workoutKcal(a,Date.now())} kcal</span></div>
           ${a.items.filter(it=>it.sets.some(s=>s.st)).map(it=>{ const d=it.sets.filter(s=>s.st), ok=d.filter(s=>s.st==='ok').length; return `<div class="exline" style="padding:6px 0"><span>${esc(exOf(it.exId).n)}${it.hurt?` <span style="color:var(--bad)">${ic('bandage','xs')}</span>`:''}</span><span class="r num">${it.cardio?`${esc(d[0].w)} min · ~${it.kcal||0} kcal`:setDots(d)}</span></div>`; }).join('')||'<span class="muted small">Nothing logged yet.</span>'}
@@ -2910,7 +2913,7 @@ function render(){ const oldHTML=app.innerHTML, oldY=window.scrollY, k=viewKey()
   const c2=document.getElementById('car');
   if(c2){ c2.scrollLeft = sl!=null ? sl : (Pf.active.idx||0)*(c2.querySelector('.ex-card').offsetWidth+10); c2.addEventListener('scroll',onCarScroll,{passive:true}); }
   window.scrollTo(0,wy);
-  if(S.route!=='splash'&&!(S.route==='app'&&S.tab==='friends'&&S.fview==='chat')) app.insertAdjacentHTML('beforeend',`<button class="fbk ${S.route==='app'||S.route==='session'?'intab':''} ${S.route==='session'?'insess':''}" data-a="feedback" aria-label="Send beta feedback">${ic('chat','sm')}<span>Feedback</span></button>`);
+  if(S.route!=='splash') app.insertAdjacentHTML('beforeend',`<button class="fbk ${S.route==='app'||S.route==='session'?'intab':''} ${S.route==='session'?'insess':''} ${S.fview==='chat'&&S.tab==='friends'?'inchat':''}" data-a="feedback" aria-label="Send beta feedback">${ic('chat','sm')}<span>Feedback</span></button>`);
   if(PREVIEW) app.insertAdjacentHTML('beforeend',devPanel());
   renderSheet();
   { const lb=document.querySelector('.livebar'); document.documentElement.style.setProperty('--live-h',(lb?lb.offsetHeight+14:0)+'px'); }
@@ -3043,7 +3046,9 @@ document.addEventListener('touchend',()=>{ if(!SW) return; const {sh,dy,on,t0}=S
 function revealCards(){ if(!('IntersectionObserver' in window)) return; if(RIO) RIO.disconnect();
   RIO=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); RIO.unobserve(e.target); } }),{rootMargin:'0px 0px -6% 0px'});
   document.querySelectorAll('#feed > *, .pgrid3 > button, .prof .post').forEach((n,i)=>{ n.classList.add('rv'); n.style.transitionDelay=Math.min(i,6)*40+'ms'; RIO.observe(n); }); }
-function renderSheet(){ const b=document.getElementById('sbody'), st=b?b.scrollTop:0, same=S.sheet&&renderSheet._k===S.sheet.kind; renderSheet._k=S.sheet&&S.sheet.kind; sheetEl.innerHTML=vSheet()+(PREVIEW&&S.sheet&&S.sheet.kind!=='dev'?devPanel():''); const nb=document.getElementById('sbody'); if(nb) nb.scrollTop=st; if(same){ sheetEl.querySelectorAll('.scrim,.sheet').forEach(n=>n.style.animation='none'); } if(S.sheet&&(S.sheet.kind==='export'||(S.sheet.kind==='finish'&&S.sheet.pump))) drawOverlayInto(document.getElementById('ovc')); if(S.sheet&&S.sheet.kind==='avcrop') avDraw(); }
+function scrollLock(on){ const b=document.body; if(on&&!b.classList.contains('locked')){ b.dataset.ly=window.scrollY; b.style.top=-window.scrollY+'px'; b.classList.add('locked'); } else if(!on&&b.classList.contains('locked')){ const y=+b.dataset.ly||0; b.classList.remove('locked'); b.style.top=''; window.scrollTo(0,y); } }
+new MutationObserver(()=>scrollLock(!!(S.sheet||askEl.innerHTML))).observe(document.getElementById('ask'),{childList:true});
+function renderSheet(){ setTimeout(()=>scrollLock(!!(S.sheet||askEl.innerHTML)),0); const b=document.getElementById('sbody'), st=b?b.scrollTop:0, same=S.sheet&&renderSheet._k===S.sheet.kind; renderSheet._k=S.sheet&&S.sheet.kind; sheetEl.innerHTML=vSheet()+(PREVIEW&&S.sheet&&S.sheet.kind!=='dev'?devPanel():''); const nb=document.getElementById('sbody'); if(nb) nb.scrollTop=st; if(same){ sheetEl.querySelectorAll('.scrim,.sheet').forEach(n=>n.style.animation='none'); } if(S.sheet&&(S.sheet.kind==='export'||(S.sheet.kind==='finish'&&S.sheet.pump))) drawOverlayInto(document.getElementById('ovc')); if(S.sheet&&S.sheet.kind==='avcrop') avDraw(); }
 function go(route,opts={}){ document.body.classList.remove('barmini'); Object.assign(S,opts); S.route=route; if(route==='session'&&Pf.active){ try{ reconcileWorkout(); Store.save(); }catch(e){} } window.scrollTo(0,0); render(); }
 function cardW(){ const c=document.getElementById('car'); return c?c.querySelector('.ex-card').offsetWidth+10:1; }
 function onCarScroll(e){
@@ -3270,7 +3275,7 @@ const A = {
   'type-add'(v){ const i=document.getElementById('nt-name'), n=(i&&i.value||'').trim(); if(!n){ i&&i.classList.add('bad'); i&&i.focus(); return; }
     const ex=Object.entries(TYPES).find(([,l])=>l.toLowerCase()===n.toLowerCase()); const key=ex?ex[0]:'x_'+uid(); if(!ex){ Pf.customTypes=Pf.customTypes||{}; Pf.customTypes[key]=n.slice(0,16); syncTypes(); }
     S.addType=null; if(v==='sp-type') A['sp-type'](key); else if(v.startsWith('split:')){ const d=v.slice(6); Pf.split[d]=key; if(Pf.active&&Pf.active.day===d) Pf.active.type=key; Store.save(); render(); } toast(`${n} added`); },
-  'split-use'(v){ const sp=SPLITS[v]; if(!sp) return; const go=()=>{ if(sp.ct){ Pf.customTypes={...(Pf.customTypes||{}),...sp.ct}; syncTypes(); } DAYS.forEach(([d],i)=>{ Pf.split[d]=sp.days[i]; }); S.obSet=new Set(DAYS.map(x=>x[0])); if(Pf.active) Pf.active.type=Pf.split[Pf.active.day]||Pf.active.type; Store.save(); render(); popCue(); };
+  'split-use'(v){ const sp=SPLITS[v]; if(!sp) return; const go=()=>{ DAYS.forEach(([d],i)=>{ Pf.split[d]=sp.days[i]; }); S.obSet=new Set(DAYS.map(x=>x[0])); if(Pf.active) Pf.active.type=Pf.split[Pf.active.day]||Pf.active.type; Store.save(); render(); popCue(); };
     if(S.route==='onboard') return go(); askConfirm('Use the '+sp.n+' split?','Your day types change. Exercises you already added stay on their weekdays.','Use split',go); },
   prange(v){ S.prange=v; Pf.prange=v; Store.save(); render(); },
   'post-more'(v){ const [u]=v.split(':'); S.sheet={kind:'pmore',key:v,uid:u}; renderSheet(); },
@@ -3328,7 +3333,7 @@ const A = {
     const row=(ok,t,sub)=>`<div class="ckrow ${ok?'ok':''}"><span class="ckbox">${ok?ic('check','xs'):''}</span><span><b>${t}</b>${sub?`<br><span class="muted small">${sub}</span>`:''}</span></div>`;
     const rows=sc.cardioOnly?row(sc.ok,'Log a cardio session','Cardio-only days count once one is logged.')
       :row(sc.timeOk,`${R.min}+ minutes of training`,`${sc.mins||0} min so far`)+row(sc.setsOk,`${R.sets} working sets across 2 exercises`,`or ${R.sets+1} sets in one exercise · ${sc.total||0} logged`);
-    infoBox(sc.ok?'🔥 Counts toward your streak':'🔥 Doesn’t count yet',`<div class="stack" style="gap:10px;text-align:left"><span class="muted small">${esc(L)} minimum</span>${rows}</div>`); },
+    infoBox(sc.ok?'Counts toward your streak':'Doesn’t count yet',`<div class="stack" style="gap:10px;text-align:left"><span class="muted small">${esc(L)} minimum</span>${rows}</div>`); },
   'rank-open'(v){ S.sheet.open=S.sheet.open===v?null:v; renderSheet(); },
   activity(){ S.actSeenAt=Pf.actSeen||0; S.fview='activity'; S.actF='all'; Pf.actSeen=Date.now(); Store.save(); window.scrollTo(0,0); render(); },
   'act-back'(){ S.fview=null; window.scrollTo(0,0); render(); },
