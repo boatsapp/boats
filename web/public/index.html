@@ -177,6 +177,8 @@ body.kbopen .chatwrap .chatpage{padding-bottom:0!important}
 body.swipeback #app{position:relative;z-index:1}
 body.swipeback #app .screen,body.swipeback #app .chatwrap{background:var(--bg);min-height:100vh;min-height:100dvh}
 body.swipeback{background:var(--bg)!important;overflow:hidden;touch-action:none}html:has(body.swipeback){overflow:hidden}
+.wkrow{align-items:center}.wkthumb{width:44px;height:55px;object-fit:cover;border-radius:8px;flex:none}
+.reqtxt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;white-space:normal;word-break:break-word}
 .dmtools{display:flex;align-items:center;gap:14px;align-self:center;padding-right:2px}
 .dmtools button{border:0;background:none;padding:0;color:#fff;display:grid;place-items:center}
 .dmtools svg{width:24px;height:24px;stroke-width:1.9}
@@ -226,7 +228,8 @@ body.swipeback #app .screen,body.swipeback #app .chatwrap{box-shadow:-18px 0 40p
 .chback{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 70%,transparent)}
 .chathead .whobtn .av{width:44px;height:44px}
 .chwho{display:flex;flex-direction:column;align-items:flex-start;line-height:1.2}.chwho b{font-size:17px;display:flex;align-items:center}.chwho small{font-size:13px;color:var(--muted)}
-.chatwrap .chat{padding-top:calc(76px + env(safe-area-inset-top,0px))!important;gap:4px!important}
+.chatwrap .chat{padding-top:calc(76px + env(safe-area-inset-top,0px))!important;padding-bottom:18px!important;scroll-padding-bottom:18px;gap:4px!important}
+.chathead{pointer-events:none}.chathead button{pointer-events:auto}.chfb{margin-left:6px}
 .dsep{align-self:center;font-size:12px;letter-spacing:.04em;color:var(--muted);margin:14px 0 8px}
 .bub{max-width:76%!important;padding:10px 15px!important;border-radius:22px!important;font-size:17px!important;line-height:1.3!important;border:0!important;background:#262626!important;color:#fff}
 .bub.me{background:linear-gradient(135deg,#1E7FC0,#3FB0E8)!important;color:#fff}
@@ -250,6 +253,8 @@ body.swipeback #app .screen,body.swipeback #app .chatwrap{box-shadow:-18px 0 40p
 .dmphoto{display:block;line-height:0;cursor:pointer}
 .dmphoto img{width:200px;max-width:100%;border-radius:16px;background:var(--surface-2);min-height:120px;object-fit:cover}
 .bub.hasphoto span:not(.dmphoto){display:block;padding:6px 9px 4px}
+.photoview{touch-action:none;overscroll-behavior:none}.pvx{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:14px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;z-index:2}
+.limitnote{font-size:12px;color:var(--muted);opacity:.75;white-space:nowrap;align-self:center;flex:none}
 .dmbig{max-width:92vw;max-height:84vh;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .chatbar{align-items:flex-end}
 .chatbar textarea#dm-in{flex:1;min-height:44px;max-height:84px;resize:none;padding:11px 14px;line-height:1.35;overflow-y:auto}
@@ -436,7 +441,7 @@ textarea.input{font-family:inherit;font-size:16px;line-height:1.4}
 .betatag.sm{font-size:9px;padding:1px 5px;margin-left:5px;position:relative;top:-6px}
 .fbk{position:fixed;z-index:21;left:calc(14px + env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:5px;height:32px;padding:0 11px 0 9px;border-radius:999px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--muted);font-size:12px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.1)}
 .fbk.intab{bottom:calc(var(--tab-h) + var(--live-h,0px) + 12px + env(safe-area-inset-bottom,0px))}
-.wkpick button.unset{opacity:.38}
+.wkpick button.unset{opacity:.5}.wkpick .unq{font-weight:800;font-size:16px;line-height:20px;height:20px}
 .wkpick button.unset.sel{opacity:1}
 .injnote{color:var(--bad);font-weight:600;margin-top:-6px;text-align:center}
 .injask{display:flex;flex-direction:column;gap:6px;padding:4px 0}
@@ -921,7 +926,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v122';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v123';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1156,7 +1161,7 @@ const dateKey = (d=new Date()) => { const x=new Date(d); return x.getFullYear()+
 
 function defaultProfile(){
   return { v:2, onboarded:false, username:'', town:'', photo:'', unit:guessUnit(), ft:5, inch:10, cm:178, bodyweight:'', goal:'bulk',
-    repMin:7, repMax:10, rest:90, sound:true, theme:'dark',
+    repMin:8, repMax:12, rest:120, sound:true, theme:'dark',
     show:{photo:false,town:true,goal:true,height:false,weight:false,status:true}, vibrate:false, flash:false,
     split:{mon:'push',tue:'pull',wed:'legs',thu:'rest',fri:'push',sat:'pull',sun:'legs'},
     plans:{mon:[],tue:[],wed:[],thu:[],fri:[],sat:[],sun:[]}, active:null, adjusted:{}, nextW:{}, friends:[], custom:[], bwLog:[],
@@ -1387,6 +1392,7 @@ function blockedPhoto(){ infoBox('Photo not allowed','<span class="muted small">
 function editBox(title,val,max,fn){ ASKFN=null; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="dialog" aria-label="${esc(title)}" style="text-align:left"><b>${esc(title)}</b><textarea class="input" id="edit-in" maxlength="${max}" rows="4">${esc(val||'')}</textarea><div class="askbtns"><button class="btn" data-a="ask-no">Cancel</button><button class="btn primary" data-a="edit-save">Save</button></div></div></div>`; EDITFN=fn; setTimeout(()=>{ const t=document.getElementById('edit-in'); if(t){ t.focus(); t.setSelectionRange(t.value.length,t.value.length); } },30); }
 let EDITFN=null;
 function savedNote(t){ const el=document.createElement('div'); el.className='savednote'; el.setAttribute('role','status'); el.innerHTML=`${ic('check','sm')}${esc(t)}`; document.body.appendChild(el); setTimeout(()=>el.classList.add('out'),1400); setTimeout(()=>el.remove(),1900); }
+function askInfo(title,sub){ ASKFN=null; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="alertdialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${sub?`<span class="muted small">${esc(sub)}</span>`:''}<div class="askbtns"><button class="btn primary" data-a="ask-no">OK</button></div></div></div>`; }
 function askConfirm(title,sub,yes,fn,no){ ASKFN=fn; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="alertdialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${sub?`<span class="muted small">${esc(sub)}</span>`:''}<div class="askbtns"><button class="btn" data-a="ask-no">${esc(no||'Cancel')}</button><button class="btn danger" data-a="ask-yes">${esc(yes)}</button></div></div></div>`; }
 let rootTheme = document.documentElement.getAttribute('data-theme');
 function applyTheme(){ const r=document.documentElement; if(Pf.theme!=='light') Pf.theme='dark'; if(Pf.theme==='system'){ if(rootTheme) r.setAttribute('data-theme',rootTheme); else r.removeAttribute('data-theme'); } else r.setAttribute('data-theme',Pf.theme); }
@@ -1420,10 +1426,10 @@ function streakCheck(w,ms){
 }
 const countsForStreak = w => w.streak!=null ? !!w.streak : streakCheck(w,durOf(w)).ok;
 // Each qualifying workout day adds 1. Days without a workout pause the streak.
-// It only resets after more than 7 days in a row with no qualifying workout.
-const STREAK_GAP=7;
+// Up to 6 days off in a row are fine; the 7th day without a qualifying workout resets it (today isn't missed until it's over).
+const STREAK_GAP=6;
 function lastQualDay(){ const q=Store.workouts.filter(countsForStreak); if(!q.length) return null; const t=Math.max(...q.map(w=>w.startedAt)); const d=new Date(t); d.setHours(0,0,0,0); return d; }
-function streakDaysLeft(){ const l=lastQualDay(); if(!l) return null; const today=new Date(); today.setHours(0,0,0,0); const since=Math.round((today-l)/864e5); return STREAK_GAP+1-since; }
+function streakDaysLeft(){ const l=lastQualDay(); if(!l) return null; const today=new Date(); today.setHours(0,0,0,0); const since=Math.round((today-l)/864e5); return STREAK_GAP+2-since; }
 function streakGrace(){ const left=streakDaysLeft(); return left!=null&&left<=2&&left>0&&streak()>0; }
 function streak(){
   const qual=Store.workouts.filter(countsForStreak);
@@ -1432,7 +1438,7 @@ function streak(){
   const first=Math.min(...qual.map(w=>w.startedAt));
   let n=0, gap=0; const d=new Date(); d.setHours(12,0,0,0);
   for(let i=0;i<2000;i++){
-    if(done.has(d.toDateString())){ n++; gap=0; } else if(++gap>STREAK_GAP) break;
+    if(done.has(d.toDateString())){ n++; gap=0; } else if(i>0&&++gap>STREAK_GAP) break;
     d.setDate(d.getDate()-1);
     if(d.getTime()<first-86400000) break;
   }
@@ -1498,9 +1504,10 @@ function idFields(withBio){
   return `<div class="rowx idrow" style="gap:16px;align-items:flex-start">
       <button data-a="photo" aria-label="Choose profile picture" style="position:relative">${avatar(Pf.username||'?',Pf.photo,null,true)}<span class="ico" style="position:absolute;right:-4px;bottom:-4px;width:30px;height:30px;border-radius:50%;border:3px solid var(--bg)">${ic('camera','xs')}</span></button>
       <div class="field" style="flex:1;min-width:0"><label for="f-user">Create username</label><input class="input" id="f-user" maxlength="17" placeholder="e.g. jack.sparrow" autocapitalize="off" autocorrect="off" spellcheck="false" value="${esc(dv('username'))}" data-f="username" aria-describedby="u-msg" ${nameLocked()?'readonly':''}><div id="u-msg" class="small" aria-live="polite">${userMsg()}</div>
-        ${withBio?`<label for="f-bio" style="margin-top:10px">About the Captain</label>${BIOFIELD().replace(/^<div class="field"><label for="f-bio">About the Captain<\/label>/,'').replace(/<\/div>$/,'')}`:NAMEFIELD(true)}</div>
+      </div>
     </div>
-    ${withBio?`<div class="field">${NAMEFIELD(false)}</div>`:''}
+    ${withBio?BIOFIELD():''}
+    <div class="field">${NAMEFIELD(false)}</div>
     <div class="field"><label for="f-town">Town</label><div class="inwrap townwrap"><input class="input" id="f-town" maxlength="40" placeholder="Start typing" autocomplete="off" value="${esc(dv('town'))}" data-f="town" aria-describedby="t-msg" role="combobox" aria-autocomplete="list" aria-controls="town-sug" aria-expanded="false"><div class="sug" id="town-sug" role="listbox" hidden></div></div><div id="t-msg" class="small" aria-live="polite">${townMsg()}</div></div>`;
 }
 function goalCards(){
@@ -1511,8 +1518,9 @@ function typeGrid(name,val){ return `<div class="tgrid" role="radiogroup">${Obje
   ${S.addType===name?`<div class="rowx" style="gap:8px"><input class="input" id="nt-name" maxlength="16" placeholder="e.g. Boxing, Upper, Glutes" autocomplete="off"><button class="btn primary" style="width:auto;flex:none" data-a="type-add" data-v="${name}">Add</button></div>`:''}`; }
 function splitList(){ const sel=S.splitDay||'mon';
   const touched=S.obSet||(S.obSet=new Set());
-  return `<div class="wkpick">${DAYS.map(([k,l])=>{const t=Pf.split[k];return `<button class="${k===sel?'sel':''} ${t==='rest'?'rest':''} ${S.route==='onboard'&&!touched.has(k)?'unset':''}" data-a="sp-day" data-v="${k}" aria-pressed="${k===sel}" aria-label="${l}, ${TYPES[t]}">${'<b>'+l.slice(0,3)+'</b>'}${ic(typeIcon(t),'sm')}<span>${t==='full'?'Full':TYPES[t]}</span></button>`}).join('')}</div>
-  <div class="field"><span class="flabel">${DAYN[sel]}</span>${typeGrid('sp-type',Pf.split[sel])}</div>`; }
+  const ob=S.route==='onboard';
+  return `<div class="wkpick">${DAYS.map(([k,l])=>{const t=Pf.split[k], un=ob&&!touched.has(k);return `<button class="${k===sel?'sel':''} ${!un&&t==='rest'?'rest':''} ${un?'unset':''}" data-a="sp-day" data-v="${k}" aria-pressed="${k===sel}" aria-label="${l}, ${un?'not picked':TYPES[t]}">${'<b>'+l.slice(0,3)+'</b>'}${un?'<span class="unq">?</span><span>Pick</span>':`${ic(typeIcon(t),'sm')}<span>${t==='full'?'Full':TYPES[t]}</span>`}</button>`}).join('')}</div>
+  <div class="field"><span class="flabel">${DAYN[sel]}</span>${typeGrid('sp-type',ob&&!touched.has(sel)?'':Pf.split[sel])}</div>`; }
 function splitShareRow(){ return `<button class="li card" style="padding:12px 16px" data-a="share-split"><span class="grow"><span class="t">Make my split public</span><br><span class="s">Others can view and copy it from your profile</span></span><span class="toggle ${Pf.shareSplit?'on':''}"></span></button>`; }
 
 /* ---------- views ---------- */
@@ -1604,7 +1612,7 @@ function weighCard(){ const last=Pf.bwLog[Pf.bwLog.length-1], today=last&&sameDa
     :`<div style="flex:1;min-width:0"><div class="inwrap"><input class="input num" id="bw-today" inputmode="decimal" placeholder="Weigh-in${last?' (last '+fmtN(last.w)+')':''}" style="height:44px"><span class="suf">${Pf.unit}</span></div></div><button class="btn sm primary" style="width:auto;flex:none;height:44px" data-a="bw-today">Log</button>`}</section>`; }
 function nameAsk(){ return S.nameTaken?`<section class="card stack" style="gap:8px;border-color:var(--bad)"><b>@${esc(Pf.username)} belongs to someone else</b><span class="muted small">Two accounts ended up with the same username. Pick a new one so friends can find you.</span><button class="btn primary" data-a="settings">Change username</button></section>`:''; }
 function realNameAsk(){ return Pf.onboarded&&!String(Pf.realName||'').trim()?`<section class="card stack" style="gap:8px"><b>Add your name</b><span class="muted small">Your name shows small under your username so friends can search for you.</span><button class="btn" data-a="settings">Add my name</button></section>`:''; }
-function sexAsk(){ return Pf.onboarded&&!Pf.sex?`<section class="card stack" style="gap:10px"><b>One quick thing</b><span class="muted small">Boats now uses your sex to estimate calories more accurately. It’s never shown on your profile.</span>${seg('sex','',{male:'Male',female:'Female'})}</section>`:''; }
+function sexAsk(){ return Pf.onboarded&&!Pf.sex?`<section class="card stack" style="gap:10px"><b>One quick thing</b><span class="muted small">Boats uses sex to provide the most accurate information on calories. This is never shown on your profile.</span>${seg('sex','',{male:'Male',female:'Female'})}</section>`:''; }
 function vChecklist(){
   const tk=dayKey(new Date()), items=Pf.checklist.filter(c=>!c.days||c.days.includes(tk)); const tags=targetTags();
   if(!items.length&&!tags.length) return `<section class="card stack clsec" style="gap:2px">
@@ -2071,11 +2079,10 @@ function vDms(){ const th=dmThreads(), reqs=th.filter(t=>t.req), main=th.filter(
     <div class="search">${ic('search','sm')}<input class="input" id="dm-q" placeholder="Search your crew" value="${esc(S.dmQ||'')}" autocomplete="off" autocapitalize="off"></div>
     <div id="dmres">${dmResults()}</div>
     <div class="itabs" role="tablist"><button role="tab" aria-selected="${tab==='main'}" aria-label="Messages" class="${tab==='main'?'on':''}" data-a="dm-tab" data-v="main">${ic('chat')}</button><button role="tab" aria-selected="${tab==='req'}" aria-label="Requests" class="${tab==='req'?'on':''}" data-a="dm-tab" data-v="req"><span style="position:relative;display:inline-grid">${ic('me')}${reqs.length?`<i class="reqdot">${reqs.length}</i>`:''}</span></button></div>
-    ${tab==='req'?`<p class="muted small" style="margin:0">Messages from people you don't follow. Accept to reply, or delete.</p>`:''}
     ${S.dmNew?`<div class="stack" style="gap:6px"><span class="flabel">New message to</span>${Pf.friends.length?`<div class="list">${Pf.friends.filter(u=>Social.people[u]).map(u=>`<button class="li" data-a="dm-open" data-v="${esc(u)}">${avatar(Social.nameOf(u),Social.photoOf(u),null)}<span class="grow"><span class="t">${esc(Social.nameOf(u))}</span></span>${ic('right','sm')}</button>`).join('')}</div>`:'<div class="card muted small">Follow people to message them.</div>'}</div>`:''}
-    ${list.length?`<div class="stack" style="gap:2px">${list.map(t=>`<div class="swrap"><button class="swdel" data-a="dm-hide" data-v="${esc(t.u)}">Delete</button><div class="actrow dmrow" ${t.req?'':`data-sw="${esc(t.u)}"`}><button class="actmain" data-a="dm-open" data-dbl="dm-del-ask" data-v="${esc(t.u)}" data-pin="${esc(t.u)}">${avatar(Social.nameOf(t.u),Social.photoOf(t.u),null)}<span class="acttxt"><b>${esc(Social.nameOf(t.u))}</b><br><span class="${!t.req&&!t.last.me&&t.last.at>(seen[t.u]||0)?'':'muted'}">${t.last.me?'You: ':''}${esc(t.last.text.slice(0,60))} · ${ago(t.last.at)}</span></span></button>${(Pf.dmPins||[]).includes(t.u)?`<span class="pinic" aria-label="Pinned">${ic('pin','xs')}</span>`:''}${t.req?`<button class="btn sm fbbtn" data-a="dm-accept" data-v="${esc(t.u)}">Accept</button><button class="btn sm" style="width:auto;flex:none" data-a="dm-hide" data-v="${esc(t.u)}">Delete</button>`:''}</div></div>`).join('')}</div>`
+    ${list.length?`<div class="stack" style="gap:2px">${list.map(t=>`<div class="swrap"><button class="swdel" data-a="dm-hide" data-v="${esc(t.u)}">Delete</button><div class="actrow dmrow" ${t.req?'':`data-sw="${esc(t.u)}"`}><button class="actmain" data-a="dm-open" data-dbl="dm-del-ask" data-v="${esc(t.u)}" data-pin="${esc(t.u)}">${avatar(Social.nameOf(t.u),Social.photoOf(t.u),null)}<span class="acttxt"><b>${esc(Social.nameOf(t.u))}</b><br><span class="${t.req?'reqtxt ':''}${!t.req&&!t.last.me&&t.last.at>(seen[t.u]||0)?'':'muted'}">${t.last.me?'You: ':''}${esc(t.req?t.last.text||'':t.last.text.slice(0,60))}${t.req?'':' · '+ago(t.last.at)}</span></span></button>${(Pf.dmPins||[]).includes(t.u)?`<span class="pinic" aria-label="Pinned">${ic('pin','xs')}</span>`:''}${t.req?`<button class="btn sm fbbtn" data-a="dm-accept" data-v="${esc(t.u)}">Accept</button><button class="btn sm" style="width:auto;flex:none" data-a="dm-hide" data-v="${esc(t.u)}">Delete</button>`:''}</div></div>`).join('')}</div>`
       :`<div class="card empty">${ic('send')}<div style="margin-top:6px">${tab==='req'?'No message requests.':'No messages yet. Tap + to message someone you follow.'}</div></div>`}
-    <p class="muted small" style="margin:0">Hold a chat to pin it (up to 5). Swipe left to delete.</p>
+    <p class="muted small" style="margin:0">Hold to pin, swipe left to delete.</p>
   </div>${tabbar()}`; }
 function mentionHtml(t){ return esc(t).replace(/@([A-Za-z0-9._]{3,20})/g,(m,u)=>{ const id=Object.keys(Social.people||{}).find(k=>String((Social.people[k]||{}).username||'').toLowerCase()===u.toLowerCase()); return !id?m:id===Social.me()?`<button class="link mention" data-a="tab" data-v="me">@${u}</button>`:`<button class="link mention" data-a="person" data-v="${esc(id)}">@${u}</button>`; }); }
 // Your messages sent within 5 minutes of each other stack as one group; under each group: time · Delete.
@@ -2111,7 +2118,7 @@ function chatMsgs(u){ const msgs=chatWith(u); if(!msgs.length) return `<div clas
   return out; }
 function vChat(){ const u=S.chatWith, msgs=chatWith(u), req=dmThreads().find(t=>t.u===u&&t.req);
   return `<div class="chatwrap"><div class="screen actpage chatpage">
-    <div class="chathead"><button class="iconbtn chback" data-a="dm-back" aria-label="Back">${ic('back')}</button><button class="whobtn" data-a="person" data-v="${esc(u)}">${avatar(Social.nameOf(u),Social.photoOf(u),null)}<span class="chwho"><b>${esc(Social.nameOf(u))}${fbadge(u)}</b><small>${esc(((Social.people||{})[u]||{}).name||'')}</small></span></button><span class="spacer"></span>${Pf.friends.includes(u)?`<button class="fpill on" data-a="follow-tog" data-v="${esc(u)}" aria-label="Following ${esc(Social.nameOf(u))}, tap to unfollow">${ic('check','xs')}Following</button>`:`<button class="fpill" data-a="follow-tog" data-v="${esc(u)}">${ic('plus','xs')}Follow</button>`}</div>
+    <div class="chathead"><button class="iconbtn chback" data-a="dm-back" aria-label="Back">${ic('back')}</button><button class="whobtn" data-a="person" data-v="${esc(u)}">${avatar(Social.nameOf(u),Social.photoOf(u),null)}<span class="chwho"><b>${esc(Social.nameOf(u))}${fbadge(u)}</b><small>${esc(((Social.people||{})[u]||{}).name||'')}</small></span></button><span class="spacer"></span>${Pf.friends.includes(u)?`<button class="fpill on" data-a="follow-tog" data-v="${esc(u)}" aria-label="Following ${esc(Social.nameOf(u))}, tap to unfollow">${ic('check','xs')}Following</button>`:`<button class="fpill" data-a="follow-tog" data-v="${esc(u)}">${ic('plus','xs')}Follow</button>`}<button class="fpill chfb" data-a="feedback" aria-label="Send beta feedback">${ic('chat','xs')}Feedback</button></div>
     <div class="chat" id="chat">${chatMsgs(u)}</div>
     ${req?`<div class="card stack" style="gap:8px"><span class="small"><b>${esc(Social.nameOf(u))}</b> wants to message you.</span><div class="rowx" style="gap:8px"><button class="btn sm" style="flex:1" data-a="dm-hide" data-v="${esc(u)}">Delete</button><button class="btn sm fbbtn" style="flex:1" data-a="dm-accept" data-v="${esc(u)}">Accept</button></div></div>`
       :`<div class="chatbar">${S.rec?`<div class="dmbox recbox"><button class="recx" data-a="rec-cancel" aria-label="Cancel recording">${ic('trash','sm')}</button><span class="recdot"></span><span class="rect num" id="rect">0:00</span><canvas id="recwave" width="400" height="60"></canvas><button class="recsend" data-a="rec-stop" aria-label="Send voice note">${ic('send','sm')}</button></div>`
@@ -2172,18 +2179,25 @@ function vFriends(){
 function vFriendList(){
   const crew=(S.flTab||'following')==='crew';
   return `<div class="screen">
-    <div class="rowx" style="gap:6px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="profile" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">${crew?'Crew':'Following'}</span>${crew?'':inviteCard()}</div>
-    <div class="search">${ic('search','sm')}<input class="input" id="fq" placeholder="Search ${crew?'your crew':'people you follow'}" value="${esc(S.fq)}" autocomplete="off" autocapitalize="off"></div>
+    <div class="rowx" style="gap:6px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="profile" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">${crew?'Followers':'Following'}</span>${inviteCard()}</div>
+    <div class="search">${ic('search','sm')}<input class="input" id="fq" placeholder="Search ${crew?'your followers':'people you follow'}" value="${esc(S.fq)}" autocomplete="off" autocapitalize="off"></div>
     <div class="stack" id="flist" style="gap:20px">${crew?crewList():friendsList()}</div>
   </div>${tabbar()}`;
 }
 function crewList(){ const me=Social.me(), q=(S.fq||'').trim().toLowerCase();
   const crew=Object.entries(Social.people||{}).filter(([id,c])=>id!==me&&c&&Array.isArray(c.following)&&c.following.includes(me)&&pm(c,q));
-  return crew.length?`<div class="list">${crew.map(([id,p])=>personRow(id,p,Pf.friends.includes(id))).join('')}</div>`:`<div class="card empty">${q?'No one in your crew matches that.':'No one has joined your crew yet. Share a workout or invite friends.'}</div>`; }
+  return crew.length?`<div class="list">${crew.map(([id,p])=>personRow(id,p,Pf.friends.includes(id))).join('')}</div>`:`<div class="card empty">${q?'No followers match that.':'No followers yet. Share a workout or invite friends.'}</div>`; }
 
 function lockRow(key,label,val){
   return `<button class="li" data-a="show" data-v="${key}"><span class="grow"><span class="t">${label}</span><br><span class="s">${val?esc(val):'Not set'}</span></span><span class="small muted" style="margin-right:6px">${Pf.show[key]?'Public':'Private'}</span><span class="toggle ${Pf.show[key]?'on':''}"></span></button>`;
 }
+function vMyWorkouts(){ const ws=[...Store.workouts].sort((a,b)=>b.startedAt-a.startedAt);
+  return `<div class="screen">
+    <div class="rowx" style="gap:6px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="profile" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">Workouts <span class="muted" style="font-weight:600">${ws.length}</span></span></div>
+    ${ws.length?`<div class="list">${ws.map(w=>{ const {v,n}=volume(w), d=new Date(w.startedAt), pub=isShared(w.id);
+      return `<button class="li wkrow" data-a="wk-open" data-v="${esc(w.id)}">${w.pump?`<img class="wkthumb" src="${esc(w.pump)}" alt="" loading="lazy">`:`<span class="ico">${ic(typeIcon(w.type),'sm')}</span>`}<span class="grow"><span class="t">${esc(w.title||dayWord(w.type))}</span><br><span class="s">${d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:d.getFullYear()===new Date().getFullYear()?undefined:'numeric'})} · ${fmtDur(durOf(w))} · ${n} set${n===1?'':'s'}${v?' · '+fmtN(Math.round(v))+' '+(w.unit||Pf.unit):''}</span></span>${countsForStreak(w)?'<span title="Counted toward your streak">🔥</span>':''}<span class="muted">${ic(pub?'eye':'lock','xs')}</span></button>`; }).join('')}</div>`
+      :`<div class="card empty" style="padding:28px 16px">${ic('star')}<div style="margin-top:6px">Finish a workout and it shows up here.</div></div>`}
+  </div>${tabbar()}`; }
 function ownGrid(){
   const view=S.pview||'grid', mine=Social.myPosts().filter(p=>p.photo);
   const tabs=`<div class="itabs" role="tablist"><button role="tab" aria-selected="${view==='grid'}" aria-label="Public posts" class="${view==='grid'?'on':''}" data-a="pview" data-v="grid">${ic('grid')}</button><button role="tab" aria-selected="${view==='list'}" aria-label="Private workout history" class="${view==='list'?'on':''}" data-a="pview" data-v="list">${ic('lock')}</button></div>`;
@@ -2206,10 +2220,10 @@ function vPeopleList(){ const {uid,tab}=S.plist, me=Social.me(), ok=id=>id===me|
   const total=ids.length; if(q) ids=ids.filter(id=>pm(cardOf(id),q));
   const rowp=id=>{ const c=id===me?Social.card():Social.people[id], r=relInfo(id,tab); return `<div class="li"><button class="whobtn" style="flex:1;min-width:0" data-a="person" data-v="${esc(id)}">${avatar(c.username||'?',c.photo,null)}<span style="flex:1;min-width:0;text-align:left"><b>${esc(c.username||'Lifter')}${id===me?' (you)':''}</b>${fbadge(id)}${c.name?`<br><span class="muted small">${esc(c.name)}</span>`:''}${r.l?`<br><span class="small" style="color:var(--accent)">${r.l}</span>`:c.town?`<br><span class="muted small">${esc(c.town)}</span>`:''}</span></button>${id===me?'':`<button class="btn sm ${Pf.friends.includes(id)?'':'primary'}" style="width:auto;flex:none" data-a="plist-follow" data-v="${esc(id)}">${Pf.friends.includes(id)?'Following':'Follow'}</button>`}</div>`; };
   return `<div class="screen">
-    <div class="rowx" style="gap:6px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="plist-back" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">${tab==='crew'?'Crew':'Following'} <span class="muted" style="font-weight:600">· ${total}</span></span></div>
+    <div class="rowx" style="gap:6px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="plist-back" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">${tab==='crew'?'Followers':'Following'} <span class="muted" style="font-weight:600">· ${total}</span></span></div>
     <span class="muted small" style="margin-top:-6px">${tab==='crew'?`People who follow ${esc(Social.nameOf(uid))}`:`People ${esc(Social.nameOf(uid))} follows`}</span>
     <div class="search">${ic('search','sm')}<input class="input" id="pl-q" placeholder="Search" value="${esc(S.plq||'')}" autocomplete="off" autocapitalize="off"></div>
-    <div id="plrows">${ids.length?`<div class="list">${ids.map(rowp).join('')}</div>`:`<div class="card muted small">${q?'No one matches that.':tab==='crew'?'No crew yet.':'Not following anyone yet.'}</div>`}</div>
+    <div id="plrows">${ids.length?`<div class="list">${ids.map(rowp).join('')}</div>`:`<div class="card muted small">${q?'No one matches that.':tab==='crew'?'No followers yet.':'Not following anyone yet.'}</div>`}</div>
   </div>${tabbar()}`; }
 function followersOf(uid){ const me=Social.me(); return Object.entries(Social.people||{}).filter(([id,c])=>id!==uid&&id!==me&&c&&Array.isArray(c.following)&&c.following.includes(uid)).length+(uid!==me&&(Pf.friends||[]).includes(uid)?1:0); }
 function fbadgeN(uid){ const n=founderNo(uid); return n?`<span class="anchorb withn" title="Founding Crew #${String(n).padStart(3,'0')}">${ic('anchor','xs')}<i>${String(n).padStart(3,'0')}</i></span>`:''; }
@@ -2219,13 +2233,13 @@ function profileBlock(uid,c,me){
   c=c||{}; const st=statusOf(c.status), posts=((Social.posts[uid]||{}).items||[]), pics=posts.filter(p=>p.photo);
   const tags=[c.town?`<span class="tag">${ic('pin','xs')}${esc(c.town)}</span>`:'', c.height?`<span class="tag">${esc(c.height)}</span>`:'', c.weight?`<span class="tag">${esc(c.weight)}</span>`:'', c.goal&&GOALS[c.goal]?`<span class="tag">${({bulk:'Bulking',maintain:'Maintaining',cut:'Cutting'})[c.goal]}</span>`:''].join('');
   const wk=me?Store.workouts.length:(c.wcount??'–'), fol=followersOf(uid), fing=me?(Pf.friends||[]).length:(Array.isArray(c.following)?c.following.length:'–');
-  const stat=(n,l)=>me?`<button data-a="my-friends" data-v="${l==='crew'?'crew':'following'}" aria-label="${n} ${l}"><b class="num">${n}</b><span>${l}</span></button>`:`<button data-a="plist" data-v="${esc(uid)}|${l==='crew'?'crew':'following'}" aria-label="See ${n} ${l}"><b class="num">${n}</b><span>${l}</span></button>`;
+  const stat=(n,l)=>{ const t=l==='crew'?'followers':l; return me?`<button data-a="my-friends" data-v="${l==='crew'?'crew':'following'}" aria-label="${n} ${t}"><b class="num">${n}</b><span>${t}</span></button>`:`<button data-a="plist" data-v="${esc(uid)}|${l==='crew'?'crew':'following'}" aria-label="See ${n} ${t}"><b class="num">${n}</b><span>${t}</span></button>`; };
   const gtag='';
   const streakN=me?streak():(c.status?c.status.streak:0);
   const fn=founderNo(uid), r=streakRank(uid), rl=rankLabel(r,5);
   return `<div class="prof">
     <div class="rowx" style="gap:18px"><button class="avbtn" data-a="av-view" data-v="${esc(uid)}" aria-label="View profile picture">${avatar(c.username||'?',c.photo,c.status?st.cls:null,true)}</button>
-      <div class="pstats"><div><b class="num">${wk}</b><span>voyages</span></div>${stat(fol,'crew')}${stat(fing,'following')}</div></div>
+      <div class="pstats">${me?`<button data-a="my-workouts" aria-label="See your ${wk} workouts"><b class="num">${wk}</b><span>workouts</span></button>`:`<div><b class="num">${wk}</b><span>workouts</span></div>`}${stat(fol,'crew')}${stat(fing,'following')}</div></div>
     <div class="rowx" style="align-items:flex-start;gap:12px"><div class="stack" style="gap:4px;flex:1;min-width:0"><div class="rowx" style="gap:8px;flex-wrap:nowrap;min-width:0"><h2 class="h2" style="font-size:22px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.username||'Lifter')}</h2>${fbadge(uid)}${fn?`<button class="ftag" data-a="founder-info" data-v="${fn}" aria-label="Founding Crew member number ${fn}">#${String(fn).padStart(3,'0')}</button>`:''}</div>
       ${c.name?`<span class="realname">${esc(c.name)}</span>`:''}
       ${c.status?`<span class="small muted">${st.label}</span>`:''}</div>
@@ -2253,6 +2267,7 @@ function vPerson(){ const id=S.personId, p=Social.people[id];
 function vMe(){
   if(S.meView==='settings') return vSettings();
   if(S.meView==='friends') return vFriendList();
+  if(S.meView==='workouts') return vMyWorkouts();
   if(S.meView==='admin') return vAdmin();
   if(S.meView==='install') return vInstall();
   return `<div class="screen">
@@ -2496,7 +2511,7 @@ function pickerList(){
   return `${del?`<div class="card stack" style="gap:10px"><b>Delete ${esc(del.n)}?</b><span class="muted small">${uses?`It comes out of ${uses} day${uses===1?'':'s'} in your plan. `:''}Workouts you already logged keep it.</span><div class="rowx" style="gap:8px"><button class="btn sm" style="flex:1;width:auto" data-a="ex-del-ask" data-v="">Cancel</button><button class="btn sm danger" style="flex:1;width:auto" data-a="ex-del" data-v="${esc(sh.delEx)}">Delete</button></div></div>`:''}
     ${sh.cat==='mine'&&!list.length&&!q?`<div class="card muted small">Exercises you create show up here. Search for one that isn't in the library to add it.</div>`:''}
     ${rec.length?`<div class="stack" style="gap:8px"><span class="flabel">Recommended swaps</span><div class="list">${rec.map(exRow).join('')}</div></div>`:''}
-    ${pop.length?`<div class="stack" style="gap:8px"><span class="flabel">Popular for ${TYPES[sh.type]}</span><div class="list">${pop.map(exRow).join('')}</div></div>`:''}
+    ${pop.length?`<div class="stack" style="gap:8px"><span class="flabel">🔥 Popular for ${TYPES[sh.type]}</span><div class="list">${pop.map(exRow).join('')}</div></div>`:''}
     <div class="stack" style="gap:8px"><span class="flabel">${q?'Results':'All exercises'}</span>${list.length?`<div class="list">${list.map(exRow).join('')}</div>`:`<div class="card muted small">No exercise matches “${esc(sh.q)}” yet.</div>`}</div>
     ${q&&!EX.some(e=>e.n.toLowerCase()===q)?`<button class="btn" data-a="new-ex">${ic('plus','sm')}Add “${esc(sh.q.trim())}” as a new exercise</button>`:''}`;
 }
@@ -2676,7 +2691,7 @@ function vSheet(){
       board('crew','Crewmate Captains','Top 5 streaks among your crew',sorted(all.filter(([u])=>u===me||Pf.friends.includes(u))),10,'Follow people to compare streaks.')
       +board('region','Regional Captains',town?'Top 5 streaks in '+esc(town):'Top 5 streaks in your town',town?sorted(all.filter(([,c])=>c.town===town)):[],15,town?'No one else in your town yet.':'Add your town in Settings to see your region.')
       +board('global','Global Captains','Top 5 streaks on Boats',sorted(all),100,'No one yet.')
-      +`<p class="muted small" style="margin:0">Each workout that meets your level’s minimum adds a day. Days off pause your streak; it resets only after 7 days with no workout. Tap a board to see more.</p>`); }
+      +`<p class="muted small" style="margin:0">Each workout that meets your level’s minimum adds a day. Rest days pause your streak. Take up to 6 in a row, then work out on the 7th day or it resets. Tap a board to see more.</p>`); }
   if(sh.kind==='activity'){ const list=myActivity(), seen=sh.seen||0;
     return wrap(`<div class="rowx"><span class="h2">Activity</span><span class="spacer"></span><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>`,
       list.length?`<div class="list">${list.map(x=>`<button class="li ${x.at>seen?'sel':''}" data-a="${x.kind==='follow'?'person':'post-open'}" data-v="${esc(x.kind==='follow'?x.uid:x.key)}">${avatar(Social.nameOf(x.uid),Social.photoOf(x.uid),null)}<span class="grow"><span class="t" style="font-weight:500"><b>${esc(Social.nameOf(x.uid))}</b> ${x.kind==='follow'?(isShipmate(x.uid)?'joined your crew. You’re shipmates.':'joined your crew.'):x.kind==='like'?'liked your post.':'commented: '+esc(x.text)}</span>${x.at?`<br><span class="s">${shortDate(x.at)}</span>`:''}</span>${x.kind==='follow'?(Pf.friends.includes(x.uid)?'':`<span class="btn sm primary" style="width:auto">Follow back</span>`):x.photo?`<img class="actthumb" src="${esc(x.photo)}" alt="">`:''}</button>`).join('')}</div>`
@@ -2807,6 +2822,10 @@ function devPanel(){
 /* ---------- render ---------- */
 // Remember the page you came from, so swiping back can show it underneath
 const VSTACK=[]; let VK='';
+// Page history for back buttons: always return to the page you were on
+const NAVH=[]; const NAVF=['route','tab','fview','meView','personId','plist','postsOf','chatWith','flTab'];
+function navPush(){ const o={y:window.scrollY}; NAVF.forEach(k=>o[k]=S[k]&&typeof S[k]==='object'?{...S[k]}:S[k]); const t=NAVH[NAVH.length-1]; if(t&&NAVF.every(k=>JSON.stringify(t[k])===JSON.stringify(o[k]))) return; NAVH.push(o); if(NAVH.length>30) NAVH.shift(); }
+function navBack(){ const o=NAVH.pop(); if(!o) return false; NAVF.forEach(k=>S[k]=o[k]); S.sheet=null; renderSheet(); render(); window.scrollTo(0,o.y||0); return true; }
 const viewKey=()=>JSON.stringify([S.route,S.tab,S.fview,S.meView,S.personId,S.postsOf,S.plist&&S.plist.uid+S.plist.tab,S.chatWith&&S.fview==='chat'?S.chatWith:'',S.planDay]);
 function render(){ const oldHTML=app.innerHTML, oldY=window.scrollY, k=viewKey();
   if(k!==VK){ if(VSTACK.length&&VSTACK[VSTACK.length-1].k===k) VSTACK.pop(); else if(VK){ VSTACK.push({k:VK,html:oldHTML,y:oldY}); if(VSTACK.length>8) VSTACK.shift(); } VK=k; }
@@ -2838,7 +2857,7 @@ setInterval(()=>{ if(askEl.querySelector('img[data-hq]')) hqScan(); },400);
 document.addEventListener('contextmenu',e=>{ if(e.target.tagName==='IMG') e.preventDefault(); });
 if(window.visualViewport){ const kb=()=>{ const v=visualViewport, r=document.documentElement.style; r.setProperty('--vvh',Math.round(v.height)+'px'); r.setProperty('--vvt',Math.round(v.offsetTop)+'px'); document.body.classList.toggle('kbopen',innerHeight-v.height>150); const c=document.getElementById('chat'); if(c&&S.fview==='chat'&&c.dataset.end!=='0') c.scrollTop=c.scrollHeight; }; visualViewport.addEventListener('resize',kb); visualViewport.addEventListener('scroll',kb); kb(); }
 // In a chat the page itself never moves: only a message list that's long enough to scroll can be dragged.
-document.addEventListener('touchmove',e=>{ if(!document.body.classList.contains('chatopen')) return; const c=e.target.closest&&e.target.closest('#chat'); if(!c||c.scrollHeight<=c.clientHeight+1){ if(e.cancelable) e.preventDefault(); } },{passive:false});
+document.addEventListener('touchmove',e=>{ if(e.target.closest&&e.target.closest('.photoview')){ if(e.cancelable) e.preventDefault(); return; } if(!document.body.classList.contains('chatopen')) return; const c=e.target.closest&&e.target.closest('#chat'); if(!c||c.scrollHeight<=c.clientHeight+1){ if(e.cancelable) e.preventDefault(); } },{passive:false});
 let PSW=null;
 document.addEventListener('touchcancel',()=>{ if(PTR&&PTR.scr){ PTR.scr.style.transition='transform .25s'; PTR.scr.style.transform=''; try{ ptrEl().style.opacity=0; }catch(e){} } PTR=null;
   if(PSW&&PSW.pg){ PSW.pg.style.transition='transform .2s'; PSW.pg.style.transform=''; } PSW=null; document.body.classList.remove('swipeback'); try{ behindHide(); }catch(e){} },{passive:true});
@@ -2861,6 +2880,9 @@ let TSW=null;
 document.addEventListener('touchstart',e=>{ const c=e.target.closest('#chat'); if(!c) return; TSW={c,x:e.touches[0].clientX,y:e.touches[0].clientY,on:false}; },{passive:true});
 document.addEventListener('touchmove',e=>{ if(!TSW) return; const dx=TSW.x-e.touches[0].clientX, dy=e.touches[0].clientY-TSW.y; if(!TSW.on){ if(Math.abs(dx)<10) return; if(Math.abs(dy)>Math.abs(dx)){ TSW=null; return; } TSW.on=true; TSW.c.classList.add('dragging'); } TSW.c.style.setProperty('--tx',Math.max(0,Math.min(72,dx))+'px'); },{passive:true});
 document.addEventListener('touchend',()=>{ if(!TSW) return; TSW.c.classList.remove('dragging'); TSW.c.style.setProperty('--tx','0px'); TSW=null; },{passive:true});
+document.addEventListener('input',e=>{ const t=e.target; if(!t||!(t.tagName==='INPUT'||t.tagName==='TEXTAREA')||!(t.maxLength>0)||t.type==='range') return; let n=t.nextElementSibling; if(!(n&&n.classList.contains('limitnote'))) n=null;
+  if(t.value.length>=t.maxLength){ if(!n){ n=document.createElement('span'); n.className='limitnote'; n.textContent='Max reached'; t.after(n); } } else if(n) n.remove(); },true);
+document.addEventListener('load',e=>{ const c=e.target&&e.target.closest&&e.target.closest('#chat'); if(c&&c.dataset.end!=='0') c.scrollTop=c.scrollHeight; },true);
 document.addEventListener('scroll',e=>{ const c=e.target; if(c&&c.id==='chat') c.dataset.end=(c.scrollHeight-c.scrollTop-c.clientHeight<60)?'1':'0'; },true);
 // swipe a sheet: drag the top down to close, up to expand; dragging down from the top of its content closes too
 let XLP=null;
@@ -3089,9 +3111,10 @@ const A = {
       if(Pf.unit==='lb'){ if(!num(Pf.ft)) bad.push('f-ft'); } else if(!num(Pf.cm)) bad.push('f-cm'); if(!num(Pf.bodyweight)) bad.push('f-bw'); if(!Pf.sex) bad.push('f-sex'); if(!String(Pf.realName||'').trim()) bad.push('f-name');
       document.querySelectorAll('.input.bad,.field.bad').forEach(n=>n.classList.remove('bad')); if(bad.length){ bad.forEach(id=>document.getElementById(id)?.classList.add('bad')); const f=document.getElementById(bad[0]); if(f){ f.scrollIntoView({block:'center',behavior:'smooth'}); f.focus({preventScroll:true}); } return; }
       if(window.boatsClaimName){ const r=await window.boatsClaimName(Pf.username,Pf.nameClaimed); if(r==='taken'){ const i=document.getElementById('f-user'), m=document.getElementById('u-msg'); i?.classList.add('bad'); if(m) m.innerHTML=`<span style="color:var(--bad)">@${esc(Pf.username)} is already taken. Try another.</span>`; i?.focus(); return; } if(r==='ok') Pf.nameClaimed=Pf.username; } }
-    if(S.ob===1) applyRecDefaults();
+    if(S.ob===1&&!S.obDefTouched){ const r=recReps(); Pf.repMin=r.min; Pf.repMax=r.max; Pf.rest=recRest(); }
+    if(S.ob===3){ const T=S.obSet||new Set(), miss=DAYS.find(([k])=>!T.has(k)); if(miss){ S.splitDay=miss[0]; render(); toast('Pick a day type for '+DAYN[miss[0]]+' first.'); return; } }
     if(S.ob<3){ S.ob++; window.scrollTo(0,0); render(); } else { Pf.onboarded=true; if(!Pf.bwLog.length&&num(Pf.bodyweight)) Pf.bwLog.push({t:Date.now(),w:num(Pf.bodyweight)}); Store.save(); if(window.boatsClaimFounder) window.boatsClaimFounder(); go('app',{tab:'plan'}); } },
-  tab(v){ document.body.classList.remove('barmini'); S.plist=null; if(v==='me') S.meView=null; S.sheet=null; S.sheetFull=false; S.fview=null; S.personId=null; S.postsOf=null; renderSheet(); if(v==='today'&&Pf.active&&S.tab==='today'){ go('session'); return; } if(v==='today'&&Pf.active&&S.route==='app'){ go('session'); return; } if(v!=='me'||S.tab!=='me') S.meView=null; S.tab=v; S.planDay=null; S.confirmErase=false; S.menu=null; S.route='app'; window.scrollTo(0,0); render(); },
+  tab(v){ NAVH.length=0; document.body.classList.remove('barmini'); S.plist=null; if(v==='me') S.meView=null; S.sheet=null; S.sheetFull=false; S.fview=null; S.personId=null; S.postsOf=null; renderSheet(); if(v==='today'&&Pf.active&&S.tab==='today'){ go('session'); return; } if(v==='today'&&Pf.active&&S.route==='app'){ go('session'); return; } if(v!=='me'||S.tab!=='me') S.meView=null; S.tab=v; S.planDay=null; S.confirmErase=false; S.menu=null; S.route='app'; window.scrollTo(0,0); render(); },
   'edit-day'(v){ S.tab='plan'; S.planDay=v; window.scrollTo(0,0); render(); },
   'plan-back'(){ S.planDay=null; render(); },
   'add-ex'(){ openPicker({mode:'plan',day:S.planDay},Pf.split[S.planDay]); },
@@ -3178,7 +3201,7 @@ const A = {
     const ex=Object.entries(TYPES).find(([,l])=>l.toLowerCase()===n.toLowerCase()); const key=ex?ex[0]:'x_'+uid(); if(!ex){ Pf.customTypes=Pf.customTypes||{}; Pf.customTypes[key]=n.slice(0,16); syncTypes(); }
     S.addType=null; if(v==='sp-type') A['sp-type'](key); else if(v.startsWith('split:')){ const d=v.slice(6); Pf.split[d]=key; if(Pf.active&&Pf.active.day===d) Pf.active.type=key; Store.save(); render(); } toast(`${n} added`); },
   'sp-day'(v){ S.splitDay=v; render(); },
-  'sp-type'(v){ const d=S.splitDay||'mon'; (S.obSet||(S.obSet=new Set())).add(d); if(v==='rest'&&Pf.split[d]!=='rest'&&DAYS.filter(([k])=>Pf.split[k]==='rest').length>=3){ toast('Max 3 rest days a week'); return; } Pf.split[d]=v; if(Pf.active&&Pf.active.day===d) Pf.active.type=v; const ks=DAYS.map(x=>x[0]), i=ks.indexOf(d); if(i<ks.length-1) S.splitDay=ks[i+1]; Store.save(); render(); },
+  'sp-type'(v){ const d=S.splitDay||'mon', T=(S.obSet||(S.obSet=new Set())), ob=S.route==='onboard'; if(v==='rest'&&!(Pf.split[d]==='rest'&&(!ob||T.has(d)))&&DAYS.filter(([k])=>Pf.split[k]==='rest'&&(!ob||T.has(k))).length>=6){ toast('Max 6 rest days a week'); return; } T.add(d); if(false){ toast('Max 6 rest days a week'); return; } Pf.split[d]=v; if(Pf.active&&Pf.active.day===d) Pf.active.type=v; const ks=DAYS.map(x=>x[0]), i=ks.indexOf(d); if(i<ks.length-1) S.splitDay=ks[i+1]; Store.save(); render(); },
   's-add'(){ openPicker({mode:'session'},Pf.active.type); },
   'rest-add'(){ if(S.rest){ S.rest.until+=15000; S.rest.total+=15; tick(); } },
   'rest-skip'(){ S.rest=null; render(); },
@@ -3196,7 +3219,7 @@ const A = {
   'adj-apply'(v){ const g=S.sheet.items[+v], amt=g.amt??recAdj(g); A.adj(v+'.'+amt); },
   'adj-skip'(v){ const g=S.sheet.items[+v]; g.done=`Keeping ${fmtN(g.top)} ${Pf.unit}`; Pf.adjusted[keyOf(g.exId,g.equip)]=Date.now(); Store.save(); renderSheet(); },
   discard(){ Pf.active=null; S.rest=null; S.sheet=null; Store.save(); go('app',{tab:homeTab()}); toast('Workout discarded'); },
-  pstep(_,el){ if(/rep(Min|Max)/.test(el.dataset.f)) Pf.defaultsTouched=true; setTimeout(()=>{ if(/rep(Min|Max)/.test(el.dataset.f)) render(); },0); const f=el.dataset.f; let v=(+Pf[f]||0)+(+el.dataset.d); if(f==='repMin') v=Math.max(1,Math.min(Pf.repMax,v)); if(f==='repMax') v=Math.max(Pf.repMin,Math.min(50,v)); Pf[f]=v; document.getElementById('f-'+f).value=v; Store.save(); },
+  pstep(_,el){ if(/rep(Min|Max)/.test(el.dataset.f)){ Pf.defaultsTouched=true; S.obDefTouched=true; } setTimeout(()=>{ if(/rep(Min|Max)/.test(el.dataset.f)) render(); },0); const f=el.dataset.f; let v=(+Pf[f]||0)+(+el.dataset.d); if(f==='repMin') v=Math.max(1,Math.min(Pf.repMax,v)); if(f==='repMax') v=Math.max(Pf.repMin,Math.min(50,v)); Pf[f]=v; document.getElementById('f-'+f).value=v; Store.save(); },
   export(v){ S.menu=null; S.sheet={kind:'export',id:v,style:0,tone:'light',bg:'clear'}; renderSheet(); },
   'ov-style'(v){ readTitle(); S.sheet.style=+v; renderSheet(); },
   'ov-tone'(v){ readTitle(); S.sheet.tone=v; renderSheet(); },
@@ -3220,12 +3243,12 @@ const A = {
       <span>${ic('clock','xs')} <b>${R.min}+ minutes</b> of training, and</span><span>${ic('dumbbell','xs')} <b>${R.sets} working sets</b> across 2 exercises, <i>or</i> <b>${R.sets+1} sets</b> in one exercise.</span>
       <span>${ic('flame','xs')} Cardio-only days count once you log a cardio session.</span>
       ${sc.missing&&sc.missing.length?`<span class="small" style="color:var(--streak)">Still needed: ${esc(sc.missing.join(' · '))}</span>`:''}
-      <span class="muted small">Missed days pause your streak. It only resets after more than 7 days without a workout that counts.</span></div>`); },
+      <span class="muted small">Rest days pause your streak. Take up to 6 in a row, then work out on the 7th day or it resets.</span></div>`); },
   'rank-open'(v){ S.sheet.open=S.sheet.open===v?null:v; renderSheet(); },
   activity(){ S.actSeenAt=Pf.actSeen||0; S.fview='activity'; S.actF='all'; Pf.actSeen=Date.now(); Store.save(); window.scrollTo(0,0); render(); },
   'act-back'(){ S.fview=null; window.scrollTo(0,0); render(); },
   dms(){ S.personId=null; S.postsOf=null; S.fview='dms'; S.dmTab='main'; S.dmNew=false; window.scrollTo(0,0); render(); },
-  'dm-pin'(v){ const p=Pf.dmPins||[]; if(p.includes(v)) Pf.dmPins=p.filter(x=>x!==v); else { if(p.length>=5){ toast('Max 5 pinned chats'); return; } Pf.dmPins=[...p,v]; } Store.save(); render(); popCue(); },
+  'dm-pin'(v){ const p=Pf.dmPins||[]; if(p.includes(v)) Pf.dmPins=p.filter(x=>x!==v); else { if(p.length>=5){ askInfo('Maximum of 5 pins','Unpin a chat to pin another one.'); return; } Pf.dmPins=[...p,v]; } Store.save(); render(); popCue(); },
   'dm-tab'(v){ S.dmTab=v; render(); },
   'dm-new'(){ S.dmNew=!S.dmNew; render(); },
   'dm-open'(v){ setTimeout(()=>markSeen(v),300); S.personId=null; S.postsOf=null; S.dmQ=''; S.sheet=null; renderSheet(); S.chatWith=v; S.fview='chat'; S.tab='friends'; S.route='app'; Pf.dmSeen={...(Pf.dmSeen||{}),[v]:Date.now()}; Store.save(); render(); const c=document.getElementById('chat'); if(c) c.scrollTop=c.scrollHeight; },
@@ -3253,6 +3276,7 @@ const A = {
   'dev-go'(v){ previewLoad(v); },
   settings(){ S.nameOpen=Pf.username; S.draft={username:Pf.username||'',realName:Pf.realName||'',town:Pf.town||'',bio:Pf.bio||'',link:Pf.link||''}; S.meView='settings'; S.tab='me'; S.route='app'; S.sheet=null; window.scrollTo(0,0); render(); },
   'my-friends'(v){ S.flTab=v||'following'; S.fq=''; S.meView='friends'; S.tab='me'; S.route='app'; window.scrollTo(0,0); render(); },
+  'my-workouts'(){ S.personId=null; S.plist=null; S.postsOf=null; S.meView='workouts'; S.tab='me'; S.route='app'; window.scrollTo(0,0); render(); },
   profile(){ S.meView=null; window.scrollTo(0,0); render(); },
   'chart-open'(v){ S.sheetFull=true; S.sheet={kind:'chart',which:v,range:'3m'}; renderSheet(); },
   'chart-range'(v){ S.sheet.range=v; renderSheet(); },
@@ -3265,7 +3289,7 @@ const A = {
   async 'wk-unshare'(v){ S.menu=null; S.sheet=null; await Social.delPost(v); render(); renderSheet(); toast('Now private: only you can see it'); },
   'pick-day'(){ S.sheet={kind:'pickday'}; renderSheet(); },
   'town-pick'(v){ if(S.draft&&S.meView==='settings'){ S.draft.town=v; const sb=document.getElementById('idsave'); if(sb) sb.disabled=!draftDirty(); } else { Pf.town=v; Store.save(); } const i=document.getElementById('f-town'); if(i) i.value=v; const b=document.getElementById('town-sug'); if(b){ b.hidden=true; b.innerHTML=''; } const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); },
-  'rep-preset'(v){ const p=REP_PRESETS[+v]; Pf.repMin=p.min; Pf.repMax=p.max; Pf.defaultsTouched=true; Store.save(); render(); },
+  'rep-preset'(v){ const p=REP_PRESETS[+v]; Pf.repMin=p.min; Pf.repMax=p.max; Pf.defaultsTouched=true; S.obDefTouched=true; Store.save(); render(); },
   pick(v){ S.pick=v===dayKey(new Date())?null:v; S.sheet=null; render(); },
   ftab(v){ S.ftab=v; render(); },
   'post-like'(v){ const r=Social.myReacts(); if(r.likes[v]) delete r.likes[v]; else r.likes[v]=true; Social.saveReacts(r,true); patchLikes(v); },
@@ -3291,7 +3315,7 @@ const A = {
   async 'text-invite'(){ const txt=inviteText()+'\n'+ARTIFACT_URL; if(navigator.share){ try{ await navigator.share({text:txt}); return; }catch(e){ if(e&&e.name==='AbortError') return; } } try{ await navigator.clipboard.writeText(txt); toast('Invite copied. Paste it in a text.'); }catch(e){ toast('Copy failed. Long-press the message above to copy it.'); } if(matchMedia('(pointer:coarse)').matches) location.href='sms:?&body='+encodeURIComponent(txt); },
   'copy-invite'(){ const txt=inviteText()+'\n'+ARTIFACT_URL, box=document.getElementById('invite-msg'); const sel=()=>{ const r=document.createRange(); r.selectNodeContents(box); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast('Text selected. Copy it to send.'); };
     try{ navigator.clipboard.writeText(txt).then(()=>toast('Invite copied. Paste it in a text.'),sel); }catch(e){ sel(); } },
-  person(v){ S.backComments=S.sheet&&(S.sheet.kind==='comments')?S.sheet.key:null; S.backLikers=S.sheet&&S.sheet.kind==='likers'?S.sheet.key:null; S.sheetBottom=false; S.plist=null; S.postsOf=null; S.sheet=null; S.sheetFull=false; renderSheet(); if(v===Social.me()){ S.personId=null; A.tab('me'); return; } S.personFrom=window.scrollY; S.personId=v; S.unfAsk=false; S.route='app'; window.scrollTo(0,0); render(); },
+  person(v){ if(v!==Social.me()) navPush(); S.backComments=S.sheet&&(S.sheet.kind==='comments')?S.sheet.key:null; S.backLikers=S.sheet&&S.sheet.kind==='likers'?S.sheet.key:null; S.sheetBottom=false; S.plist=null; S.postsOf=null; S.sheet=null; S.sheetFull=false; renderSheet(); if(v===Social.me()){ S.personId=null; A.tab('me'); return; } S.personFrom=window.scrollY; S.personId=v; S.unfAsk=false; S.route='app'; window.scrollTo(0,0); render(); },
   'split-view'(v){ S.sheet={kind:'splitview',id:v}; renderSheet(); },
   'split-copy-ask'(){ S.sheet.confirm=true; renderSheet(); },
   'split-copy-no'(){ S.sheet.confirm=false; renderSheet(); },
@@ -3308,9 +3332,9 @@ const A = {
     try{ if(Store.db&&Store.uid){ const ref=Store.db.collection('feedback').doc(Store.uid); let prev=[]; try{ const g=await ref.get(); prev=((g&&g.data&&g.data())||{}).items||[]; }catch(e){} await ref.set({items:[...prev,item].slice(-100)}); } else { Pf.feedbackLocal=[...(Pf.feedbackLocal||[]),item].slice(-50); Store.save(); } }
     catch(e){ toast('Could not send that. Try again in a moment.'); return; }
     S.sheet.sent=true; renderSheet(); popCue(); },
-  'posts-open'(v){ const [uid]=v.split(':'); S.sheet=null; renderSheet(); S.postsFrom=window.scrollY; S.postsOf=uid; S.route='app'; render(); requestAnimationFrame(()=>{ const a=document.querySelector(`article[data-key="${CSS.escape(v)}"]`); window.scrollTo(0,a?a.getBoundingClientRect().top+window.scrollY-12:0); }); },
-  'posts-back'(){ S.postsOf=null; render(); window.scrollTo(0,S.postsFrom||0); },
-  'person-back'(){ S.personId=null; render(); window.scrollTo(0,S.personFrom||0); if(S.backComments){ const k=S.backComments; S.backComments=null; A['cm-open'](k); } else if(S.backLikers){ const k=S.backLikers; S.backLikers=null; A['likers-open'](k); } },
+  'posts-open'(v){ navPush(); const [uid]=v.split(':'); S.sheet=null; renderSheet(); S.postsFrom=window.scrollY; S.postsOf=uid; S.route='app'; render(); requestAnimationFrame(()=>{ const a=document.querySelector(`article[data-key="${CSS.escape(v)}"]`); window.scrollTo(0,a?a.getBoundingClientRect().top+window.scrollY-12:0); }); },
+  'posts-back'(){ if(navBack()) return; S.postsOf=null; render(); window.scrollTo(0,S.postsFrom||0); },
+  'person-back'(){ const ck=S.backComments, lk=S.backLikers; if(navBack()){ S.backComments=null; S.backLikers=null; if(ck) A['cm-open'](ck); else if(lk) A['likers-open'](lk); return; } S.personId=null; render(); window.scrollTo(0,S.personFrom||0); if(S.backComments){ const k=S.backComments; S.backComments=null; A['cm-open'](k); } else if(S.backLikers){ const k=S.backLikers; S.backLikers=null; A['likers-open'](k); } },
   async 'pdf-export'(){ boatLoading(true,'Making your PDF…'); try{ const blob=await buildPdf(); const name=`boats-${(Pf.username||'workouts').replace(/[^a-z0-9._-]/gi,'')}-${dateKey()}.pdf`;
       const dl=window.claude&&claude.use?await claude.use('downloads').catch(()=>null):null;
       if(dl){ try{ await dl.save({filename:name,data:blob}); popCue(); }catch(e){ if(e&&e.code!=='declined') toast('Could not save the PDF here.'); } }
@@ -3340,7 +3364,7 @@ const A = {
   'likers-open'(v){ S.sheet={kind:'likers',key:v}; renderSheet(); },
   'dm-photo'(){ S.photoFor='dm'; const inp=document.getElementById('photo-in'); inp.multiple=false; inp.click(); },
   'dm-cam'(){ S.photoFor='dm'; document.getElementById('cam-in').click(); },
-  async 'rec-start'(){ if(S.rec) return; let stream; try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ toast('Can’t use the microphone ('+((e&&e.name)||'error')+'). Allow it in your browser settings.'); return; }
+  async 'rec-start'(){ if(S.rec) return; let stream; try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ toast('Allow microphone in browser settings to use.'); return; }
     const mime=['audio/mp4','audio/webm;codecs=opus','audio/webm'].find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m))||'';
     const mr=new MediaRecorder(stream,mime?{mimeType:mime,audioBitsPerSecond:48000}:undefined), chunks=[], actx=new (window.AudioContext||window.webkitAudioContext)(), src=actx.createMediaStreamSource(stream), an=actx.createAnalyser(); an.fftSize=256; src.connect(an);
     S.rec={mr,chunks,stream,actx,an,t0:Date.now(),peaks:[],cancel:false}; mr.ondataavailable=e=>{ if(e.data&&e.data.size) chunks.push(e.data); }; mr.onstop=()=>recDone(); mr.start(250);
@@ -3352,7 +3376,7 @@ const A = {
     const a=new Audio(url); VNA={id:v,a}; const bars=[...b.querySelectorAll('.vbars i')], ico=b.querySelector('.vplay');
     const tick=()=>{ if(!VNA||VNA.a!==a) return; const f=a.duration?a.currentTime/a.duration:0; bars.forEach((x,k)=>x.classList.toggle('on',k/bars.length<=f)); if(!a.paused) requestAnimationFrame(tick); };
     a.onplay=()=>{ ico.innerHTML=ic('pause','sm'); tick(); }; a.onpause=()=>{ ico.innerHTML=ic('play','sm'); }; a.onended=()=>{ ico.innerHTML=ic('play','sm'); bars.forEach(x=>x.classList.remove('on')); VNA=null; }; a.play().catch(()=>toast('Could not play that voice note.')); },
-  'dm-photo-view'(v,el){ const img=el.querySelector('img'); if(!img) return; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><img class="dmbig" src="${esc(img.src)}" alt="Photo" data-a="ask-no"></div>`; },
+  'dm-photo-view'(v,el){ const img=el.querySelector('img'); if(!img) return; askEl.innerHTML=`<div class="scrim askscrim photoview"><button class="pvx" data-a="ask-no" aria-label="Close photo">${ic('x')}</button><img class="dmbig" src="${esc(img.src)}" alt="Photo"></div>`; },
   'edit-save'(){ const t=document.getElementById('edit-in'), v=(t&&t.value||'').trim(), f=EDITFN; askEl.innerHTML=''; EDITFN=null; if(f) f(v); },
   'post-edit'(v){ const p=Social.myPosts().find(x=>x.id===v); if(!p) return; editBox('Edit caption',p.caption||'',300,async val=>{ await Social.savePosts(Social.myPosts().map(x=>x.id===v?{...x,caption:val.slice(0,300),edited:Date.now()}:x)); patchPost(Social.me()+':'+v); popCue(); savedNote('Caption updated'); }); },
   'cm-edit'(v){ const [,key,,at]=v.split('|'), t=+at, r=Social.myReacts(), c=(r.comments[key]||[]).find(x=>x.at===t); if(!c) return;
@@ -3373,9 +3397,9 @@ const A = {
   'msg-del'(v){ askConfirm('Delete this message?','It’s removed permanently for both of you.','Delete',()=>{ const d=Social.myDms(), u=S.chatWith, t=+v; d.out[u]=(d.out[u]||[]).filter(m=>m.at!==t); Social.saveDms(d); const c=document.getElementById('chat'); if(c) c.innerHTML=chatMsgs(u); popCue(); }); },
   'av-view'(v){ const c=cardOf(v)||{}, hid=v+'_avatar'; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="avview" data-a="ask-no">${c.photo?`<img src="${esc(HQ[hid]||c.photo)}" ${c.photoHq&&!HQ[hid]?`data-hq="${esc(hid)}"`:''} alt="${esc(c.username||'')}">`:`<span class="ini">${esc((c.username||'?')[0].toUpperCase())}</span>`}</div></div>`; },
   'mention-pick'(v){ const t=MT; if(!t) return; const pos=t.selectionStart, before=t.value.slice(0,pos).replace(/@([A-Za-z0-9._]{0,20})$/,'@'+v+' '), after=t.value.slice(pos); t.value=before+after; t.focus(); t.setSelectionRange(before.length,before.length); document.getElementById('msug')?.remove(); MT=null; },
-  plist(v){ const [uid,tab]=v.split('|'); S.plq=''; S.plist={uid,tab}; window.scrollTo(0,0); render(); },
+  plist(v){ navPush(); const [uid,tab]=v.split('|'); S.plq=''; S.plist={uid,tab}; window.scrollTo(0,0); render(); },
   'plist-tab'(v){ S.plist.tab=v; render(); },
-  'plist-back'(){ S.plist=null; window.scrollTo(0,0); render(); },
+  'plist-back'(){ if(navBack()) return; S.plist=null; window.scrollTo(0,0); render(); },
   'plist-follow'(v){ A['follow-tog'](v,null); },
   install(){ S.meView='install'; S.tab='me'; S.route='app'; S.instDone=null; const pl=S.instTab||'ios'; S.instStep=INSTALL_STEPS[pl][0].skip()?1:0; window.scrollTo(0,0); render(); },
   'inst-tab'(v){ S.instTab=v; S.instStep=INSTALL_STEPS[v][0].skip()?1:0; render(); },
@@ -3388,7 +3412,7 @@ const A = {
   async 'inst-prompt'(){ const p=window.__bip; if(!p) return; try{ p.prompt(); const r=await p.userChoice; if(r&&r.outcome==='accepted'){ window.__bip=null; S.instDone='installed'; } }catch(e){} render(); },
   async 'id-save'(){ const d=S.draft; if(!d) return; const u=String(d.username||'').trim(), changedName=u.toLowerCase()!==String(Pf.username||'').toLowerCase()||u!==Pf.username;
     const um=document.getElementById('u-msg'), say=(m)=>{ if(um) um.innerHTML=`<span style="color:var(--bad)">${esc(m)}</span>`; document.getElementById('f-user')?.focus(); };
-    if(changedName){ if(nameLocked()&&!(window.boatsAdmin&&u==='SWAIZY')){ say('You can only change your username once a week.'); return; } const x=usernameIssue(u); if(x){ say(x); return; }
+    if(changedName){ if(nameLocked()&&!(window.boatsAdmin&&u==='Swaizy')){ say('You can only change your username once a week.'); return; } const x=usernameIssue(u); if(x){ say(x); return; }
       if(window.boatsClaimName){ const r=await window.boatsClaimName(u,Pf.nameClaimed||Pf.username); if(r==='taken'){ say(`@${u} is already taken. Try another.`); return; } if(r==='error'){ say('Could not check that name. Try again.'); return; } Pf.nameClaimed=u; } }
     const town=String(d.town||'').trim(); if(town&&!placeValid(town)){ const tm=document.getElementById('t-msg'); if(tm) tm.innerHTML=townMsg(); document.getElementById('f-town')?.focus(); return; }
     if(String(d.link||'').trim()&&!linkOf(d.link)){ toast('That link doesn’t look right. Check it and try again.'); document.getElementById('f-link')?.focus(); return; }
@@ -3464,7 +3488,7 @@ document.addEventListener('click',e=>{
     if(DBL&&DBL.k===k&&now-DBL.t<320){ clearTimeout(DBL.to); DBL=null; A[el.dataset.dbl]&&A[el.dataset.dbl](el.dataset.v,el); return; }
     if(DBL) clearTimeout(DBL.to); const sa=el.dataset.a, sv=el.dataset.v; DBL={k,t:now,to:setTimeout(()=>{ DBL=null; A[sa]&&A[sa](sv,el); },320)}; return; }
   const a=el.dataset.a, v=el.dataset.v;
-  if(a.startsWith('split:')){ const d=a.slice(6); if(v==='rest'&&Pf.split[d]!=='rest'&&DAYS.filter(([k])=>Pf.split[k]==='rest').length>=3){ toast('Max 3 rest days a week'); return; } Pf.split[d]=v; if(Pf.active&&Pf.active.day===d) Pf.active.type=v; Store.save(); render(); return; }
+  if(a.startsWith('split:')){ const d=a.slice(6); if(v==='rest'&&Pf.split[d]!=='rest'&&DAYS.filter(([k])=>Pf.split[k]==='rest').length>=6){ toast('Max 6 rest days a week'); return; } Pf.split[d]=v; if(Pf.active&&Pf.active.day===d) Pf.active.type=v; Store.save(); render(); return; }
   if(a.startsWith('swap:')){ const tk=dayKey(new Date()); const d=Pf.split[tk]===v?tk:DAYS.map(x=>x[0]).find(k=>Pf.split[k]===v);
     if(!d){ toast(`No ${TYPES[v]} day in your split yet. Add one in Plan.`); return; }
     S.pick=d===tk?null:d; render(); if(d!==tk) toast(`Doing ${DAYN[d]}'s ${TYPES[v]} workout today`); return; }
@@ -3495,7 +3519,7 @@ function onInput(e){
   if(t.id==='pl-q'){ S.plq=t.value; const h=document.createElement('div'); h.innerHTML=vPeopleList(); const n=h.querySelector('#plrows'), o=document.getElementById('plrows'); if(n&&o) o.replaceWith(n); return; }
   if(t.id==='adm-q'){ S.admQ=t.value; const pos=t.selectionStart; render(); const n=document.getElementById('adm-q'); if(n){ n.focus(); n.setSelectionRange(pos,pos); } return; }
   if(t.id==='fq'){ S.fq=t.value; document.getElementById('flist').innerHTML=friendsList(); return; }
-  if(t.id==='f-restr'){ Pf.rest=+t.value; Pf.defaultsTouched=true; document.getElementById('restv').textContent=fmtSec(Pf.rest); const r=document.getElementById('restrec'); r.textContent=restTag(); r.classList.toggle('good',Pf.rest===recRest()); Store.save(); return; }
+  if(t.id==='f-restr'){ Pf.rest=+t.value; Pf.defaultsTouched=true; S.obDefTouched=true; document.getElementById('restv').textContent=fmtSec(Pf.rest); const r=document.getElementById('restrec'); r.textContent=restTag(); r.classList.toggle('good',Pf.rest===recRest()); Store.save(); return; }
   if(t.id==='dm-q'){ S.dmQ=t.value; const r=document.getElementById('dmres'); if(r) r.innerHTML=dmResults(); return; }
   if(t.id==='cl-new'){ const sec=t.closest('.clsec'); if(sec) sec.classList.toggle('typing',!!t.value.trim()); return; }
   if(t.dataset.adj!=null&&S.sheet&&S.sheet.kind==='suggest'){ const i=+t.dataset.adj, g=S.sheet.items[i]; g.amt=parseFloat(t.value); const nw=adjNew(g,g.amt);
@@ -3632,7 +3656,7 @@ Store.init().catch(()=>{}).then(()=>{
   try{ Social.start(); }catch(e){}
   if(S.route==='splash'){ S.waiting=null; if(Store.mode==='cloud') A.login(); else render(); }
   if(window.boatsAdminReady&&Pf&&Pf.onboarded&&Pf.username) window.boatsAdminReady.then(isOwner=>{ const u=Pf.username;
-    if(isOwner){ if(u.toLowerCase()==='swaizy'&&u!=='SWAIZY'){ Pf.username='SWAIZY'; Store.save(); Social.publish(); render(); } }
+    if(isOwner){ if(u.toLowerCase()==='swaizy'&&u!=='Swaizy'){ Pf.username='Swaizy'; Store.save(); Social.publish(); render(); } }
     else if(/[A-Z]/.test(u)){ Pf.username=u.toLowerCase(); Store.save(); Social.publish(); render(); } });
   if(Pf&&Pf.pinReload){ S.pinNow=Pf.pinReload; Pf.pinReload=null; Store.save(); }
   if(window.boatsClaimFounder&&Pf&&Pf.onboarded) window.boatsClaimFounder().then(n=>{ if(n&&!Social.founders[Social.me()]){ Social.founders={...Social.founders,[Social.me()]:n}; refreshSocial(); } });
