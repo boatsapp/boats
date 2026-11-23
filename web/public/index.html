@@ -182,6 +182,7 @@ body.swipeback{background:var(--bg)!important;overflow:hidden;touch-action:none}
 .instchk{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:none;color:var(--fg);font:inherit;font-weight:600;text-align:left}.instchk.on{border-color:var(--good)}.instchk.on .ckbox{background:var(--good);border-color:var(--good);color:#fff}.instchk:disabled{opacity:.5}.instchk.nudge{animation:nudge .4s}@keyframes nudge{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .instwarn{font-size:13px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--streak) 14%,transparent);color:var(--fg)}
 .modbox{border-style:dashed}.modw summary{cursor:pointer;list-style:none}.modw .exline{padding:4px 0}.modmsg{padding:4px 0;border-top:1px solid var(--line);font-size:14px;word-break:break-word}
+.rangenote{display:block;font-size:12px;color:var(--bad);margin-top:4px}
 .ckrow{display:flex;gap:10px;align-items:flex-start}.ckbox{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;margin-top:1px}.ckrow.ok .ckbox{background:var(--good);border-color:var(--good);color:#fff}
 .splitchips{display:grid;grid-template-columns:1fr 1fr;gap:8px}.splitchip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:inherit;text-align:left}.splitchip b{font-size:15px}.splitchip small{font-size:11.5px;color:var(--muted);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.splitchip.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}.splitchip .rtag{font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
 .reqtxt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;white-space:normal;word-break:break-word}
@@ -949,7 +950,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v135';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v136';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1441,7 +1442,7 @@ function askConfirm(title,sub,yes,fn,no){ ASKFN=fn; askEl.innerHTML=`<div class=
 let rootTheme = document.documentElement.getAttribute('data-theme');
 function applyTheme(){ const r=document.documentElement; if(Pf.theme!=='light') Pf.theme='dark'; if(Pf.theme==='system'){ if(rootTheme) r.setAttribute('data-theme',rootTheme); else r.removeAttribute('data-theme'); } else r.setAttribute('data-theme',Pf.theme); }
 
-const TOAST_SHOW=/microphone|recording|voice note|Max |can't|cannot|could not|couldn|first|limit|Pick |needs|failed|broke|No |not in|isn't|Add a|Give |Paste|Long-press|minimum|Something/i;
+const TOAST_SHOW=/Enter a |microphone|recording|voice note|Max |can't|cannot|could not|couldn|first|limit|Pick |needs|failed|broke|No |not in|isn't|Add a|Give |Paste|Long-press|minimum|Something/i;
 function popCue(){ if(!Pf||!Pf.sound) return; const c=ac(); if(!c) return; const t=c.currentTime, o=c.createOscillator(), g=c.createGain(); o.type='sine'; o.frequency.setValueAtTime(620,t); o.frequency.exponentialRampToValueAtTime(980,t+.07); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.13,t+.01); g.gain.exponentialRampToValueAtTime(0.0001,t+.14); o.connect(g).connect(c.destination); o.start(t); o.stop(t+.16); }
 function toast(msg){ if(!TOAST_SHOW.test(msg)){ popCue(); return; } const t=document.getElementById('toast'); t.innerHTML=`<span class="tico">${ic(/broke|could not|couldn|failed|Max |limit|can't|first|needs|No /i.test(msg)?'x':'check','sm')}</span><span>${esc(msg)}</span>`; t.hidden=false; t.classList.remove('show'); void t.offsetWidth; t.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>{ if(!t.classList.contains('show')) t.hidden=true; },250); },3200); }
 const stepAmt = () => Pf.unit==='lb'?5:2.5;
@@ -1506,6 +1507,10 @@ function restRange(){
     <input type="range" id="f-restr" min="30" max="150" step="15" value="${Pf.rest}" aria-label="Rest between sets">
     <div class="ticks"><span>0:30</span><span>${fmtSec(recRest())} recommended</span><span>2:30</span></div></div>`;
 }
+// Realistic limits so nobody can enter a 10 ft or 900 lb lifter
+const LIMITS={ft:[3,8,'3–8 ft'],inch:[0,11,'0–11 in'],cm:[90,250,'90–250 cm']};
+function limitOf(f){ if(f==='bodyweight'||f==='goalWeight') return Pf.unit==='lb'?[60,600,'60–600 lb']:[27,272,'27–272 kg']; return LIMITS[f]||null; }
+function inLimit(f,v){ const L=limitOf(f); if(!L) return true; const n=parseFloat(v); return isFinite(n)&&n>=L[0]&&n<=L[1]; }
 function bodyFields(){
   const u=Pf.unit;
   return `
@@ -2088,6 +2093,9 @@ function buildFeed(){ const me=Social.me(), now=Date.now(), fol=new Set(Pf.frien
   // 1) up to 2 recent posts from different people you follow
   const known=pool.filter(x=>x.id!==me&&fol.has(x.id)&&!x.seen).sort((a,b)=>b.p.at-a.p.at); const auth=new Set();
   for(const x of known){ if(first.length>=2) break; if(auth.has(x.id)||used.has(x.k)) continue; auth.add(x.id); take(x); }
+  // 1b) posts the BOATS owner (Founding Crew #001) pinned: right after new posts from people you follow, until you've seen them
+  const owner=Object.keys(Social.founders||{}).find(k=>Social.founders[k]===1), ownerPins=owner&&owner!==me?(((Social.people||{})[owner]||{}).pins||[]):[];
+  for(const id of ownerPins){ const x=pool.find(y=>y.id===owner&&y.p.id===id); if(x&&!used.has(x.k)&&!x.seen&&!seen.has(x.k)) take(x); }
   // 2) public highlights from the last 7 days: most likes, then most unique commenters
   const wk=pool.filter(x=>!used.has(x.k)&&!x.seen&&now-x.p.at<7*864e5);
   const topL=wk.filter(x=>x.likes>0).sort((a,b)=>b.likes-a.likes||b.p.at-a.p.at)[0]; if(topL) take(topL);
@@ -3247,7 +3255,7 @@ const A = {
   'pump-view'(v){ S.sheet={kind:'pump',id:v}; renderSheet(); },
   'ob-back'(){ S.ob--; render(); },
   async 'ob-next'(){ if(S.ob===0){ const bad=[]; if(usernameIssue(Pf.username)) bad.push('f-user'); if(String(Pf.town||'').trim()&&!placeValid(Pf.town)) bad.push('f-town');
-      if(Pf.unit==='lb'){ if(!num(Pf.ft)) bad.push('f-ft'); } else if(!num(Pf.cm)) bad.push('f-cm'); if(!num(Pf.bodyweight)) bad.push('f-bw'); if(!Pf.sex) bad.push('f-sex');
+      if(Pf.unit==='lb'){ if(!inLimit('ft',Pf.ft)) bad.push('f-ft'); if(!inLimit('inch',Pf.inch||0)) bad.push('f-in'); } else if(!inLimit('cm',Pf.cm)) bad.push('f-cm'); if(!inLimit('bodyweight',Pf.bodyweight)) bad.push('f-bw'); if(!Pf.sex) bad.push('f-sex');
       document.querySelectorAll('.input.bad,.field.bad').forEach(n=>n.classList.remove('bad')); if(bad.length){ bad.forEach(id=>document.getElementById(id)?.classList.add('bad')); const f=document.getElementById(bad[0]); if(f){ f.scrollIntoView({block:'center',behavior:'smooth'}); f.focus({preventScroll:true}); } return; }
       if(window.boatsClaimName){ const r=await window.boatsClaimName(Pf.username,Pf.nameClaimed); if(r==='taken'){ const i=document.getElementById('f-user'), m=document.getElementById('u-msg'); i?.classList.add('bad'); if(m) m.innerHTML=`<span style="color:var(--bad)">@${esc(Pf.username)} is already taken. Try another.</span>`; i?.focus(); return; } if(r==='ok') Pf.nameClaimed=Pf.username; } }
     if(S.ob===1&&!S.obDefTouched){ const r=recReps(); Pf.repMin=r.min; Pf.repMax=r.max; Pf.rest=recRest(); }
@@ -3429,7 +3437,7 @@ const A = {
   dev(){ S.sheet={kind:'dev'}; renderSheet(); },
   'dev-go'(v){ previewLoad(v); },
   'edit-profile'(){ navPush(); S.nameOpen=Pf.username; S.draft={username:Pf.username||'',realName:Pf.realName||'',town:Pf.town||'',bio:Pf.bio||'',link:Pf.link||''}; S.meView='edit'; S.tab='me'; S.route='app'; S.sheet=null; window.scrollTo(0,0); render(); },
-  async 'share-profile'(){ const url=APP_URL.replace(/\/?$/,'/')+'?u='+encodeURIComponent(Social.me()), text='Follow @'+(Pf.username||'me')+' on BOATS'; try{ if(navigator.share){ await navigator.share({title:'BOATS',text,url}); return; } }catch(e){ if(e&&e.name==='AbortError') return; } try{ await navigator.clipboard.writeText(url); savedNote('Profile link copied'); }catch(e){ toast('Could not share right now.'); } },
+  async 'share-profile'(){ const url=APP_URL.replace(/\/?$/,'/')+'?u='+encodeURIComponent(Social.me()), text='Follow '+(Pf.username||'me')+' on BOATS. See when I’m hitting the gym today!'; try{ if(navigator.share){ await navigator.share({title:'BOATS',text,url}); return; } }catch(e){ if(e&&e.name==='AbortError') return; } try{ await navigator.clipboard.writeText(url); savedNote('Profile link copied'); }catch(e){ toast('Could not share right now.'); } },
   ptagged(v){ S.ptabT=v||null; render(); },
   settings(){ S.draft=null; S.meView='settings'; S.tab='me'; S.route='app'; S.sheet=null; window.scrollTo(0,0); render(); },
   'my-friends'(v){ S.flTab=v||'following'; S.fq=''; S.meView='friends'; S.tab='me'; S.route='app'; window.scrollTo(0,0); render(); },
@@ -3462,7 +3470,7 @@ const A = {
   'bw-edit'(){ S.bwEdit=true; render(); setTimeout(()=>document.getElementById('bw-today')?.focus(),30); },
   'bw-today'(){ const i=document.getElementById('bw-today'), v=num(i&&i.value); if(!v){ i&&i.classList.add('bad'); i&&i.focus(); return; } const last=Pf.bwLog[Pf.bwLog.length-1];
     if(last&&sameDay(last.t,Date.now())) last.w=v; else Pf.bwLog.push({t:Date.now(),w:v}); Pf.bodyweight=String(v); S.bwEdit=false; Store.save(); Social.publish(); render(); popCue(); },
-  'bw-log'(){ const v=num(document.getElementById('bw-in').value); if(!v){ toast('Enter your weight first.'); return; } const last=Pf.bwLog[Pf.bwLog.length-1]; if(last&&sameDay(last.t,Date.now())) last.w=v; else Pf.bwLog.push({t:Date.now(),w:v}); Pf.bodyweight=String(v); S.bwEdit2=false; Store.save(); Social.publish(); render(); popCue(); },
+  'bw-log'(){ const v=num(document.getElementById('bw-in').value); if(!v){ toast('Enter your weight first.'); return; } if(!inLimit('bodyweight',v)){ toast('Enter a weight between '+limitOf('bodyweight')[2]+'.'); return; } const last=Pf.bwLog[Pf.bwLog.length-1]; if(last&&sameDay(last.t,Date.now())) last.w=v; else Pf.bwLog.push({t:Date.now(),w:v}); Pf.bodyweight=String(v); S.bwEdit2=false; Store.save(); Social.publish(); render(); popCue(); },
   'bw-edit2'(){ S.bwEdit2=true; render(); setTimeout(()=>document.getElementById('bw-in')?.focus(),30); },
   'new-ex'(){ S.sheet.step='new'; S.sheet.newName=S.sheet.q.trim(); S.sheet.newCat=S.sheet.cat==='all'?(['push','pull','legs','cardio'].includes(S.sheet.type)?S.sheet.type:'push'):S.sheet.cat; renderSheet(); },
   newcat(v){ S.sheet.newName=document.getElementById('nx-name').value; S.sheet.newCat=v; renderSheet(); },
@@ -3697,6 +3705,7 @@ function onInput(e){
   if(t.id==='f-user'&&!window.boatsAdmin&&/[A-Z]/.test(t.value)){ const p=t.selectionStart; t.value=t.value.toLowerCase(); t.setSelectionRange(p,p); }
   if(t.id==='f-bio'){ let n=0; const v=t.value.replace(/\n/g,()=>++n<=2?'\n':' '); if(v!==t.value) t.value=v; }
   if(t.dataset.f&&S.draft&&S.meView==='edit'&&S.route==='app'&&(t.dataset.f in S.draft)){ S.draft[t.dataset.f]=t.value; if(t.id==='f-town'){ showTownSug(); const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); } if(t.id==='f-user'){ const m=document.getElementById('u-msg'); if(m) m.innerHTML=userMsg(); } const b=document.getElementById('idsave'); if(b) b.disabled=!draftDirty(); return; }
+  if(t.dataset.f&&limitOf(t.dataset.f)&&!t.closest('.stepper')){ const ok=t.value===''||inLimit(t.dataset.f,t.value), w=t.closest('.inwrap')||t; t.classList.toggle('bad',!ok); let h=w.nextElementSibling; if(!(h&&h.classList.contains('rangenote'))) h=null; if(!ok){ if(!h){ h=document.createElement('span'); h.className='rangenote'; w.after(h); } h.textContent='Enter '+limitOf(t.dataset.f)[2]; if(S.route==='onboard'){ Pf[t.dataset.f]=''; Store.save(); } return; } if(h) h.remove(); }
   if(t.dataset.f && !t.closest('.stepper')){ Pf[t.dataset.f]=t.value; if(t.id==='f-town'){ showTownSug(); const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); } if(t.id==='f-user'){ const m=document.getElementById('u-msg'); if(m) m.innerHTML=userMsg(); } Store.save(); return; }
   if(t.dataset.f){ const n=parseInt(t.value); if(n>0){ Pf[t.dataset.f]=n; Store.save(); } }
 }
