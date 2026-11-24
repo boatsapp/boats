@@ -170,6 +170,9 @@ authReady.then(async u => {
         f.docs.forEach(d => { const x = unpack(d); ((x && x.items) || []).forEach(it => feedback.push({ ...it, uid: d.id })); });
         return { accounts, feedback };
       },
+      // Owner only (enforced by rules): edit someone's packed doc (people / posts / reactions), e.g. remove a post or comment.
+      edit: async (col, uid, fn) => { const r = doc(fs, col, uid), g = await getDoc(r), x = g.exists() ? (unpack(g) || {}) : {}; await setDoc(r, pack(fn(x))); },
+      delPhotos: async (uid, pid, more) => { const ids = [`${uid}_${pid}`, ...Array.from({ length: more || 0 }, (_, k) => `${uid}_${pid}_${k + 1}`)]; for(const id of ids){ try { await deleteDoc(doc(fs, "photos", id)); } catch(e) {} } },
       // Owner only (enforced by rules): suspend / unsuspend / mark deleted, send a pop-up, wipe someone's data.
       setStatus: async (uid, data) => { const r = doc(fs, "moderation", uid); if(!data) await deleteDoc(r); else await setDoc(r, { ...data, at: Date.now() }); },
       notify: async (uid, text) => { const r = doc(fs, "notices", uid), g = await getDoc(r), items = g.exists() ? (g.data().items || []) : []; await setDoc(r, { items: [...items, { at: Date.now(), text: String(text).slice(0, 500) }].slice(-20) }); },

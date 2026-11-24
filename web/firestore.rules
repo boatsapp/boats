@@ -18,9 +18,9 @@ service cloud.firestore {
     // Pop-up messages from BOATS to one person: only they read them; only the owner writes.
     match /notices/{uid} { allow read: if isMe(uid) || isAdmin(); allow write: if isAdmin(); }
     // Public cards, posts, likes/comments: signed-in users read, only the owner writes.
-    match /people/{uid}    { allow read: if signedIn(); allow delete: if isMe(uid) || isAdmin(); allow create, update: if isMe(uid) && small(); }
-    match /posts/{uid}     { allow read: if signedIn(); allow delete: if isMe(uid) || isAdmin(); allow create, update: if isMe(uid) && small(); }
-    match /reactions/{uid} { allow read: if signedIn(); allow delete: if isMe(uid) || isAdmin(); allow create, update: if isMe(uid) && small(); }
+    match /people/{uid}    { allow read: if signedIn(); allow delete: if isMe(uid) || isAdmin(); allow create, update: if (isMe(uid) || isAdmin()) && small(); }
+    match /posts/{uid}     { allow read: if signedIn(); allow delete: if isMe(uid) || isAdmin(); allow create, update: if (isMe(uid) || isAdmin()) && small(); }
+    match /reactions/{uid} { allow read: if signedIn(); allow delete: if isMe(uid) || isAdmin(); allow create, update: if (isMe(uid) || isAdmin()) && small(); }
     // Feedback: only you (the app owner reads it in the Firebase console).
     match /feedback/{uid}  { allow read: if isMe(uid) || isAdmin(); allow delete: if isMe(uid) || isAdmin(); allow create: if isMe(uid) && small(); allow update: if (isMe(uid) || isAdmin()) && small(); }
     // Account list (email, name, join/last-seen dates): you write your own, only the owner reads all.
@@ -34,7 +34,7 @@ service cloud.firestore {
     match /photos/{id} {
       allow read: if signedIn();
       allow create, update: if signedIn() && id.matches(request.auth.uid + '_.+') && small();
-      allow delete: if signedIn() && id.matches(request.auth.uid + '_.+');
+      allow delete: if signedIn() && (id.matches(request.auth.uid + '_.+') || isAdmin());
     }
     // Founding Crew numbers 1-100. Each member can take exactly one number, only the next free one, in the same write that advances the counter.
     match /meta/founders {
