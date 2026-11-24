@@ -482,7 +482,7 @@ body.chatopen{position:fixed;inset:0;width:100%;overflow:hidden}
 .daytag{margin-left:auto;flex:none}
 .pacts{align-items:center}
 .swrap{position:relative;overflow:hidden;border-radius:12px}
-.bootload{position:fixed;inset:0;display:grid;place-items:center;background:#0E0E0D;color:#F4F3EF;z-index:2}.bootload .floatboat{color:#F4F3EF}.bootload .floatboat{transform:scale(1.6)}
+.bootload{position:fixed;inset:0;display:grid;place-items:center;background:#0E0E0D;color:#F4F3EF;z-index:2}.bootload .floatboat{color:#F4F3EF}.bootmark{font:900 52px/1 var(--display,'Inter Tight'),system-ui,sans-serif;letter-spacing:-.04em;background:linear-gradient(105deg,#4a4945 0%,#4a4945 35%,#F4F3EF 50%,#4a4945 65%,#4a4945 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 1.5s linear infinite}@keyframes shine{from{background-position:100% 0}to{background-position:0 0}}
 .floatboat{display:flex;flex-direction:column;align-items:center;margin:6px auto 0;color:var(--muted)}
 .floatboat .pboat{line-height:0;animation:bob 2.4s ease-in-out infinite}
 .floatboat .pboat svg{width:30px;height:30px}
@@ -556,7 +556,9 @@ body.chatopen{position:fixed;inset:0;width:100%;overflow:hidden}
 @keyframes slin{from{transform:translateX(100%)}to{transform:none}}
 @keyframes slout{to{transform:translateX(100%)}}
 @keyframes slback{from{transform:translateX(-25%);opacity:.6}to{transform:none;opacity:1}}
-.fhead{margin:-4px 0 -6px}.fhead3{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}.fhead3>div:first-child{margin-left:-8px;display:flex;align-items:center}.fhr{display:flex;justify-content:flex-end;align-items:center}
+.fhead{margin:-4px 0 -6px}.fhead3{position:sticky;top:0;z-index:12;margin:-20px calc(-1 * max(16px,env(safe-area-inset-left,0px))) -6px;padding:calc(12px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-left,0px)) 8px;transition:transform .32s cubic-bezier(.2,.8,.2,1),background-color .2s;display:grid;grid-template-columns:1fr auto 1fr;align-items:center}.fhead3>div:first-child{margin-left:-8px;display:flex;align-items:center}.fhr{display:flex;justify-content:flex-end;align-items:center}
+body.feedscrolled .fhead3{background:color-mix(in srgb,var(--bg) 60%,transparent);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);box-shadow:0 1px 0 color-mix(in srgb,var(--fg) 7%,transparent)}
+body.barmini .fhead3{transform:translateY(-100%)}
 .wordmark{font-family:var(--display);font-weight:900;font-size:26px;letter-spacing:-.04em}
 .iconbtn.dot{position:relative}
 .iconbtn.dot::after{content:'';position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--bad);border:2px solid var(--bg)}
@@ -940,7 +942,7 @@ body.chatopen{position:fixed;inset:0;width:100%;overflow:hidden}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
-<div id="app"><div class="bootload" role="status" aria-label="Loading BOATS"><div class="floatboat bigboat" aria-hidden="true"><span class="pboat"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15.5h18l-2.2 4H5.2z"/><path d="M12 3.5v12M12 4.5l6 9H12"/><path d="M12 7l-4.5 6.5H12"/></svg></span><span class="pwave"><svg viewBox="0 0 120 10" width="120" height="10"><path d="M0 5 Q7.5 0 15 5 T30 5 T45 5 T60 5 T75 5 T90 5 T105 5 T120 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span></div></div></div>
+<div id="app"><div class="bootload" role="status" aria-label="Loading BOATS"><span class="bootmark">BOATS</span></div></div>
 <p class="legal" id="sitefoot">BOATS is a workout tracker you use with friends. By continuing you agree to the <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>
 
 <div id="sheet"></div><div id="ask"></div>
@@ -960,7 +962,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v145';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v146';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1528,7 +1530,7 @@ function inLimit(f,v){ const L=limitOf(f); if(!L) return true; const n=parseFloa
 function bodyFields(){
   const u=Pf.unit;
   return `
-  <div class="field" id="f-sex"><span class="flabel">Sex</span>${seg('sex',Pf.sex||'',{male:'Male',female:'Female'})}<span class="muted small">Only used to estimate calories more accurately. Never shown on your profile.</span></div>
+  <div class="field" id="f-sex"><span class="flabel">Sex</span>${seg('sex',Pf.sex||'',{male:'Male',female:'Female'})}<span class="muted small">Only used for calories. Never shown.</span></div>
   <div class="field"><span class="flabel">Units</span>${seg('unit',u,{lb:'lb · ft',kg:'kg · cm'})}</div>
   <div class="field"><span class="flabel">Height</span>
     ${u==='lb' ? `<div class="rowx"><div class="inwrap"><input class="input num" id="f-ft" inputmode="numeric" value="${esc(Pf.ft)}" data-f="ft"><span class="suf">ft</span></div><div class="inwrap"><input class="input num" id="f-in" inputmode="numeric" value="${esc(Pf.inch)}" data-f="inch"><span class="suf">in</span></div></div>`
@@ -1629,7 +1631,7 @@ function vSplash(){
 function vOnboard(){
   const s=S.ob;
   const titles=['About you','Your current goal','Workout defaults','Your weekly split'];
-  const subs=['Your profile and a starting point. Everything here can be changed later.','This helps us optimize your workouts.','How long you rest and how many reps you aim for. The recommended picks suit your goal.','Pick what you train each day. You add exercises next.'];
+  const subs=['You can change this anytime.','Helps tailor your workouts.','Rest time and reps. Picked for your goal.','Pick what you train each day.'];
   const body = s===0 ? privacyNote()+idFields()+bodyFields()
     : s===1 ? `<div class="stack">${goalCards()}</div><div class="field"><span class="flabel">Experience</span>${levelPicker()}</div>`
     : s===2 ? `<div class="card small" style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px">${ic('bolt','sm')}<span>${esc(REC_WHY[Pf.goal]||REC_WHY.maintain)} Recommended picks are already selected.</span></div><div class="field"><span class="flabel">Rest between sets</span>${restRange()}</div><div class="field"><span class="flabel">Rep range</span>${repPicker()}</div><div class="muted small">Every new exercise starts with this target. Tick ✓ when you hit it and ✕ when you don't, and Boats suggests when to go heavier or lighter. You can change both for any exercise later.</div>`
@@ -1694,9 +1696,9 @@ function weighCard(){ const last=Pf.bwLog[Pf.bwLog.length-1], today=last&&sameDa
   return `<section class="card rowx weigh" style="gap:10px;padding:12px 14px"><span class="ico">${ic('scale','sm')}</span>
     ${today&&!S.bwEdit?`<span style="color:var(--good);display:inline-flex">${ic('check','sm')}</span><div style="flex:1;min-width:0"><b>${fmtN(last.w)} ${Pf.unit}</b> <span class="muted small">logged today</span></div><button class="link small" data-a="bw-edit">Update</button>`
     :`<div style="flex:1;min-width:0"><div class="inwrap"><input class="input num" id="bw-today" inputmode="decimal" placeholder="Weigh-in${last?' (last '+fmtN(last.w)+')':''}" style="height:44px"><span class="suf">${Pf.unit}</span></div></div><button class="btn sm primary" style="width:auto;flex:none;height:44px" data-a="bw-today">Log</button>`}</section>`; }
-function nameAsk(){ return S.nameTaken?`<section class="card stack" style="gap:8px;border-color:var(--bad)"><b>@${esc(Pf.username)} belongs to someone else</b><span class="muted small">Two accounts ended up with the same username. Pick a new one so friends can find you.</span><button class="btn primary" data-a="edit-profile">Change username</button></section>`:''; }
-function realNameAsk(){ return Pf.onboarded&&!Pf.official&&!Pf.nameSkip&&!String(Pf.realName||'').trim()?`<section class="card stack" style="gap:8px"><b>Add your name</b><span class="muted small">Your name shows small under your username so friends can search for you.</span><button class="btn" data-a="edit-profile">Add my name</button></section>`:''; }
-function sexAsk(){ return Pf.onboarded&&!Pf.sex&&!Pf.official?`<section class="card stack" style="gap:10px"><b>One quick thing</b><span class="muted small">Boats uses sex to provide the most accurate information on calories. This is never shown on your profile.</span>${seg('sex','',{male:'Male',female:'Female'})}</section>`:''; }
+function nameAsk(){ return S.nameTaken?`<section class="card stack" style="gap:8px;border-color:var(--bad)"><b>@${esc(Pf.username)} belongs to someone else</b><span class="muted small">Someone else has this username. Pick a new one.</span><button class="btn primary" data-a="edit-profile">Change username</button></section>`:''; }
+function realNameAsk(){ return Pf.onboarded&&!Pf.official&&!Pf.nameSkip&&!String(Pf.realName||'').trim()?`<section class="card stack" style="gap:8px"><b>Add your name</b><span class="muted small">Helps friends find you.</span><button class="btn" data-a="edit-profile">Add my name</button></section>`:''; }
+function sexAsk(){ return Pf.onboarded&&!Pf.sex&&!Pf.official?`<section class="card stack" style="gap:10px"><b>One quick thing</b><span class="muted small">Used only for calories. Never shown on your profile.</span>${seg('sex','',{male:'Male',female:'Female'})}</section>`:''; }
 function vChecklist(){
   const tk=dayKey(new Date()), items=Pf.checklist.filter(c=>!c.days||c.days.includes(tk)); const tags=targetTags();
   if(!items.length&&!tags.length) return `<section class="card stack clsec" style="gap:2px">
@@ -1745,7 +1747,7 @@ function vToday(){
 function vPlan(){
   if(S.planDay) return vPlanDay(S.planDay);
   return `<div class="screen">
-    <div class="stack" style="gap:4px"><span class="eyebrow">Weekly split</span><h1 class="h1">Your week</h1></div>
+    <div class="stack" style="gap:4px"><span class="eyebrow">Your week</span><h1 class="h1">Weekly split</h1></div>
     ${DAYS.some(([k])=>Pf.split[k]!=='rest'&&!(Pf.plans[k]||[]).length)?`<div class="card rowx" style="gap:12px;padding:14px 16px"><span class="ico">${ic('clock','sm')}</span><div style="flex:1;min-width:0"><b>Set up once and never have to again.</b><div class="muted small">Tap a day to add its exercises. 5–10 min total setup.</div></div></div>`:''}
     <div class="list">${DAYS.map(([k,l])=>{const t=Pf.split[k],n=(Pf.plans[k]||[]).length;return `<button class="li ${t!=='rest'&&!n?'dimday':''}" data-a="edit-day" data-v="${k}"><span class="ico">${ic(typeIcon(t))}</span><span class="grow"><span class="t">${l}</span><br><span class="s">${TYPES[t]}${variantOf(k)?` <span class="vtag">${variantOf(k)}</span>`:''}${t!=='rest'||n?` · ${n} exercise${n===1?'':'s'}`:''}</span></span>${ic('right','sm')}</button>`}).join('')}</div>
     <p class="muted small" style="margin:0">Tap a day to set its type and add exercises from the library.</p>
@@ -2250,7 +2252,7 @@ function vNewPost(){ const np=S.np||{}, list=np.list||[], cur=npCur(), cr=cur&&c
     <div class="rowx" style="gap:8px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="np-close" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">New post</span>${list.length>1?`<span class="muted small">${list.length} photos</span>`:''}</div>
     ${photo}
     ${np.editing?'':`<div class="field mfield"><textarea class="input" id="np-cap" maxlength="300" rows="3" aria-label="Caption" placeholder="Write a caption, tag someone, and share to boats.">${esc(np.cap||'')}</textarea></div>
-    ${Social.postedToday()?`<div class="card muted small">You’ve shared 3 posts today, the daily limit.</div>`:`<p class="npnote">${ic('boat','xs')}<span>BOATS is for fitness and lifestyle. Off-topic or promotional posts may be removed.</span></p><button class="btn primary" data-a="np-share" ${list.length?'':'disabled'}>Share to feed</button><span class="muted small" style="text-align:center;margin-top:-6px">Shows in the feed and on your profile. Up to 3 posts a day.</span>`}`}
+    ${Social.postedToday()?`<div class="card muted small">You’ve shared 3 posts today, the daily limit.</div>`:`<p class="npnote">${ic('boat','xs')}<span>BOATS is a fitness and lifestyle app. Unrelated posts will be removed.</span></p><button class="btn primary" data-a="np-share" ${list.length?'':'disabled'}>Share to feed</button><span class="muted small" style="text-align:center;margin-top:-6px">Shows in the feed and on your profile. Up to 3 posts a day.</span>`}`}
   </div>`; }
 // 4:5 crop at zoom z (1 = fill), centred on x/y (0..1)
 function npRegion(img,cr){ const iw=img.width, ih=img.height, r=4/5; let sw=iw, sh=iw/r; if(sh>ih){ sh=ih; sw=ih*r; } sw/=cr.z; sh/=cr.z; return {sx:(iw-sw)*cr.x, sy:(ih-sh)*cr.y, sw, sh}; }
@@ -2280,7 +2282,7 @@ function findSuggestions(){ const me=Social.me(), fol=new Set(Pf.friends||[]), o
     const score=(id===Social.officialUid?1000:0)+via.length*6+(followsMe?8:0)+pop;
     out.push({id,c,score,why:followsMe?'Follows you':via.length?`Followed by ${Social.nameOf(via[0])}${via.length>1?` + ${via.length-1}`:''}`:id===Social.officialUid?'Official BOATS account':pop?`Popular · ${pop} follower${pop===1?'':'s'}`:'New on BOATS'}); }
   return out.sort((a,b)=>b.score-a.score).slice(0,20); }
-function findRows(list){ return list.length?`<div class="list">${list.map(({id,c,why})=>`<div class="li"><button class="whobtn" style="flex:1;min-width:0" data-a="person" data-v="${esc(id)}">${avatar(c.username||'?',c.photo,null)}<span class="grow" style="min-width:0;text-align:left"><span class="t">${esc(c.username)}${fbadge(id)}</span><br><span class="s">${esc(c.name?c.name+' · ':'')}${esc(why)}</span></span></button>${Pf.friends.includes(id)?`<span class="muted small" style="flex:none">Following</span>`:`<button class="pfollow" data-a="follow-sug" data-v="${esc(id)}">Follow</button>`}</div>`).join('')}</div>`:''; }
+function findRows(list){ return list.length?`<div class="list">${list.map(({id,c,why})=>`<div class="li"><button class="whobtn" style="flex:1;min-width:0" data-a="person" data-v="${esc(id)}">${avatar(c.username||'?',c.photo,null)}<span class="grow" style="min-width:0;text-align:left"><span class="t">${esc(c.username)}${fbadge(id)}</span>${c.name?`<br><span class="s">${esc(c.name)}</span>`:''}</span></button>${Pf.friends.includes(id)?`<span class="muted small" style="flex:none">Following</span>`:`<button class="pfollow" data-a="follow-sug" data-v="${esc(id)}">Follow</button>`}</div>`).join('')}</div>`:''; }
 function findResults(){ const q=(S.findQ||'').trim().toLowerCase(), me=Social.me();
   if(!q) return `<span class="flabel">Suggested for you</span>${findRows(findSuggestions())||'<div class="card muted small">No suggestions yet. Invite friends to BOATS.</div>'}`;
   const hits=Object.entries(Social.people||{}).filter(([id,c])=>id!==me&&c&&c.username&&!blockedWith(id)&&pm(c,q)).map(([id,c])=>({id,c,why:Pf.friends.includes(id)?'Following':followersOf(id)+' follower'+(followersOf(id)===1?'':'s'),s:(String(c.username).toLowerCase().startsWith(q)?10:0)+followersOf(id)})).sort((a,b)=>b.s-a.s).slice(0,30);
@@ -2402,7 +2404,7 @@ function vPosts(){ const uid=S.postsOf, ps=(((Social.posts[uid]||{}).items)||[])
 function vPerson(){ const id=S.personId, p=Social.people[id];
   return `<div class="screen">
     <div class="rowx phead phead2" style="margin:-4px -4px -6px -8px"><button class="iconbtn" data-a="person-back" aria-label="Back">${ic('back')}</button><b class="ptop" style="font-size:20px">${esc((p&&p.username)||'')}</b>${p&&!blockedWith(id)?fbadge(id)+(founderNo(id)?`<button class="ftag" data-a="founder-info" data-v="${founderNo(id)}" aria-label="Founding Crew member number ${founderNo(id)}">#${String(founderNo(id)).padStart(3,'0')}</button>`:''):''}<span class="spacer"></span>${p&&!blockedWith(id)?`<button class="iconbtn" data-a="share-profile" data-v="${esc(id)}" aria-label="Share ${esc(p.username||'')}’s profile">${ic('share','sm')}</button>`:''}${p?`<button class="iconbtn" data-a="user-more" data-v="${esc(id)}" aria-label="More options">${ic('more','sm')}</button>`:''}</div>
-    ${(Pf.blocked||[]).includes(id)?`<div class="card stack" style="gap:10px;text-align:center"><b>You blocked ${esc((p&&p.username)||'this person')}</b><span class="muted small">You won’t see their posts, comments or messages, and they can’t see yours.</span><button class="btn" data-a="unblock" data-v="${esc(id)}">Unblock</button></div>`
+    ${(Pf.blocked||[]).includes(id)?`<div class="card stack" style="gap:10px;text-align:center"><b>You blocked ${esc((p&&p.username)||'this person')}</b><span class="muted small">You won’t see each other on BOATS.</span><button class="btn" data-a="unblock" data-v="${esc(id)}">Unblock</button></div>`
       :blockedWith(id)||!p?`<div class="card muted">This profile isn’t available.</div>`:profileBlock(id,p,false)}
     ${window.boatsAdmin&&Pf.modMode&&p?`<div class="card stack modbox" style="gap:8px"><span class="eyebrow">Moderator · only you see this</span><div class="rowx" style="gap:8px"><button class="btn sm" style="flex:1" data-a="mod-workouts" data-v="${esc(id)}">${ic('lock','xs')}Saved workouts</button><button class="btn sm" style="flex:1" data-a="mod-dms" data-v="${esc(id)}">${ic('chat','xs')}Messages</button></div></div>`:''}
   </div>${tabbar()}`; }
@@ -2556,29 +2558,29 @@ function vSettings(){
     ${isStandalone()?'':`<button class="btn primary instbtn" data-a="install">${ic('dl','sm')}Download App to Phone</button>`}
     ${privacyNote()}
     <div class="stack" style="gap:8px"><span class="flabel">Sharing</span>
-      <button class="li card" style="padding:12px 16px" data-a="show" data-v="status"><span class="grow"><span class="t">Gym status and streak</span><br><span class="s">Show if you’re at the gym, trained today, and your streak</span></span><span class="small muted" style="margin-right:6px">${Pf.show.status?'Public':'Private'}</span><span class="toggle ${Pf.show.status?'on':''}"></span></button>
-      <button class="li card" style="padding:12px 16px" data-a="autoshare"><span class="grow"><span class="t">Share workouts by default</span><br><span class="s">"Share to feed" starts switched on when you end a workout</span></span><span class="toggle ${Pf.autoShare!==false?'on':''}"></span></button>
-      <button class="li card" style="padding:12px 16px" data-a="share-split"><span class="grow"><span class="t">Make my split public</span><br><span class="s">People who visit your profile can view and copy your weekly split</span></span><span class="toggle ${Pf.shareSplit?'on':''}"></span></button></div>
+      <button class="li card" style="padding:12px 16px" data-a="show" data-v="status"><span class="grow"><span class="t">Gym status and streak</span><br><span class="s">Shown on your profile</span></span><span class="small muted" style="margin-right:6px">${Pf.show.status?'Public':'Private'}</span><span class="toggle ${Pf.show.status?'on':''}"></span></button>
+      <button class="li card" style="padding:12px 16px" data-a="autoshare"><span class="grow"><span class="t">Share workouts by default</span><br><span class="s">Posts are public by default</span></span><span class="toggle ${Pf.autoShare!==false?'on':''}"></span></button>
+      <button class="li card" style="padding:12px 16px" data-a="share-split"><span class="grow"><span class="t">Make my split public</span><br><span class="s">Others can copy your split</span></span><span class="toggle ${Pf.shareSplit?'on':''}"></span></button></div>
     <div class="field"><span class="flabel">Goal</span>${seg('goal',Pf.goal,{bulk:'Bulk',maintain:'Maintain',cut:'Cut'})}</div>
-    <div class="field"><span class="flabel">Experience</span>${levelPicker()}<span class="muted small">Sets the expected line on your Progress charts. Beginners gain fastest; pros progress slower.</span></div>
+    <div class="field"><span class="flabel">Experience</span>${levelPicker()}<span class="muted small">Sets your expected progress.</span></div>
     ${bodyFields()}
     <div class="field"><span class="flabel">Rest between sets</span>${restRange()}</div>
     <div class="field"><span class="flabel">Goal weight</span><div class="grid2"><div class="inwrap"><input class="input num" id="f-gw" inputmode="decimal" placeholder="0" value="${esc(Pf.goalWeight)}" data-f="goalWeight"><span class="suf">${Pf.unit}</span></div><input class="input" id="f-gby" maxlength="20" placeholder="By when" value="${esc(Pf.goalBy)}" data-f="goalBy"></div></div>
     <div class="field"><span class="flabel">Default rep range</span>
       ${repPicker()}
-      <span class="muted small">Used for new exercises. Hit the top of the range on every set to get a suggestion to go heavier.</span></div>
+      <span class="muted small">For new exercises. Max out the range to go heavier.</span></div>
     <div class="field"><span class="flabel">Appearance</span>${seg('theme',Pf.theme==='light'?'light':'dark',{light:'Light',dark:'Dark'})}</div>
     <div class="stack" style="gap:8px"><span class="flabel">Connections</span>
       <div class="list">${[['heart','Apple Health','Body weight, workouts, steps, calories'],['heart','Android Health','Health Connect, including Samsung Health']].map(([i,n,d])=>`<div class="li"><span class="ico">${ic(i)}</span><span class="grow"><span class="t">${n}</span><br><span class="s">${d}</span></span><span class="tag">Soon</span></div>`).join('')}</div>
     <div class="list">
-      <button class="li" data-a="sound"><span class="ico">${ic('sound')}</span><span class="grow"><span class="t">Sounds</span><br><span class="s">Ding for ✓, soft tone for ✕, chime when rest ends, a small pop when something saves</span></span><span class="toggle ${Pf.sound?'on':''}"></span></button>
+      <button class="li" data-a="sound"><span class="ico">${ic('sound')}</span><span class="grow"><span class="t">Sounds</span><br><span class="s">Workout and app sounds</span></span><span class="toggle ${Pf.sound?'on':''}"></span></button>
       <button class="li" data-a="flash"><span class="ico">${ic('bolt')}</span><span class="grow"><span class="t">Flash screen when rest ends</span><br><span class="s">A quick screen flash you can see without sound</span></span><span class="toggle ${Pf.flash?'on':''}"></span></button>
       <button class="li" data-a="vib"><span class="ico">${ic('vibrate')}</span><span class="grow"><span class="t">Vibrate when rest ends</span><br><span class="s">${false?'':'Buzzes your phone when the timer runs out'}</span></span><span class="toggle ${Pf.vibrate?'on':''}"></span></button>
       <button class="li" data-a="pdf-export"><span class="ico">${ic('cloud')}</span><span class="grow"><span class="t">${Store.mode==='cloud'?'Synced to your account':'Saved on this device only'}</span><br><span class="s">${Store.workouts.length} workout${Store.workouts.length===1?'':'s'} logged · app ${BUILD}</span></span><span class="tag">${ic('down','xs')}PDF</span></button>
     </div>
     <div class="stack" style="gap:8px">
       <button class="btn" data-a="sign-out">Sign out</button>
-      ${S.confirmErase===2?`<div class="card stack"><b>We’re sorry you’re walking the plank.</b><span class="muted small">Before you leave, would you like to download all your workouts and information?</span><button class="btn primary" data-a="data-dl">Download my data</button><div class="rowx"><button class="btn sm danger" data-a="erase-yes">Delete</button><button class="btn sm" data-a="erase-no">Keep</button></div></div>`
+      ${S.confirmErase===2?`<div class="card stack"><b>We’re sorry you’re walking the plank.</b><span class="muted small">Download your workouts first?</span><button class="btn primary" data-a="data-dl">Download my data</button><div class="rowx"><button class="btn sm danger" data-a="erase-yes">Delete</button><button class="btn sm" data-a="erase-no">Keep</button></div></div>`
       :S.confirmErase?`<div class="card stack"><b>Delete ${esc(Pf.username||'this account')}?</b><span class="small" style="color:var(--bad);font-weight:600">Your streaks, workouts, friends, and follower info will be lost forever.</span><span class="muted small">This deletes your profile, plan, posts and every workout. It can’t be undone.</span><div class="rowx"><button class="btn sm danger" data-a="erase-next">Delete account</button><button class="btn sm" data-a="erase-no">Keep it</button></div></div>`
       :`<button class="btn ghost danger" data-a="erase">Walk the plank</button>`}
     </div>
@@ -2693,18 +2695,18 @@ function vSheet(){
        </div>`); }
   if(sh.kind==='pmore'||sh.kind==='umore'){ const u=sh.uid, n=esc(Social.nameOf(u)), bl=(Pf.blocked||[]).includes(u), mu=isMuted(u);
     return wrap(`<span class="h2" style="flex:1">${sh.kind==='pmore'?'Post options':'@'+n}</span>`,`<div class="list">
-      <button class="li" data-a="user-mute" data-v="${esc(u)}"><span class="ico">${ic('eye','sm')}</span><span class="grow"><span class="t">${mu?'Show':'Hide'} @${n}’s posts</span><br><span class="s">${mu?'Their posts come back to your feed':'You stay following. They aren’t told.'}</span></span></button>
-      <button class="li" data-a="share-profile" data-v="${esc(u)}"><span class="ico">${ic('share','sm')}</span><span class="grow"><span class="t">Share @${n}’s profile</span></span></button>
-      <button class="li" data-a="report-open" data-v="${esc(u)}|${esc(sh.key||'')}"><span class="ico" style="color:var(--bad)">${ic('bolt','sm')}</span><span class="grow"><span class="t" style="color:var(--bad)">Report ${sh.kind==='pmore'?'post':'@'+n}</span><br><span class="s">Sent privately to the BOATS team</span></span></button>
+      <button class="li" data-a="user-mute" data-v="${esc(u)}"><span class="ico">${ic('eye','sm')}</span><span class="grow"><span class="t">${mu?'Show':'Hide'} @${n}’s posts</span><br><span class="s">${mu?'Show them in your feed again':'They won’t know'}</span></span></button>
+      ${sh.kind==='pmore'?`<button class="li" data-a="share-post" data-v="${esc(sh.key)}"><span class="ico">${ic('share','sm')}</span><span class="grow"><span class="t">Share this post</span></span></button>`:`<button class="li" data-a="share-profile" data-v="${esc(u)}"><span class="ico">${ic('share','sm')}</span><span class="grow"><span class="t">Share profile</span></span></button>`}
+      <button class="li" data-a="report-open" data-v="${esc(u)}|${esc(sh.key||'')}"><span class="ico" style="color:var(--bad)">${ic('bolt','sm')}</span><span class="grow"><span class="t" style="color:var(--bad)">Report ${sh.kind==='pmore'?'post':'@'+n}</span><br><span class="s">Private</span></span></button>
       ${window.boatsAdmin&&(Pf.modMode||S.viaAdmin)?`<span class="flabel" style="margin:8px 0 0 4px">Admin${modOf(u)?` · ${modOf(u).status==='deleted'?'removed':'suspended'+(modOf(u).until?' until '+shortDate(modOf(u).until):'')}`:''}</span>
-        <button class="li" data-a="adm-msg" data-v="${esc(u)}"><span class="ico">${ic('chat','sm')}</span><span class="grow"><span class="t">Send pop-up message</span><br><span class="s">Shows as “Message from BOATS” next time they open the app</span></span></button>
+        <button class="li" data-a="adm-msg" data-v="${esc(u)}"><span class="ico">${ic('chat','sm')}</span><span class="grow"><span class="t">Send pop-up message</span><br><span class="s">Pops up next time they open BOATS</span></span></button>
         ${modOf(u)&&modOf(u).status==='suspended'?`<button class="li" data-a="adm-unsuspend" data-v="${esc(u)}"><span class="ico">${ic('check','sm')}</span><span class="grow"><span class="t">Lift suspension</span></span></button>`:`<button class="li" data-a="adm-suspend" data-v="${esc(u)}"><span class="ico">${ic('lock','sm')}</span><span class="grow"><span class="t">Suspend account</span><br><span class="s">They can’t use BOATS and are hidden from everyone</span></span></button>`}
         <button class="li" data-a="adm-delete" data-v="${esc(u)}"><span class="ico" style="color:var(--bad)">${ic('trash','sm')}</span><span class="grow"><span class="t" style="color:var(--bad)">Delete account</span><br><span class="s">Removes their profile, workouts, posts and messages</span></span></button>`:''}
-      <button class="li" data-a="${bl?'unblock':'block-ask'}" data-v="${esc(u)}"><span class="ico" style="color:var(--bad)">${ic('x','sm')}</span><span class="grow"><span class="t" style="color:var(--bad)">${bl?'Unblock':'Block'} @${n}</span><br><span class="s">${bl?'You’ll see each other again':'Neither of you sees the other’s posts, comments, profile or messages'}</span></span></button></div>`); }
+      <button class="li" data-a="${bl?'unblock':'block-ask'}" data-v="${esc(u)}"><span class="ico" style="color:var(--bad)">${ic('x','sm')}</span><span class="grow"><span class="t" style="color:var(--bad)">${bl?'Unblock':'Block'} @${n}</span><br><span class="s">${bl?'You’ll see each other again':'You won’t see each other'}</span></span></button></div>`); }
   if(sh.kind==='suspend'){ return wrap(`<span class="h2" style="flex:1">Suspend @${esc(Social.nameOf(sh.uid))}</span>`,`<div class="list">${[['1','1 day'],['7','7 days'],['30','30 days'],['0','Until I lift it']].map(([d,l])=>`<button class="li" data-a="adm-suspend-go" data-v="${esc(sh.uid)}|${d}"><span class="grow"><span class="t">${l}</span></span>${ic('right','sm')}</button>`).join('')}</div>
       <textarea class="input" id="sus-in" maxlength="200" rows="2" placeholder="Reason they’ll see (optional)" style="height:auto;padding:12px 14px;resize:none"></textarea>`); }
   if(sh.kind==='report'){ const R=['Spam or scam','Nudity or sexual content','Harassment or bullying','Hate speech','Violence or threats','Fake account','Something else'];
-    return wrap(`<span class="h2" style="flex:1">Report${sh.key?' post':' @'+esc(Social.nameOf(sh.uid))}</span>`,`<span class="muted small">Why are you reporting this? Your report is private.</span>
+    return wrap(`<span class="h2" style="flex:1">Report${sh.key?' post':' @'+esc(Social.nameOf(sh.uid))}</span>`,`<span class="muted small">Why are you reporting this?</span>
       <div class="list">${R.map(r=>`<button class="li ${sh.reason===r?'sel':''}" data-a="report-reason" data-v="${esc(r)}"><span class="grow"><span class="t">${esc(r)}</span></span>${sh.reason===r?ic('check','sm'):''}</button>`).join('')}</div>
       <textarea class="input" id="rep-in" maxlength="300" rows="3" placeholder="Anything else we should know? (optional)" style="height:auto;padding:12px 14px;resize:none">${esc(sh.text||'')}</textarea>
       <button class="btn primary" data-a="report-send" ${sh.reason?'':'disabled'}>Send report</button>`); }
@@ -2724,7 +2726,7 @@ function vSheet(){
   if(sh.kind==='avcrop'){ return wrap(`<span class="h2">Profile picture</span>`,`<div class="stack" style="gap:14px;align-items:center">
       <div class="avcropwrap"><canvas id="avcv" width="600" height="600" aria-label="Drag to move your picture"></canvas></div>
       <div class="rowx" style="gap:10px;width:100%">${ic('search','sm')}<input type="range" id="av-zoom" min="1" max="3" step="0.01" value="${sh.z}" aria-label="Zoom" style="flex:1"></div>
-      <span class="muted small">Drag to move · slide to zoom. The circle is how it shows on your profile.</span>
+      <span class="muted small">Drag to move · slide to zoom.</span>
       <div class="rowx" style="gap:8px;width:100%"><button class="btn" style="flex:1" data-a="close-sheet">Cancel</button><button class="btn primary" style="flex:1" data-a="av-done">Use photo</button></div></div>`); }
   if(sh.kind==='picker' && sh.step==='list'){
     return wrap(`<div class="rowx"><span class="h2">${sh.ctx.swap?'Swap '+esc(exOf(sh.ctx.swapFrom).n)+' for…':'Exercise library'}</span><span class="spacer"></span><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>
@@ -2761,7 +2763,7 @@ function vSheet(){
       `<div class="stats"><div class="stat"><div class="k">Time</div><div class="v num">${fmtDur(elapsed(a))}</div></div><div class="stat"><div class="k">Sets</div><div class="v num">${marked.filter((_,k)=>true).length}</div></div><div class="stat"><div class="k">Volume</div><div class="v num" style="white-space:nowrap">${fmtBig(v)}</div></div></div>
         <div class="card stack" style="gap:6px"><div class="rowx"><span class="h2" style="font-size:16px">Overview</span><span class="spacer"></span><span class="tag accent num">~${workoutKcal(a,Date.now())} kcal</span></div>
           ${a.items.filter(it=>it.sets.some(s=>s.st)).map(it=>{ const d=it.sets.filter(s=>s.st), ok=d.filter(s=>s.st==='ok').length; return `<div class="exline" style="padding:6px 0"><span>${esc(exOf(it.exId).n)}${it.hurt?` <span style="color:var(--bad)">${ic('bandage','xs')}</span>`:''}</span><span class="r num">${it.cardio?`${esc(d[0].w)} min · ~${it.kcal||0} kcal`:setDots(d)}</span></div>`; }).join('')||'<span class="muted small">Nothing logged yet.</span>'}
-          <span class="muted small">Calories are an estimate from your body weight, lifting time and cardio settings.</span></div>
+          <span class="muted small">Calories are estimates.</span></div>
         ${sh.pump?`<div class="stack" style="gap:10px"><div class="rowx"><span class="h2" style="font-size:18px;flex:1">Share workout</span><button class="link small" data-a="pump-clear">Remove picture</button></div>
           <div class="ovstage photo"><canvas id="ovc" width="1080" height="1920" aria-label="Story preview"></canvas></div>
           <div class="card stack fincard" style="gap:12px"><div class="field"><span class="flabel">Style</span>${chipRow('ov-style',String(sh.style||0),{0:'Weight',1:'Time',2:'Carried',3:'Rowboats'})}</div>
@@ -2881,7 +2883,7 @@ function vSheet(){
     const tn=t=>t==='full'?'Full Body':(TYPES[t]||(sp.types||{})[t]||'Workout');
     return wrap(`<div class="rowx"><div style="flex:1;min-width:0"><span class="h2">${esc(c.username)}’s split</span><div class="muted small">${DAYS.filter(([k])=>sp.split[k]!=='rest').length} training days</div></div><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>`,
       `<div class="list">${DAYS.map(([k,l])=>{ const t=sp.split[k], pl=(sp.plans||{})[k]||[]; return `<div class="li" style="align-items:flex-start"><span class="ico">${ic(typeIcon(t))}</span><span class="grow"><span class="t">${l} · ${esc(tn(t))}</span>${pl.length?`<br><span class="s">${pl.map(p=>`${esc(p.n)}${p.min?` · ${p.min} min`:p.sets?` · ${p.sets}×${p.repMin&&p.repMax?p.repMin+'–'+p.repMax:''}`:''}`).join('<br>')}</span>`:t==='rest'?'':'<br><span class="s">No exercises listed</span>'}</span></div>`; }).join('')}</div>
-       ${sh.confirm?`<div class="card stack" style="gap:8px"><b>Replace your week with this split?</b><span class="muted small">Your current days and exercises are swapped for theirs. Your workout history stays. Weights start fresh so you can set your own.</span><div class="rowx" style="gap:8px"><button class="btn sm" style="flex:1" data-a="split-copy-no">Cancel</button><button class="btn sm primary" style="flex:1" data-a="split-copy" data-v="${esc(sh.id)}">Copy split</button></div></div>`
+       ${sh.confirm?`<div class="card stack" style="gap:8px"><b>Replace your week with this split?</b><span class="muted small">Your days and exercises are replaced. Your history stays.</span><div class="rowx" style="gap:8px"><button class="btn sm" style="flex:1" data-a="split-copy-no">Cancel</button><button class="btn sm primary" style="flex:1" data-a="split-copy" data-v="${esc(sh.id)}">Copy split</button></div></div>`
         :`<button class="btn primary copybig" data-a="split-copy-ask">${ic('swap','sm')}Copy this split</button>`}`); }
   if(sh.kind==='feedback'){ return wrap(`<div class="rowx"><div style="flex:1;min-width:0"><span class="h2">Beta feedback</span><div class="muted small">Tell us what to fix, add or remove</div></div><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>`,
       sh.sent?`<div class="card empty">${ic('check')}<div style="margin-top:6px"><b>Thanks, got it.</b><br>Your feedback goes straight to the Boats team.</div></div><button class="btn" data-a="close-sheet">Done</button>`
@@ -3082,6 +3084,7 @@ document.addEventListener('pointermove',e=>{ if(XLP&&Math.hypot(e.clientX-XLP.x0
 let PTR=null, BARY=0, BARDIR=0;
 function fabCheck(){ const f=document.querySelector('.fabpost'); if(!f) return; const fr=f.getBoundingClientRect(); const hit=[...document.querySelectorAll('.postnudge,.invitecard,.feedempty,#feed .card.empty')].some(el=>{ const r=el.getBoundingClientRect(); return r.bottom>fr.top-12&&r.top<fr.bottom+12; }); f.classList.toggle('fadeaway',hit); }
 window.addEventListener('scroll',fabCheck,{passive:true});
+window.addEventListener('scroll',()=>{ document.body.classList.toggle('feedscrolled',window.scrollY>4); },{passive:true});
 window.addEventListener('scroll',()=>{ const y=window.scrollY; if(y<=0||PTR){ if(document.body.classList.contains('barmini')) document.body.classList.remove('barmini'); BARY=Math.max(0,y); return; } const d=y-BARY; if(Math.abs(d)<8) return; const mini=d>0&&y>80; if(mini!==document.body.classList.contains('barmini')) document.body.classList.toggle('barmini',mini); BARY=y; },{passive:true});
 window.addEventListener('scroll',()=>{ if(S.route!=='app'||S.tab!=='friends'||S.fview||S.personId) return; const m=document.getElementById('feedmore'); if(!m||m.getBoundingClientRect().top>innerHeight+700) return; S.feedN=(S.feedN||10)+10; const f=document.getElementById('feed'); if(f) morphFeed(f,feedList()); },{passive:true});
 // one wave period = 30px; the strip slides exactly one period, so the loop is seamless
@@ -3159,7 +3162,7 @@ document.addEventListener('touchend',()=>{ if(!SW) return; const {sh,dy,on,t0}=S
   if(dy>120||(fast&&dy>50)){ sh.style.transform='translateY(105%)'; const sc=sh.closest('.scrim'); if(sc){ sc.style.transition='opacity .26s'; sc.style.opacity='0'; } setTimeout(()=>{ S.sheet=null; S.sheetFull=false; S.sheetBottom=false; renderSheet(); },260); }
   else if(dy<-50&&!sh.classList.contains('bottom')){ S.sheetFull=true; sh.classList.add('full'); sh.style.transform=''; }
   else sh.style.transform=''; },{passive:true});
-function revealCards(){ if(!('IntersectionObserver' in window)) return; if(RIO) RIO.disconnect();
+function revealCards(){ return; if(!('IntersectionObserver' in window)) return; if(RIO) RIO.disconnect();
   RIO=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); RIO.unobserve(e.target); } }),{rootMargin:'0px 0px -6% 0px'});
   document.querySelectorAll('#feed > *, .pgrid3 > button, .prof .post').forEach((n,i)=>{ n.classList.add('rv'); n.style.transitionDelay=Math.min(i,6)*40+'ms'; RIO.observe(n); }); }
 function scrollLock(on){ const b=document.body; if(on&&!b.classList.contains('locked')){ b.dataset.ly=window.scrollY; b.style.top=-window.scrollY+'px'; b.classList.add('locked'); } else if(!on&&b.classList.contains('locked')){ const y=+b.dataset.ly||0; b.classList.remove('locked'); b.style.top=''; window.scrollTo(0,y); } }
@@ -3483,6 +3486,7 @@ const A = {
   'dev-go'(v){ previewLoad(v); },
   'edit-profile'(){ navPush(); S.nameOpen=Pf.username; S.draft={username:Pf.username||'',realName:Pf.realName||'',town:Pf.town||'',bio:Pf.bio||'',link:Pf.link||''}; S.meView='edit'; S.tab='me'; S.route='app'; S.sheet=null; window.scrollTo(0,0); render(); },
   async 'share-profile'(v){ const uid=v||Social.me(), mine=uid===Social.me(), url=APP_URL.replace(/\/?$/,'/')+'?u='+encodeURIComponent(uid), text=mine?'Follow '+(Pf.username||'me')+' on BOATS. See when I’m hitting the gym today!':'Follow '+Social.nameOf(uid)+' on BOATS. See when they’re hitting the gym today!'; try{ if(navigator.share){ await navigator.share({title:'BOATS',text,url}); return; } }catch(e){ if(e&&e.name==='AbortError') return; } try{ await navigator.clipboard.writeText(url); savedNote('Profile link copied'); }catch(e){ toast('Could not share right now.'); } },
+  async 'share-post'(v){ const url=APP_URL.replace(/\/?$/,'/')+'?p='+encodeURIComponent(v), text='Check out this post on BOATS.'; try{ if(navigator.share){ await navigator.share({title:'BOATS',text,url}); return; } }catch(e){ if(e&&e.name==='AbortError') return; } try{ await navigator.clipboard.writeText(url); savedNote('Link copied'); }catch(e){ toast('Could not share right now.'); } },
   ptagged(v){ S.ptabT=v||null; render(); },
   settings(){ S.draft=null; S.meView='settings'; S.tab='me'; S.route='app'; S.sheet=null; window.scrollTo(0,0); render(); },
   'my-friends'(v){ S.flTab=v||'following'; S.fq=''; S.meView='friends'; S.tab='me'; S.route='app'; window.scrollTo(0,0); render(); },
@@ -3882,6 +3886,7 @@ Store.init().catch(()=>{}).then(()=>{
     if(isOwner){ if(u.toLowerCase()==='swaizy'&&u!=='Swaizy'){ Pf.username='Swaizy'; Store.save(); Social.publish(); render(); } }
     else if(/[A-Z]/.test(u)){ Pf.username=u.toLowerCase(); Store.save(); Social.publish(); render(); } });
   try{ if(Pf&&isStandalone()&&!Pf.installedAt){ Pf.installedAt=Date.now(); Store.save(); } }catch(e){}
+  try{ const qp=new URLSearchParams(location.search).get('p'); if(qp&&Pf&&Pf.onboarded){ history.replaceState(null,'',location.pathname); const [pu,pi]=qp.split(':'); let n=0; const t=setInterval(()=>{ if((((Social.posts||{})[pu]||{}).items||[]).some(x=>x.id===pi)||++n>40){ clearInterval(t); A['posts-open'](qp); } },250); } }catch(e){}
   try{ const qu=new URLSearchParams(location.search).get('u'); if(qu&&Pf&&Pf.onboarded){ history.replaceState(null,'',location.pathname); let n=0; const t=setInterval(()=>{ if((Social.people||{})[qu]||++n>40){ clearInterval(t); if(qu!==Social.me()) A.person(qu); else A.tab('me'); } },250); } }catch(e){}
   if(Pf&&Pf.pinReload){ S.pinNow=Pf.pinReload; Pf.pinReload=null; Store.save(); }
   if(window.boatsClaimFounder&&Pf&&Pf.onboarded) window.boatsClaimFounder().then(n=>{ if(n&&!Social.founders[Social.me()]){ Social.founders={...Social.founders,[Social.me()]:n}; refreshSocial(); } });

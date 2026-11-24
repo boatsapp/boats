@@ -55,7 +55,7 @@ gate='''
 # Static footer in the page HTML so Google's verification check (which doesn't run JavaScript) sees what BOATS is and the policy links
 foot='<p class="legal" id="sitefoot">BOATS is a workout tracker you use with friends. By continuing you agree to the <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>\n'
 # Boat animation while the app starts (replaced by the first screen as soon as it renders)
-boot='<div class="bootload" role="status" aria-label="Loading BOATS"><div class="floatboat bigboat" aria-hidden="true"><span class="pboat"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15.5h18l-2.2 4H5.2z"/><path d="M12 3.5v12M12 4.5l6 9H12"/><path d="M12 7l-4.5 6.5H12"/></svg></span><span class="pwave"><svg viewBox="0 0 120 10" width="120" height="10"><path d="M0 5 Q7.5 0 15 5 T30 5 T45 5 T60 5 T75 5 T90 5 T105 5 T120 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span></div></div>'
+boot='<div class="bootload" role="status" aria-label="Loading BOATS"><span class="bootmark">BOATS</span></div>'
 s=s.replace('<div id="app"></div>','<div id="app">'+boot+'</div>\n'+foot,1)
 s=head+'</head><body>\n'+s+gate
 os.makedirs(pub,exist_ok=True)
