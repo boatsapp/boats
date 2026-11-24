@@ -332,7 +332,6 @@ body.locked{position:fixed;left:0;right:0;overflow:hidden}
 .cm2t{font-size:16px;line-height:1.38}
 .cm2m{gap:18px;margin-top:2px}.cm2m .link{font-size:14.5px;font-weight:600}
 .cm2heart{min-width:44px;padding:6px 0 0;gap:4px;font-size:13.5px;font-weight:600}.cm2heart svg{width:22px!important;height:22px!important}
-.cm2h .anchorb.withn{color:#E8B85A}
 .cm2more{display:flex;align-items:center;gap:12px;margin:-8px 0 0 50px;border:0;background:none;padding:2px 0;color:var(--muted);font:600 14.5px/1.2 inherit;font-family:inherit}.cm2more::before{content:"";width:28px;height:1px;background:color-mix(in srgb,var(--muted) 60%,transparent)}
 .cm2emoji{padding:2px 4px}.cm2emoji button{font-size:30px}
 .cm2foot{gap:12px;padding-top:12px}
@@ -499,7 +498,7 @@ body.chatopen{position:fixed;inset:0;width:100%;overflow:hidden}
 .daytag{margin-left:auto;flex:none}
 .pacts{align-items:center}
 .swrap{position:relative;overflow:hidden;border-radius:12px}
-.bootload{position:fixed;inset:0;display:grid;place-items:center;background:#0E0E0D;color:#F4F3EF;z-index:2}.bootload .floatboat{color:#F4F3EF}.bootmark{font:900 52px/1 var(--display,'Inter Tight'),system-ui,sans-serif;letter-spacing:-.04em;background:linear-gradient(105deg,#4a4945 0%,#4a4945 35%,#F4F3EF 50%,#4a4945 65%,#4a4945 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 1.5s linear infinite}@keyframes shine{from{background-position:100% 0}to{background-position:0 0}}
+.bootload{position:fixed;inset:0;display:grid;place-items:center;background:#0E0E0D;color:#F4F3EF;z-index:2}.bootload .floatboat{color:#F4F3EF;margin:0}.bootload .floatboat .pboat svg{width:58px;height:58px}.bootload .floatboat .pwave{width:104px}.bootmark{font:900 52px/1 var(--display,'Inter Tight'),system-ui,sans-serif;letter-spacing:-.04em;background:linear-gradient(105deg,#4a4945 0%,#4a4945 35%,#F4F3EF 50%,#4a4945 65%,#4a4945 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 1.5s linear infinite}@keyframes shine{from{background-position:100% 0}to{background-position:0 0}}
 .floatboat{display:flex;flex-direction:column;align-items:center;margin:6px auto 0;color:var(--muted)}
 .floatboat .pboat{line-height:0;animation:bob 2.4s ease-in-out infinite}
 .floatboat .pboat svg{width:30px;height:30px}
@@ -572,7 +571,7 @@ body.kbopen .chatbar{padding-bottom:5px!important}
 .actchips .chip{flex:none}
 .actrow{display:flex;align-items:center;gap:10px;padding:7px 0}
 .actmain{display:flex;align-items:center;gap:12px;flex:1;min-width:0;background:none;border:0;padding:0;color:inherit;font:inherit;text-align:left}
-.actmain .av{width:44px;height:44px;flex:none}
+.actmain .av{width:44px;height:44px;flex:none}.actmain{cursor:pointer}.actav{border:0;background:none;padding:0;flex:none;line-height:0}.actname{border:0;background:none;padding:0;color:inherit;font:inherit;font-weight:700;display:inline}
 .acttxt{font-size:14px;line-height:1.35}
 .actrow.new .acttxt{font-weight:500}
 .actthumbb{background:none;border:0;padding:0;flex:none}
@@ -986,7 +985,7 @@ body.barmini .fhead3{transform:translateY(-100%)}
   .bootmark,.shinymark{animation-name:shine!important;animation-duration:2.6s!important;animation-iteration-count:infinite!important;animation-timing-function:linear!important}}
 </style>
 
-<div id="app"><div class="bootload" role="status" aria-label="Loading BOATS"><span class="bootmark">BOATS</span></div></div>
+<div id="app"><div class="bootload" role="status" aria-label="Loading BOATS"><div class="floatboat bigboat" aria-hidden="true"><span class="pboat"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15.5h18l-2.2 4H5.2z"/><path d="M12 3.5v12M12 4.5l6 9H12"/><path d="M12 7l-4.5 6.5H12"/></svg></span><span class="pwave"><svg viewBox="0 0 120 10" width="120" height="10" aria-hidden="true"><path d="M0 5 Q7.5 0 15 5 T30 5 T45 5 T60 5 T75 5 T90 5 T105 5 T120 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span></div></div></div>
 <p class="legal" id="sitefoot">BOATS is a workout tracker you use with friends. By continuing you agree to the <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>
 
 <div id="sheet"></div><div id="ask"></div>
@@ -1006,7 +1005,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v154';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v155';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1771,7 +1770,7 @@ function vToday(){
       <div class="stack" style="gap:4px;flex:1;min-width:0"><span class="eyebrow">${now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})}</span><h1 class="h1">${trainedToday&&!a?'Nice work today':'Ready to lift'}</h1></div>
       <button data-a="tab" data-v="me" aria-label="Your profile">${avatar(Pf.username,Pf.photo,myStatusCls())}</button>
     </div>
-    <button class="card streak sm hot quiet" data-a="ranks" style="width:100%;text-align:left"><span class="flame">${ic('flame','sm')}</span><div style="flex:1;min-width:0"><div class="h2 num" style="font-size:16px">${st} day streak</div><div class="muted small" ${streakGrace()&&st?'style="color:var(--bad);font-weight:600"':''}>${streakGrace()?(streakDaysLeft()===1?'Work out today to keep your streak':'Work out by tomorrow to keep your streak'):'Check leaderboards'}</div></div>${ic('right','sm')}</button>
+    <button class="card streak sm hot ${st?'':'quiet'}" data-a="ranks" style="width:100%;text-align:left"><span class="flame">${ic('flame','sm')}</span><div style="flex:1;min-width:0"><div class="h2 num" style="font-size:16px">${st} day streak</div><div class="muted small" ${streakGrace()&&st?'style="color:var(--bad);font-weight:600"':''}>${streakGrace()?(streakDaysLeft()===1?'Work out today to keep your streak':'Work out by tomorrow to keep your streak'):'Check leaderboards'}</div></div>${ic('right','sm')}</button>
     ${weekStrip()}
     <section class="card hero">
       ${a?`<div class="rowx"><span class="eyebrow" style="color:var(--good)">In progress</span><span class="spacer"></span><span class="num muted small" data-timer>${a.startedAt?fmtUp(elapsed(a)):'Not started'}</span></div>
@@ -2207,10 +2206,10 @@ function vActivity(){ const f=S.actF||'all', seen=S.actSeenAt||0, me=Social.me()
   if(f==='following') list=list.filter(x=>(x.uids||[x.uid]).some(u=>Pf.friends.includes(u)));
   if(f==='comments') list=list.filter(x=>x.kind==='comment'); if(f==='follows') list=list.filter(x=>x.kind==='follow');
   const day=t=>{ const d=new Date(); d.setHours(0,0,0,0); return t>=d.getTime()?'Today':t>=d.getTime()-864e5?'Yesterday':t>=d.getTime()-6*864e5?'This week':'Earlier'; };
-  const nm=u=>`<b>${esc(Social.nameOf(u))}</b>`;
+  const nm=u=>`<button class="actname" data-a="person" data-v="${esc(u)}">${esc(Social.nameOf(u))}</button>`;
   const row=x=>{ const u=x.uids?x.uids[0]:x.uid, go=x.kind==='follow'?`data-a="person" data-v="${esc(u)}"`:`data-a="posts-open" data-v="${esc(x.key)}"`;
     const txt=x.kind==='follow'?`${nm(u)} started following you.`:x.kind==='comment'?`${nm(u)} commented: ${esc(x.text)}`:x.uids.length===1?`${nm(u)} liked your post.`:x.uids.length===2?`${nm(x.uids[0])} and ${nm(x.uids[1])} liked your post.`:`${nm(x.uids[0])}, ${nm(x.uids[1])} and others liked your post.`;
-    return `<div class="actrow ${x.at>seen?'new':''}"><button class="actmain" ${go}>${avatar(Social.nameOf(u),Social.photoOf(u),null)}<span class="acttxt">${txt}${x.at?` <span class="muted">${ago(x.at)}</span>`:''}</span></button>
+    return `<div class="actrow ${x.at>seen?'new':''}"><div class="actmain" role="button" tabindex="0" ${go}><button class="actav" data-a="person" data-v="${esc(u)}" aria-label="${esc(Social.nameOf(u))}">${avatar(Social.nameOf(u),Social.photoOf(u),null)}</button><span class="acttxt">${txt}${x.at?` <span class="muted">${ago(x.at)}</span>`:''}</span></div>
       ${x.kind==='follow'?(Pf.friends.includes(u)?`<button class="btn sm" style="width:auto;flex:none" data-a="person" data-v="${esc(u)}">Following</button>`:`<button class="btn sm fbbtn" data-a="follow-back" data-v="${esc(u)}">Follow back</button>`):x.photo?`<button class="actthumbb" ${go}><img class="actthumb" src="${esc(x.photo)}" alt=""></button>`:''}</div>`; };
   const groups={}; for(const x of list){ const k=x.at?day(x.at):'Earlier'; (groups[k]=groups[k]||[]).push(x); }
   return `<div class="screen actpage">
@@ -2728,7 +2727,7 @@ function vSheet(){
   if(sh.kind==='comments'){ const key=sh.key, [owner]=key.split(':'), all=Social.comments(key), top=all.filter(c=>!c.re).sort((a,b)=>Social.likes(ckOf(key,b))-Social.likes(ckOf(key,a))||a.at-b.at), kids=c=>all.filter(x=>x.re===c.at).sort((a,b)=>a.at-b.at), me=Social.me();
     const row=(c,sub,parent)=>{ const ck=ckOf(key,c), n=Social.likes(ck), on=Social.liked(ck), byAuthor=c.uid!==owner&&!!(((Social.reacts||{})[owner]||{}).likes||{})[ck], go=c.uid===me?'data-a="tab" data-v="me"':`data-a="person" data-v="${esc(c.uid)}"`;
       return `<div class="cm2 ${sub?'sub':''}"><button class="cm2av" ${go} aria-label="${esc(Social.nameOf(c.uid))}">${avatar(Social.nameOf(c.uid),Social.photoOf(c.uid),null)}</button>
-        <div class="cm2b"><div class="cm2h"><button class="link" ${go}><b>${esc(Social.nameOf(c.uid))}</b></button>${fbadgeN(c.uid)}<span class="muted">${ago(c.at)}</span>${c.uid===owner?'<span class="muted">· Author</span>':''}${byAuthor?`<span class="muted">· <span style="color:#ff4d5e">${ic('heart','xs')}</span> by author</span>`:''}</div>
+        <div class="cm2b"><div class="cm2h"><button class="link" ${go}><b>${esc(Social.nameOf(c.uid))}</b></button>${fbadge(c.uid)}<span class="muted">${ago(c.at)}</span>${c.uid===owner?'<span class="muted">· Author</span>':''}${byAuthor?`<span class="muted">· <span style="color:#ff4d5e">${ic('heart','xs')}</span> by author</span>`:''}</div>
         <div class="cm2t">${mentionHtml(c.text)}</div>
         <div class="cm2m"><button class="link" data-a="cm2-reply" data-v="${esc(ckOf(key,parent||c))}" data-n="${esc(Social.nameOf(c.uid))}">Reply</button>${c.uid===me?`<button class="link" data-a="cm-edit" data-v="${esc(ck)}">Edit</button>`:''}${c.uid===me||owner===me||(window.boatsAdmin&&Pf.modMode)?`<button class="link" data-a="cm-del" data-v="${esc(ck)}">Delete</button>`:''}</div></div>
         <button class="cm2heart ${on?'on':''}" data-a="cm-like" data-v="${esc(ck)}" aria-label="${on?'Unlike':'Like'} comment">${ic('heart','sm')}${n?`<span>${fmtK(n)}</span>`:''}</button></div>`; };
