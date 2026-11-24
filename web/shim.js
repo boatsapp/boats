@@ -133,7 +133,7 @@ window.boatsClaimFounder = async () => {
       const m = await tx.get(meta), f = await tx.get(mine);
       if(f.exists()) return f.data().n;
       if(!m.exists()) return 0;
-      const n = m.data().next; if(!(n >= 1 && n <= 100)) return 0;
+      const n = m.data().next; if(!(n >= 1 && n <= 999)) return 0;
       tx.set(mine, { n, at: Date.now() }); tx.update(meta, { next: n + 1 });
       return n;
     });

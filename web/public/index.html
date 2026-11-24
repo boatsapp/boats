@@ -940,13 +940,19 @@ body.barmini .fhead3{transform:translateY(-100%)}
 .pinforow{display:flex;gap:0;align-items:flex-start}.pinforow .pinfo{flex:1 1 0;min-width:0;padding-right:10px}.pinfo .bio2,.pinfo .pmeta,.pinfo a{overflow-wrap:anywhere;word-break:break-word;max-width:100%}.pinforow .sring{flex:none;width:var(--colw,33%);align-self:flex-start;margin-top:2px}
 .sring{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:0;color:var(--fg);font:inherit;min-width:72px}.srwrap{position:relative;display:block}.srwrap svg{display:block}.srin{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;color:var(--fg)}.srin svg{color:var(--streak);width:13px;height:13px}.srin b{font-family:var(--display);font-weight:900}.srl{font-size:11.5px;font-weight:700}.srs{font-size:10.5px;color:var(--muted)}
 .fgold{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 10px 0 8px;margin-left:6px;border-radius:999px;border:0;flex:none;background:linear-gradient(135deg,#F6D58A,#C99A3B);color:#1a1406;font:900 12.5px/1 var(--display);letter-spacing:.03em;box-shadow:0 0 14px rgba(232,184,90,.55),inset 0 1px 0 rgba(255,255,255,.45);vertical-align:middle}.fgold svg{width:13px;height:13px;stroke-width:2.6}
+.card.streak.quiet{background:var(--surface)!important;color:var(--fg)!important;border:1px solid color-mix(in srgb,var(--line) 70%,transparent)!important;box-shadow:none!important;padding-top:10px!important;padding-bottom:10px!important}
+.card.streak.quiet .flame{background:color-mix(in srgb,var(--streak,#FF6A2E) 14%,transparent)!important;color:var(--streak,#FF6A2E)!important}
+.card.streak.quiet .h2{font-size:15px!important}.card.streak.quiet .muted,.card.streak.quiet .small{color:var(--muted)!important;opacity:1!important}
+.card.streak.quiet svg:last-child{color:var(--muted)}
+.fgold.silver{background:linear-gradient(135deg,#F2F4F6,#A9B0B8);color:#15181b;box-shadow:0 0 14px rgba(210,218,226,.4),inset 0 1px 0 rgba(255,255,255,.6)}
+.fgold.big{height:38px;padding:0 16px 0 13px;font-size:18px;gap:6px;margin:0}.fgold.big svg{width:18px;height:18px}
 .obadge{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--accent);color:#0E0E0D;flex:none;vertical-align:middle}.obadge svg{width:10px;height:10px;stroke-width:3.2}
 .hotring{display:inline-grid;place-items:center;border-radius:50%;padding:2px;background:var(--streak);box-shadow:0 0 12px rgba(255,106,46,.6);flex:none}.hotring.big{padding:3px;box-shadow:0 0 18px rgba(255,106,46,.55)}
 .rankpill{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;margin-left:auto;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(28,28,27,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#F4F3EF;font:inherit;font-size:12px;font-weight:700;flex:none}.rankpill svg{color:var(--streak);width:13px;height:13px}.hotring .av{border:2px solid var(--bg);box-sizing:border-box}.hotlbl{font-size:11.5px;font-weight:700;color:#FFB08A;text-shadow:0 1px 4px rgba(0,0,0,.45)}
 .pright{display:flex;align-items:center;gap:6px;flex:none}.pright .pstreak{height:26px;padding:0 10px;font-size:12px;box-shadow:none}.pright .iconbtn{width:36px;height:36px}.pfollow{height:28px;padding:0 13px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--fg) 70%,transparent);background:transparent!important;color:var(--fg)!important;-webkit-appearance:none;appearance:none;font:inherit;font-size:13px;font-weight:700}
 .npnote{display:flex;gap:7px;align-items:flex-start;margin:-4px 2px 0;font-size:12.5px;line-height:1.4;color:var(--muted)}.npnote svg{flex:none;margin-top:1px;width:14px;height:14px}
-.obcompact{display:flex;flex-direction:column;gap:10px}.obcompact label,.obcompact .flabel,.obcompact .field>.muted.small,.obcompact .field>span.muted{display:none!important}.obcompact .field{gap:0;margin:0}.obcompact #t-msg{display:none}.obcompact .idrow{align-items:center!important}
-.pbtns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.pbtns.three{grid-template-columns:repeat(3,minmax(0,1fr))}.pbtn{height:36px;border-radius:10px;border:0;background:var(--surface-2);color:var(--fg);font:inherit;font-size:14px;font-weight:700}.pbtn.primary{background:var(--accent);color:#0E0E0D;font-weight:800}
+.obcompact{display:flex;flex-direction:column;gap:10px}.obcompact label,.obcompact .field>.muted.small,.obcompact .field>span.muted{display:none!important}.obcompact .flabel{display:block!important;margin:4px 0 6px}.obcompact #f-sex{order:9}.obcompact .idrow .field{display:flex;flex-direction:column;gap:8px}.obcompact .idrow #u-msg:empty{display:none}.obcompact .field{gap:0;margin:0}.obcompact #t-msg{display:none}.obcompact .idrow{align-items:center!important}
+.pbtns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.pbtns.three{grid-template-columns:repeat(3,minmax(0,1fr))}.pbtn{height:36px;border-radius:10px;border:0;background:var(--surface-2);color:var(--fg);font:inherit;font-size:14px;font-weight:700}.pbtn.primary{background:var(--fg);color:var(--bg);font-weight:800}
 .pstats{flex:1;display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
 .pstats b{display:block;font-family:var(--display);font-size:20px;font-weight:700}
 .pstats span{font-size:12px;color:var(--muted)}
@@ -1000,7 +1006,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v153';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v154';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1575,7 +1581,7 @@ function bodyFields(){
     ${u==='lb' ? `<div class="rowx"><div class="inwrap"><input class="input num" id="f-ft" inputmode="numeric" value="${esc(Pf.ft)}" data-f="ft"><span class="suf">ft</span></div><div class="inwrap"><input class="input num" id="f-in" inputmode="numeric" value="${esc(Pf.inch)}" data-f="inch"><span class="suf">in</span></div></div>`
       : `<div class="inwrap"><input class="input num" id="f-cm" inputmode="numeric" value="${esc(Pf.cm)}" data-f="cm"><span class="suf">cm</span></div>`}
   </div>
-  <div class="field"><span class="flabel">Body weight</span><div class="inwrap"><input class="input num" id="f-bw" inputmode="decimal" placeholder="Body weight" value="${esc(Pf.bodyweight)}" data-f="bodyweight"><span class="suf">${u}</span></div></div>`;
+  <div class="field"><span class="flabel">Weight</span><div class="inwrap"><input class="input num" id="f-bw" inputmode="decimal" placeholder="Body weight" value="${esc(Pf.bodyweight)}" data-f="bodyweight"><span class="suf">${u}</span></div></div>`;
 }
 // Username rules: like Instagram, no slurs, sexual terms, hate words or impersonating staff. Fun replies for a few names.
 const NAME_FUN=[[/^(god|jesus|jesuschrist|christ|yahweh|allah)$/,'Shoutout God, but you’re not him.'],[/^swaizy$/,'You’re not the founder smh.'],[/^(santa|santaclaus)$/,'Ho ho ho! Nice try.'],[/^(satan|devil|demon|lucifer)$/,'Hell nah.']];
@@ -1615,14 +1621,14 @@ function showTownSug(){ const i=document.getElementById('f-town'), box=document.
 function privacyNote(){ return `<div class="card small" style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px">${ic('lock','sm')}<span>Everything here stays <b>private</b> until you make it public.</span></div>`; }
 const BIOFIELD=()=>`<div class="field"><label for="f-bio">About the Captain</label><textarea class="input" id="f-bio" maxlength="130" rows="3" placeholder="In fewer than 3 lines" data-f="bio" style="height:auto;padding:12px 14px;resize:none">${esc(dv('bio'))}</textarea></div>`;
 const NAMEFIELD=gap=>`<label for="f-name" ${gap?'style="margin-top:10px"':''}>Your name <span class="muted" style="font-weight:500">(optional)</span></label><input class="input" id="f-name" maxlength="40" placeholder="Your name (optional)" autocomplete="off" autocorrect="off" value="${esc(dv('realName'))}" data-f="realName">`;
-function idFields(withBio){
+function idFields(withBio,ob){
   return `<div class="rowx idrow" style="gap:16px;align-items:flex-start">
       <button data-a="photo" aria-label="Choose profile picture" style="position:relative">${avatar(Pf.username||'?',Pf.photo,null,true)}<span class="ico" style="position:absolute;right:-4px;bottom:-4px;width:30px;height:30px;border-radius:50%;border:3px solid var(--bg)">${ic('camera','xs')}</span></button>
-      <div class="field" style="flex:1;min-width:0"><label for="f-user">Create username</label><input class="input" id="f-user" maxlength="17" placeholder="Create username" autocapitalize="off" autocorrect="off" spellcheck="false" value="${esc(dv('username'))}" data-f="username" aria-describedby="u-msg" ${nameLocked()?'readonly':''}><div id="u-msg" class="small" aria-live="polite">${userMsg()}</div>
+      <div class="field" style="flex:1;min-width:0"><label for="f-user">Create username</label><input class="input" id="f-user" maxlength="17" placeholder="Create username" autocapitalize="off" autocorrect="off" spellcheck="false" value="${esc(dv('username'))}" data-f="username" aria-describedby="u-msg" ${nameLocked()?'readonly':''}><div id="u-msg" class="small" aria-live="polite">${userMsg()}</div>${ob?NAMEFIELD(false):''}
       </div>
     </div>
     ${withBio?BIOFIELD():''}
-    <div class="field">${NAMEFIELD(false)}</div>
+    ${ob?'':`<div class="field">${NAMEFIELD(false)}</div>`}
     <div class="field"><label for="f-town">Town</label><div class="inwrap townwrap"><input class="input" id="f-town" maxlength="40" placeholder="Town (optional)" autocomplete="off" value="${esc(dv('town'))}" data-f="town" aria-describedby="t-msg" role="combobox" aria-autocomplete="list" aria-controls="town-sug" aria-expanded="false"><div class="sug" id="town-sug" role="listbox" hidden></div></div><div id="t-msg" class="small" aria-live="polite">${townMsg()}</div></div>`;
 }
 function goalCards(){
@@ -1671,7 +1677,7 @@ function vOnboard(){
   const s=S.ob;
   const titles=['About you','Your current goal','Workout defaults','Your weekly split'];
   const subs=['You can change this anytime.','Helps tailor your workouts.','Rest time and reps. Picked for your goal.','Pick what you train each day.'];
-  const body = s===0 ? `<div class="obcompact">${idFields()}${bodyFields()}</div>`
+  const body = s===0 ? `<div class="obcompact">${idFields(false,true)}${bodyFields()}</div>`
     : s===1 ? `<div class="stack">${goalCards()}</div><div class="field"><span class="flabel">Experience</span>${levelPicker()}</div>`
     : s===2 ? `<div class="card small" style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px">${ic('bolt','sm')}<span>${esc(REC_WHY[Pf.goal]||REC_WHY.maintain)} Recommended picks are already selected.</span></div><div class="field"><span class="flabel">Rest between sets</span>${restRange()}</div><div class="field"><span class="flabel">Rep range</span>${repPicker()}</div><div class="muted small">Every new exercise starts with this target. Tick ✓ when you hit it and ✕ when you don't, and Boats suggests when to go heavier or lighter. You can change both for any exercise later.</div>`
     : splitList()+splitShareRow()+popularSplits();
@@ -1765,7 +1771,7 @@ function vToday(){
       <div class="stack" style="gap:4px;flex:1;min-width:0"><span class="eyebrow">${now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})}</span><h1 class="h1">${trainedToday&&!a?'Nice work today':'Ready to lift'}</h1></div>
       <button data-a="tab" data-v="me" aria-label="Your profile">${avatar(Pf.username,Pf.photo,myStatusCls())}</button>
     </div>
-    <button class="card streak sm hot" data-a="ranks" style="width:100%;text-align:left"><span class="flame">${ic('flame','sm')}</span><div style="flex:1;min-width:0"><div class="h2 num" style="font-size:16px">${st} day streak</div><div class="muted small" ${streakGrace()&&st?'style="color:var(--bad);font-weight:600"':''}>${streakGrace()?(streakDaysLeft()===1?'Work out today to keep your streak':'Work out by tomorrow to keep your streak'):'Check leaderboards'}</div></div>${ic('right','sm')}</button>
+    <button class="card streak sm hot quiet" data-a="ranks" style="width:100%;text-align:left"><span class="flame">${ic('flame','sm')}</span><div style="flex:1;min-width:0"><div class="h2 num" style="font-size:16px">${st} day streak</div><div class="muted small" ${streakGrace()&&st?'style="color:var(--bad);font-weight:600"':''}>${streakGrace()?(streakDaysLeft()===1?'Work out today to keep your streak':'Work out by tomorrow to keep your streak'):'Check leaderboards'}</div></div>${ic('right','sm')}</button>
     ${weekStrip()}
     <section class="card hero">
       ${a?`<div class="rowx"><span class="eyebrow" style="color:var(--good)">In progress</span><span class="spacer"></span><span class="num muted small" data-timer>${a.startedAt?fmtUp(elapsed(a)):'Not started'}</span></div>
@@ -2396,8 +2402,9 @@ function followersOf(uid){ const me=Social.me(); return Object.entries(Social.pe
 function fbadgeN(uid){ const n=founderNo(uid); return n?`<span class="anchorb withn" title="Founding Crew #${String(n).padStart(3,'0')}">${ic('anchor','xs')}<i>${String(n).padStart(3,'0')}</i></span>`:''; }
 function obadge(uid){ return uid&&uid===Social.officialUid?`<span class="obadge" title="Official BOATS account" aria-label="Official BOATS account">${ic('check','xs')}</span>`:''; }
 function fbadge(uid){ if(uid&&uid===Social.officialUid) return obadge(uid); return founderNo(uid)?`<span class="anchorb" title="Founding Crew" aria-label="Founding Crew">${ic('anchor','xs')}</span>`:''; }
-function fgold(uid){ if(uid&&uid===Social.officialUid) return obadge(uid); const n=founderNo(uid); if(!n) return ''; const nn=String(n).padStart(3,'0'); return `<button class="fgold" data-a="founder-info" data-v="${n}" aria-label="Founding Crew member number ${nn}">${ic('anchor','xs')}<span>${nn}</span></button>`; }
+function fgold(uid){ if(uid&&uid===Social.officialUid) return obadge(uid); const n=memberNo(uid); if(!n) return ''; const nn=String(n).padStart(3,'0'); return `<button class="fgold ${n>100?'silver':''}" data-a="founder-info" data-v="${n}" aria-label="${n>100?'Early Crew':'Founding Crew'} member number ${nn}">${ic('anchor','xs')}<span>${nn}</span></button>`; }
 function founderNo(uid){ const n=((Social.founders||{})[uid]); return n>=1&&n<=100?n:0; }
+function memberNo(uid){ const n=((Social.founders||{})[uid]); return n>=1&&n<=999?n:0; }
 // Streak ring: fills toward the next milestone (7, 30, 100, 365 days); sized to sit beside the bio
 function streakRing(uid,n,lines){ const M=[0,7,30,100,365,730], i=M.findIndex(m=>m>n), next=i<0?n+365:M[i], prev=i<0?n:M[i-1], f=Math.max(.04,Math.min(1,(n-prev)/Math.max(1,next-prev)));
   const sz=Math.max(52,Math.min(72,44+lines*7)), r=sz/2-4, C=2*Math.PI*r;
@@ -3164,8 +3171,8 @@ async function buildPdf(){ const M=50, W=612, H=792; const pages=[[]]; let y=H-M
   return makePdf(pages); }
 function boatLoading(on,label){ let el=document.getElementById('boatload'); if(on){ if(!el){ el=document.createElement('div'); el.id='boatload'; document.body.appendChild(el); } el.setAttribute('role','status'); el.innerHTML=`<div class="bl"><span class="pboat">${ic('boat')}</span>${waveSvg()}<span class="small">${esc(label||'Uploading…')}</span></div>`; el.hidden=false; } else if(el) el.hidden=true; }
 function ptrEl(){ let el=document.getElementById('ptr'); if(!el){ el=document.createElement('div'); el.id='ptr'; el.innerHTML=`<span class="pboat">${ic('boat')}</span>${waveSvg()}`; document.body.appendChild(el); } return el; }
-document.addEventListener('touchstart',e=>{ if(S.route!=='app'||S.sheet||window.scrollY>0||e.target.closest('.sheet,.tabbar,.invitebar,.slides,.chips,.npthumbs')) return; PTR={x0:e.touches[0].clientX,y0:e.touches[0].clientY,dy:0,scr:document.querySelector('#app .screen')}; },{passive:true});
-document.addEventListener('touchmove',e=>{ if(!PTR) return; const dy=e.touches[0].clientY-PTR.y0, dx=e.touches[0].clientX-PTR.x0; if(!PTR.dy&&Math.abs(dx)>Math.abs(dy)){ PTR=null; return; } if(dy<=0||window.scrollY>0){ if(PTR.dy) { PTR.scr.style.transform=''; ptrEl().style.opacity=0; } PTR.dy=0; return; }
+document.addEventListener('touchstart',e=>{ if(S.route!=='app'||S.sheet||window.scrollY>2||e.target.closest('.sheet,.tabbar,.invitebar,.slides,.chips,.npthumbs')) return; PTR={x0:e.touches[0].clientX,y0:e.touches[0].clientY,dy:0,scr:document.querySelector('#app .screen')}; },{passive:true});
+document.addEventListener('touchmove',e=>{ if(!PTR) return; const dy=e.touches[0].clientY-PTR.y0, dx=e.touches[0].clientX-PTR.x0; if(!PTR.dy&&Math.abs(dx)>Math.abs(dy)){ PTR=null; return; } if(dy<=0||window.scrollY>2){ if(PTR.dy) { PTR.scr.style.transform=''; ptrEl().style.opacity=0; } PTR.dy=0; return; }
   const d=Math.min(110,dy*0.45); PTR.dy=d; PTR.scr=document.querySelector('#app .screen')||PTR.scr; PTR.scr.style.transition='none'; PTR.scr.style.transform=`translateY(${d}px)`; const el=ptrEl(); el.style.transition='none'; el.classList.remove('spin'); el.style.top=`calc(env(safe-area-inset-top,0px) + ${Math.max(4,d/2-20)}px)`; el.style.transform=`translate(-50%,0) rotate(${Math.sin(d/8)*8}deg)`; el.style.opacity=Math.max(0,Math.min(1,(d-44)/26)); if(e.cancelable) e.preventDefault(); },{passive:false});
 document.addEventListener('touchend',()=>{ if(!PTR) return; const {dy}=PTR; PTR=null; const scr=document.querySelector('#app .screen'); if(!scr) return; const el=ptrEl(); scr.style.transition='transform .35s cubic-bezier(.2,.8,.2,1)';
   if(dy>=60){ window.PTRHOLD=true; scr.style.transform='translateY(72px)'; el.style.transition='none'; el.style.transform='translate(-50%,0)'; el.style.top='calc(env(safe-area-inset-top,0px) + 14px)'; el.style.opacity=1; el.classList.add('spin');
@@ -3515,7 +3522,7 @@ const A = {
   'act-f'(v){ S.actF=v; render(); },
   'follow-back'(v,el){ if(!Pf.friends.includes(v)){ Pf.friends.push(v); Pf.followedAt={...(Pf.followedAt||{}),[v]:Date.now()}; } Store.save(); Social.publish(); if(el) el.outerHTML=`<button class="btn sm" style="width:auto;flex:none" data-a="person" data-v="${esc(v)}">Following</button>`; popCue(); },
   ranks(){ document.getElementById('ask').innerHTML=''; S.sheet={kind:'ranks'}; renderSheet(); },
-  'founder-info'(v){ const n=String(+v).padStart(3,'0'); infoBox('Founding Crew',`<div class="stack" style="gap:6px"><b class="ftag big">#${n}</b><span><b>Founding Crew · #${n} of 100</b></span><span class="muted small">One of the first 100 members to join BOATS.</span></div>`); },
+  'founder-info'(v){ const k=+v, n=String(k).padStart(3,'0'), early=k>100; infoBox(early?'Early Crew':'Founding Crew',`<div class="stack" style="gap:10px;align-items:center"><b class="fgold big ${early?'silver':''}">${ic('anchor','xs')}<span>${n}</span></b><span class="muted small">${early?'One of the first 1,000 members to join BOATS.':'One of the first 100 members to join BOATS.'}</span></div>`); },
   'streak-detail'(v,el){ const r=streakRank(v), c=cardOf(v), sN=v===Social.me()?streak():streakOf(c), top=+(el&&el.dataset.top)||5, nm=v===Social.me()?'Your':esc(Social.nameOf(v))+'’s';
     const ranks=[r.g&&r.g<=top?`<span class="tag accent">${ic('trophy','xs')}#${r.g} Global</span>`:'', r.c&&r.c<=top&&r.city?`<span class="tag accent">${ic('pin','xs')}#${r.c} in ${esc(r.city)}</span>`:''].join('');
     infoBox(`${sN}-day streak`,`<div class="stack" style="gap:10px;align-items:center"><span class="muted small">${nm} current streak: <b>${sN} day${sN===1?'':'s'}</b> of workouts that count.</span>${ranks?`<div class="rowx" style="gap:6px;justify-content:center;flex-wrap:wrap">${ranks}</div>`:''}<button class="btn" data-a="ranks">${ic('trophy','sm')}See the leaderboards</button></div>`); },

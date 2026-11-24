@@ -36,10 +36,10 @@ service cloud.firestore {
       allow create, update: if signedIn() && id.matches(request.auth.uid + '_.+') && small();
       allow delete: if signedIn() && (id.matches(request.auth.uid + '_.+') || isAdmin());
     }
-    // Founding Crew numbers 1-100. Each member can take exactly one number, only the next free one, in the same write that advances the counter.
+    // Member numbers 1-999 (1-100 are the Founding Crew). Each member can take exactly one number, only the next free one, in the same write that advances the counter.
     match /meta/founders {
       allow read: if true;   // the splash shows how many people are on BOATS before sign-in
-      allow update: if signedIn() && resource.data.next <= 100
+      allow update: if signedIn() && resource.data.next <= 999
         && request.resource.data.next == resource.data.next + 1
         && request.resource.data.keys().hasOnly(['next'])
         && getAfter(/databases/$(database)/documents/founders/$(request.auth.uid)).data.n == resource.data.next;
