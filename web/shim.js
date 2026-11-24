@@ -126,7 +126,7 @@ window.boatsClaimName = async (name, old) => {
 // Founding Crew: the first 100 members get a permanent number. meta/founders.next is the next free number;
 // it is created by the one-time backfill (tools/backfill-founders.mjs), so new members only claim once numbering exists.
 window.boatsClaimFounder = async () => {
-  const u = auth.currentUser; if(!u) return 0;
+  const u = auth.currentUser; if(!u) return 0; if(u.email === OFFICIAL_EMAIL) return 0;
   const mine = doc(fs, "founders", u.uid), meta = doc(fs, "meta", "founders");
   try {
     return await runTransaction(fs, async tx => {
@@ -139,6 +139,11 @@ window.boatsClaimFounder = async () => {
     });
   } catch(e) { return 0; }
 };
+// The official BOATS account (its address is public on the privacy page). It gets the "boats" username, an official badge and no Founding Crew number.
+const OFFICIAL_EMAIL = "boatsapplication@gmail.com";
+window.boatsOfficialMe = false;
+window.boatsOfficialReady = authReady.then(u => { const me = !!(u && u.email === OFFICIAL_EMAIL && u.emailVerified); window.boatsOfficialMe = me; if(me) setDoc(doc(fs, "meta", "official"), { uid: u.uid, at: Date.now() }).catch(() => {}); return me; });
+window.boatsWatchOfficial = cb => authReady.then(u => { if(!u) return; onSnapshot(doc(fs, "meta", "official"), s => cb(s.exists() ? s.data().uid : null), () => {}); });
 // Moderation: moderation/{uid} = {status:'suspended'|'deleted', until, reason} (owner writes, everyone signed in reads);
 // notices/{uid} = {items:[{at,text}]} pop-up messages from BOATS (owner writes, only that person reads).
 window.boatsMod = {

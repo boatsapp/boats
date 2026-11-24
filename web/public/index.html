@@ -903,6 +903,7 @@ body.chatopen{position:fixed;inset:0;width:100%;overflow:hidden}
 .fby{display:flex;align-items:center;gap:8px;margin-top:6px;background:none;border:0;padding:0;color:var(--muted);font:inherit;font-size:13px;text-align:left}.fby b{color:var(--fg)}.fbyav{display:flex}.fbyav .av{width:22px!important;height:22px!important;border:2px solid var(--bg);font-size:10px}.fbyav .av+.av{margin-left:-8px}
 .pinforow{display:flex;gap:0;align-items:flex-start}.pinforow .pinfo{flex:1 1 auto;min-width:0}.pinforow .sring{flex:none;width:var(--colw,33%);align-self:flex-start;margin-top:2px}
 .sring{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:0;color:var(--fg);font:inherit;min-width:72px}.srwrap{position:relative;display:block}.srwrap svg{display:block}.srin{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;color:var(--fg)}.srin svg{color:var(--streak);width:13px;height:13px}.srin b{font-family:var(--display);font-weight:900}.srl{font-size:11.5px;font-weight:700}.srs{font-size:10.5px;color:var(--muted)}
+.obadge{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--accent);color:#0E0E0D;flex:none;vertical-align:middle}.obadge svg{width:10px;height:10px;stroke-width:3.2}
 .pbtns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.pbtns.three{grid-template-columns:repeat(3,minmax(0,1fr))}.pbtn{height:36px;border-radius:10px;border:0;background:var(--surface-2);color:var(--fg);font:inherit;font-size:14px;font-weight:700}.pbtn.primary{background:var(--accent);color:#0E0E0D;font-weight:800}
 .pstats{flex:1;display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
 .pstats b{display:block;font-family:var(--display);font-size:20px;font-weight:700}
@@ -954,7 +955,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v141';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v142';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1312,6 +1313,7 @@ const Social = {
     Store.db.collection('posts').onSnapshot(s=>{ const m={}; s.docs.forEach(d=>{ const x=d.data(); if(x) m[d.id]=x; }); this.posts=m; refreshSocial(); },()=>{});
     Store.db.collection('dms').onSnapshot(s=>{ const m={}; s.docs.forEach(d=>{ const x=d.data(); if(x) m[d.id]=x; }); this.dms=m; refreshSocial(); },()=>{});
     try{ Store.db.collection('founders').onSnapshot(s=>{ const m={}; s.docs.forEach(d=>{ const x=d.data(); if(x&&x.n) m[d.id]=x.n; }); this.founders=m; refreshSocial(); },()=>{}); }catch(e){}
+    if(window.boatsWatchOfficial) window.boatsWatchOfficial(id=>{ this.officialUid=id; refreshSocial(); });
     if(window.boatsMod){ window.boatsMod.watchAll(m=>{ this.mod=m; if(modBlocked()||S.wasBlocked) { S.wasBlocked=modBlocked(); render(); } else refreshSocial(); }); window.boatsMod.watchNotices(items=>{ const seen=Pf.noticeSeen||0, fresh=items.filter(x=>x.at>seen); if(!fresh.length) return; Pf.noticeSeen=Math.max(...fresh.map(x=>x.at)); Store.save(); const n=fresh[fresh.length-1]; infoBox('Message from BOATS',`<span style="text-align:left;white-space:pre-line">${esc(n.text)}</span>`); try{ popCue(); }catch(_){} }); }
     Store.db.collection('reactions').onSnapshot(s=>{ const m={}; s.docs.forEach(d=>{ const x=d.data(); if(x) m[d.id]=x; }); this.reacts=m; refreshSocial(); },()=>{});
     Store.db.collection('library').onSnapshot(s=>{ LIB_EX=s.docs.map(d=>{const x=d.data()||{}; return {id:d.id,n:String(x.n||d.id),c:CATS[x.c]?x.c:'push',m:String(x.m||''),p:+x.p||50};}).filter(e=>e.c!=='all'); rebuildEx(); if(S.sheet&&S.sheet.kind==='picker'&&S.sheet.step==='list'){ const l=document.getElementById('plist'); if(l) l.innerHTML=pickerList(); } },()=>{});
@@ -1533,10 +1535,21 @@ function bodyFields(){
 const NAME_FUN=[[/^(god|jesus|jesuschrist|christ|yahweh|allah)$/,'Shoutout God, but you’re not him.'],[/^swaizy$/,'You’re not the founder smh.'],[/^(santa|santaclaus)$/,'Ho ho ho! Nice try.'],[/^(satan|devil|demon|lucifer)$/,'Hell nah.']];
 const NAME_SUB=['nigg','fuck','cunt','faggot','retard','tranny','whore','slut','rapist','pedophile','molest','hitler','porn','pussy','penis','vagina','jizz','horny','bitch','bastard','asshole','shithead','killyourself','suicide','wetback','raghead','towelhead'], NAME_EXACT=['fag','kike','spic','chink','gook','beaner','coon','dyke','rape','pedo','nazi','kkk','isis','dick','cock','boob','boobs','tits','anal','cum','sex','shit','fuk','kys','hoe'];
 const NAME_RESERVED=['admin','administrator','boats','boatsapp','official','support','moderator','mod','staff','help','team','security','root','system'];
+// One-time setup for the official BOATS account: username, name, bio, link and logo, no onboarding, no Founding Crew number
+async function setupOfficial(){ boatLoading(true,'Setting up the official BOATS account…');
+  try{ Pf.username='boats'; Pf.realName='BOATS'; Pf.bio='The official BOATS account 🚣\nBecause who else is going to carry them.'; Pf.link='carrytheboats.app/beta'; Pf.official=true; Pf.nameSkip=true;
+    Pf.show={...Pf.show,status:false,town:false,goal:false,height:false,weight:false}; Pf.shareSplit=false; for(const [d] of DAYS) Pf.split[d]='rest';
+    try{ const im=await loadImg('/icon-512.png'); const c=document.createElement('canvas'); c.width=c.height=320; c.getContext('2d').drawImage(im,0,0,320,320); Pf.photo=c.toDataURL('image/jpeg',.9); }catch(e){}
+    if(window.boatsClaimName){ const r=await window.boatsClaimName('boats',Pf.nameClaimed); if(r==='ok') Pf.nameClaimed='boats'; }
+    Pf.nameAt=0; Pf.onboarded=true; Store.save(true); Social.publish(); }
+  finally{ boatLoading(false); }
+  go('app',{tab:'me',meView:null}); savedNote('Official BOATS account ready'); }
 function nameNorm(u){ return String(u||'').toLowerCase().replace(/[0@4]/g,m=>({'0':'o','@':'a','4':'a'})[m]).replace(/[1!|]/g,'i').replace(/3/g,'e').replace(/[5$]/g,'s').replace(/7/g,'t').replace(/8/g,'b').replace(/[^a-z]/g,''); }
 function nameStrip(x){ let p; do{ p=x; x=x.replace(/^(the|real|im|iam|its|official|not)/,'').replace(/(official|real|irl|xo|og)$/,''); }while(x!==p&&x.length>2); return x; }
 function nameRule(u){ const n=nameNorm(u), plain=String(u||'').toLowerCase().replace(/[^a-z]/g,''), bare=nameStrip(n), pbare=nameStrip(plain);
   if(window.boatsAdmin&&/swaizy/.test(n)) return '';
+  if(/b+o+a+t/.test(n)||/b+o+a+t/.test(plain)) return window.boatsOfficialMe&&/^boats?$/.test(plain)?'':'Names with “boat” are reserved for the official BOATS account.';
+  if(window.boatsOfficialMe&&/^boats$/.test(plain)) return '';
   for(const [re,msg] of NAME_FUN) if([n,bare,plain,pbare].some(x=>re.test(x))) return msg;
   if([n,bare,plain,pbare].some(x=>NAME_RESERVED.includes(x))) return 'That name is reserved. Try another.';
   if(NAME_SUB.some(w=>n.includes(w)||plain.includes(w))||NAME_EXACT.some(w=>[n,bare,plain,pbare].includes(w))) return 'That username isn’t allowed. Try another.';
@@ -1677,8 +1690,8 @@ function weighCard(){ const last=Pf.bwLog[Pf.bwLog.length-1], today=last&&sameDa
     ${today&&!S.bwEdit?`<span style="color:var(--good);display:inline-flex">${ic('check','sm')}</span><div style="flex:1;min-width:0"><b>${fmtN(last.w)} ${Pf.unit}</b> <span class="muted small">logged today</span></div><button class="link small" data-a="bw-edit">Update</button>`
     :`<div style="flex:1;min-width:0"><div class="inwrap"><input class="input num" id="bw-today" inputmode="decimal" placeholder="Weigh-in${last?' (last '+fmtN(last.w)+')':''}" style="height:44px"><span class="suf">${Pf.unit}</span></div></div><button class="btn sm primary" style="width:auto;flex:none;height:44px" data-a="bw-today">Log</button>`}</section>`; }
 function nameAsk(){ return S.nameTaken?`<section class="card stack" style="gap:8px;border-color:var(--bad)"><b>@${esc(Pf.username)} belongs to someone else</b><span class="muted small">Two accounts ended up with the same username. Pick a new one so friends can find you.</span><button class="btn primary" data-a="edit-profile">Change username</button></section>`:''; }
-function realNameAsk(){ return Pf.onboarded&&!Pf.nameSkip&&!String(Pf.realName||'').trim()?`<section class="card stack" style="gap:8px"><b>Add your name</b><span class="muted small">Your name shows small under your username so friends can search for you.</span><button class="btn" data-a="edit-profile">Add my name</button></section>`:''; }
-function sexAsk(){ return Pf.onboarded&&!Pf.sex?`<section class="card stack" style="gap:10px"><b>One quick thing</b><span class="muted small">Boats uses sex to provide the most accurate information on calories. This is never shown on your profile.</span>${seg('sex','',{male:'Male',female:'Female'})}</section>`:''; }
+function realNameAsk(){ return Pf.onboarded&&!Pf.official&&!Pf.nameSkip&&!String(Pf.realName||'').trim()?`<section class="card stack" style="gap:8px"><b>Add your name</b><span class="muted small">Your name shows small under your username so friends can search for you.</span><button class="btn" data-a="edit-profile">Add my name</button></section>`:''; }
+function sexAsk(){ return Pf.onboarded&&!Pf.sex&&!Pf.official?`<section class="card stack" style="gap:10px"><b>One quick thing</b><span class="muted small">Boats uses sex to provide the most accurate information on calories. This is never shown on your profile.</span>${seg('sex','',{male:'Male',female:'Female'})}</section>`:''; }
 function vChecklist(){
   const tk=dayKey(new Date()), items=Pf.checklist.filter(c=>!c.days||c.days.includes(tk)); const tags=targetTags();
   if(!items.length&&!tags.length) return `<section class="card stack clsec" style="gap:2px">
@@ -2097,12 +2110,12 @@ function buildFeed(){ const me=Social.me(), now=Date.now(), fol=new Set(Pf.frien
   const cmp=(a,b)=>b.sc-a.sc||b.p.at-a.p.at||(a.k<b.k?-1:1), used=new Set(), first=[], per={};
   const take=x=>{ used.add(x.k); first.push(x); per[x.id]=(per[x.id]||0)+1; };
   const pin=S.pinNow&&pool.find(x=>x.id===me&&x.p.id===S.pinNow); if(pin) take(pin);
+  // 0) posts the BOATS owner (Founding Crew #001) pinned: first in everyone's feed until they've seen them
+  const owner=Object.keys(Social.founders||{}).find(k=>Social.founders[k]===1), ownerPins=owner&&owner!==me?(((Social.people||{})[owner]||{}).pins||[]):[];
+  for(const id of ownerPins){ const x=pool.find(y=>y.id===owner&&y.p.id===id); if(x&&!used.has(x.k)&&!x.seen&&!seen.has(x.k)) take(x); }
   // 1) up to 2 recent posts from different people you follow
   const known=pool.filter(x=>x.id!==me&&fol.has(x.id)&&!x.seen).sort((a,b)=>b.p.at-a.p.at); const auth=new Set();
   for(const x of known){ if(first.length>=2) break; if(auth.has(x.id)||used.has(x.k)) continue; auth.add(x.id); take(x); }
-  // 1b) posts the BOATS owner (Founding Crew #001) pinned: right after new posts from people you follow, until you've seen them
-  const owner=Object.keys(Social.founders||{}).find(k=>Social.founders[k]===1), ownerPins=owner&&owner!==me?(((Social.people||{})[owner]||{}).pins||[]):[];
-  for(const id of ownerPins){ const x=pool.find(y=>y.id===owner&&y.p.id===id); if(x&&!used.has(x.k)&&!x.seen&&!seen.has(x.k)) take(x); }
   // 2) public highlights from the last 7 days: most likes, then most unique commenters
   const wk=pool.filter(x=>!used.has(x.k)&&!x.seen&&now-x.p.at<7*864e5);
   const topL=wk.filter(x=>x.likes>0).sort((a,b)=>b.likes-a.likes||b.p.at-a.p.at)[0]; if(topL) take(topL);
@@ -2320,7 +2333,8 @@ function vPeopleList(){ const {uid,tab}=S.plist, me=Social.me(), ok=id=>id===me|
   </div>${tabbar()}`; }
 function followersOf(uid){ const me=Social.me(); return Object.entries(Social.people||{}).filter(([id,c])=>id!==uid&&id!==me&&c&&Array.isArray(c.following)&&c.following.includes(uid)).length+(uid!==me&&(Pf.friends||[]).includes(uid)?1:0); }
 function fbadgeN(uid){ const n=founderNo(uid); return n?`<span class="anchorb withn" title="Founding Crew #${String(n).padStart(3,'0')}">${ic('anchor','xs')}<i>${String(n).padStart(3,'0')}</i></span>`:''; }
-function fbadge(uid){ return founderNo(uid)?`<span class="anchorb" title="Founding Crew" aria-label="Founding Crew">${ic('anchor','xs')}</span>`:''; }
+function obadge(uid){ return uid&&uid===Social.officialUid?`<span class="obadge" title="Official BOATS account" aria-label="Official BOATS account">${ic('check','xs')}</span>`:''; }
+function fbadge(uid){ if(uid&&uid===Social.officialUid) return obadge(uid); return founderNo(uid)?`<span class="anchorb" title="Founding Crew" aria-label="Founding Crew">${ic('anchor','xs')}</span>`:''; }
 function founderNo(uid){ const n=((Social.founders||{})[uid]); return n>=1&&n<=100?n:0; }
 // Streak ring: fills toward the next milestone (7, 30, 100, 365 days); sized to sit beside the bio
 function streakRing(uid,n,lines){ const M=[0,7,30,100,365,730], i=M.findIndex(m=>m>n), next=i<0?n+365:M[i], prev=i<0?n:M[i-1], f=Math.max(.04,Math.min(1,(n-prev)/Math.max(1,next-prev)));
@@ -2367,7 +2381,7 @@ function vPosts(){ const uid=S.postsOf, ps=(((Social.posts[uid]||{}).items)||[])
   </div>${tabbar()}`; }
 function vPerson(){ const id=S.personId, p=Social.people[id];
   return `<div class="screen">
-    <div class="rowx phead phead2" style="margin:-4px -4px -6px -8px"><button class="iconbtn" data-a="person-back" aria-label="Back">${ic('back')}</button><b class="ptop" style="font-size:20px">${esc((p&&p.username)||'')}</b>${p&&!blockedWith(id)?fbadge(id)+(founderNo(id)?`<button class="ftag" data-a="founder-info" data-v="${founderNo(id)}" aria-label="Founding Crew member number ${founderNo(id)}">#${String(founderNo(id)).padStart(3,'0')}</button>`:''):''}<span class="spacer"></span>${p?`<button class="iconbtn" data-a="user-more" data-v="${esc(id)}" aria-label="More options">${ic('more','sm')}</button>`:''}</div>
+    <div class="rowx phead phead2" style="margin:-4px -4px -6px -8px"><button class="iconbtn" data-a="person-back" aria-label="Back">${ic('back')}</button><b class="ptop" style="font-size:20px">${esc((p&&p.username)||'')}</b>${p&&!blockedWith(id)?fbadge(id)+(founderNo(id)?`<button class="ftag" data-a="founder-info" data-v="${founderNo(id)}" aria-label="Founding Crew member number ${founderNo(id)}">#${String(founderNo(id)).padStart(3,'0')}</button>`:''):''}<span class="spacer"></span>${p&&!blockedWith(id)?`<button class="iconbtn" data-a="share-profile" data-v="${esc(id)}" aria-label="Share ${esc(p.username||'')}’s profile">${ic('share','sm')}</button>`:''}${p?`<button class="iconbtn" data-a="user-more" data-v="${esc(id)}" aria-label="More options">${ic('more','sm')}</button>`:''}</div>
     ${(Pf.blocked||[]).includes(id)?`<div class="card stack" style="gap:10px;text-align:center"><b>You blocked ${esc((p&&p.username)||'this person')}</b><span class="muted small">You won’t see their posts, comments or messages, and they can’t see yours.</span><button class="btn" data-a="unblock" data-v="${esc(id)}">Unblock</button></div>`
       :blockedWith(id)||!p?`<div class="card muted">This profile isn’t available.</div>`:profileBlock(id,p,false)}
     ${window.boatsAdmin&&Pf.modMode&&p?`<div class="card stack modbox" style="gap:8px"><span class="eyebrow">Moderator · only you see this</span><div class="rowx" style="gap:8px"><button class="btn sm" style="flex:1" data-a="mod-workouts" data-v="${esc(id)}">${ic('lock','xs')}Saved workouts</button><button class="btn sm" style="flex:1" data-a="mod-dms" data-v="${esc(id)}">${ic('chat','xs')}Messages</button></div></div>`:''}
@@ -2660,6 +2674,7 @@ function vSheet(){
   if(sh.kind==='pmore'||sh.kind==='umore'){ const u=sh.uid, n=esc(Social.nameOf(u)), bl=(Pf.blocked||[]).includes(u), mu=isMuted(u);
     return wrap(`<span class="h2" style="flex:1">${sh.kind==='pmore'?'Post options':'@'+n}</span>`,`<div class="list">
       <button class="li" data-a="user-mute" data-v="${esc(u)}"><span class="ico">${ic('eye','sm')}</span><span class="grow"><span class="t">${mu?'Show':'Hide'} @${n}’s posts</span><br><span class="s">${mu?'Their posts come back to your feed':'You stay following. They aren’t told.'}</span></span></button>
+      <button class="li" data-a="share-profile" data-v="${esc(u)}"><span class="ico">${ic('share','sm')}</span><span class="grow"><span class="t">Share @${n}’s profile</span></span></button>
       <button class="li" data-a="report-open" data-v="${esc(u)}|${esc(sh.key||'')}"><span class="ico" style="color:var(--bad)">${ic('bolt','sm')}</span><span class="grow"><span class="t" style="color:var(--bad)">Report ${sh.kind==='pmore'?'post':'@'+n}</span><br><span class="s">Sent privately to the BOATS team</span></span></button>
       ${window.boatsAdmin&&(Pf.modMode||S.viaAdmin)?`<span class="flabel" style="margin:8px 0 0 4px">Admin${modOf(u)?` · ${modOf(u).status==='deleted'?'removed':'suspended'+(modOf(u).until?' until '+shortDate(modOf(u).until):'')}`:''}</span>
         <button class="li" data-a="adm-msg" data-v="${esc(u)}"><span class="ico">${ic('chat','sm')}</span><span class="grow"><span class="t">Send pop-up message</span><br><span class="s">Shows as “Message from BOATS” next time they open the app</span></span></button>
@@ -3246,8 +3261,8 @@ const A = {
   soon(v){ toast(`${v} sign-in isn't ready yet. Use Google for now.`); },
   'g-in'(el){ if(!window.boatsSignIn) return; S.signing=true; render(); window.boatsSignIn('google').finally(()=>{ S.signing=false; render(); }); },
   login(){ if(!S.ready){ S.waiting='login'; render(); return; } const a=Store.accounts(); if(!a.length) return A['new-acct'](); if(a.length===1) return A['pick-acct'](a[0].id); S.picker=true; render(); },
-  'new-acct'(){ if(!S.ready){ S.waiting='new'; render(); return; } Store.create(); Social.publish(); go('onboard',{ob:0}); },
-  'pick-acct'(v){ Store.use(v); Social.last=''; Social.publish(); if(Pf.onboarded) go(liveWorkout()?'session':'app',{tab:homeTab(),pick:null,planDay:null}); else go('onboard',{ob:0}); },
+  async 'new-acct'(){ if(!S.ready){ S.waiting='new'; render(); return; } Store.create(); if(window.boatsOfficialReady&&await window.boatsOfficialReady){ await setupOfficial(); return; } Social.publish(); go('onboard',{ob:0}); },
+  async 'pick-acct'(v){ Store.use(v); Social.last=''; if(!Pf.onboarded&&window.boatsOfficialReady&&await window.boatsOfficialReady){ await setupOfficial(); return; } Social.publish(); if(Pf.onboarded) go(liveWorkout()?'session':'app',{tab:homeTab(),pick:null,planDay:null}); else go('onboard',{ob:0}); },
   splash(){ S.sheet=null; S.picker=true; go('splash'); },
   unit(v){ Pf.unit=v; Store.save(); render(); },
   sex(v){ Pf.sex=v; document.getElementById('f-sex')?.classList.remove('bad'); Store.save(); render(); },
@@ -3445,7 +3460,7 @@ const A = {
   dev(){ S.sheet={kind:'dev'}; renderSheet(); },
   'dev-go'(v){ previewLoad(v); },
   'edit-profile'(){ navPush(); S.nameOpen=Pf.username; S.draft={username:Pf.username||'',realName:Pf.realName||'',town:Pf.town||'',bio:Pf.bio||'',link:Pf.link||''}; S.meView='edit'; S.tab='me'; S.route='app'; S.sheet=null; window.scrollTo(0,0); render(); },
-  async 'share-profile'(){ const url=APP_URL.replace(/\/?$/,'/')+'?u='+encodeURIComponent(Social.me()), text='Follow '+(Pf.username||'me')+' on BOATS. See when I’m hitting the gym today!'; try{ if(navigator.share){ await navigator.share({title:'BOATS',text,url}); return; } }catch(e){ if(e&&e.name==='AbortError') return; } try{ await navigator.clipboard.writeText(url); savedNote('Profile link copied'); }catch(e){ toast('Could not share right now.'); } },
+  async 'share-profile'(v){ const uid=v||Social.me(), mine=uid===Social.me(), url=APP_URL.replace(/\/?$/,'/')+'?u='+encodeURIComponent(uid), text=mine?'Follow '+(Pf.username||'me')+' on BOATS. See when I’m hitting the gym today!':'Follow '+Social.nameOf(uid)+' on BOATS. See when they’re hitting the gym today!'; try{ if(navigator.share){ await navigator.share({title:'BOATS',text,url}); return; } }catch(e){ if(e&&e.name==='AbortError') return; } try{ await navigator.clipboard.writeText(url); savedNote('Profile link copied'); }catch(e){ toast('Could not share right now.'); } },
   ptagged(v){ S.ptabT=v||null; render(); },
   settings(){ S.draft=null; S.meView='settings'; S.tab='me'; S.route='app'; S.sheet=null; window.scrollTo(0,0); render(); },
   'my-friends'(v){ S.flTab=v||'following'; S.fq=''; S.meView='friends'; S.tab='me'; S.route='app'; window.scrollTo(0,0); render(); },

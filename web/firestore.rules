@@ -44,6 +44,11 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['next'])
         && getAfter(/databases/$(database)/documents/founders/$(request.auth.uid)).data.n == resource.data.next;
     }
+    // The official BOATS account records its own id here so the app can show its badge.
+    match /meta/official {
+      allow read: if signedIn();
+      allow write: if signedIn() && request.auth.token.email == 'boatsapplication@gmail.com' && request.auth.token.email_verified == true;
+    }
     match /founders/{uid} {
       allow read: if signedIn();
       allow create: if isMe(uid) && request.resource.data.n is int
@@ -60,7 +65,8 @@ service cloud.firestore {
     // Usernames: first come, first served; only the holder can release one.
     match /usernames/{name} {
       allow get: if signedIn();
-      allow create: if signedIn() && request.resource.data.uid == request.auth.uid && name.size() <= 20 && name == name.lower();
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid && name.size() <= 20 && name == name.lower()
+        && (!name.matches('.*b+[o0]+[a4]+t.*') || request.auth.token.email == 'boatsapplication@gmail.com');
       allow delete: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
     }
     // Exercise library: read-only for the app; edit in the console.
