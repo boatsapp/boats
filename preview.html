@@ -294,7 +294,7 @@ body.locked{position:fixed;left:0;right:0;overflow:hidden}
 .cm2.sub{padding-left:48px}
 .cm2av{border:0;background:none;padding:0;flex:none}.cm2av .av{width:36px;height:36px;font-size:14px}.cm2.sub .cm2av .av{width:30px;height:30px}
 .cm2b{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-.cm2h{display:flex;align-items:center;flex-wrap:wrap;gap:5px;font-size:13.5px}.cm2h .link{padding:0;color:var(--fg)}.cm2h svg{width:11px;height:11px;fill:currentColor;vertical-align:-1px}
+.cm2h{display:flex;align-items:center;flex-wrap:wrap;gap:5px;font-size:13.5px}.cm2h .link{padding:0;color:var(--fg)}.cm2h svg{width:11px;height:11px;fill:currentColor;vertical-align:-1px}.cm2h .anchorb svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.6;vertical-align:middle}
 .cm2t{font-size:15px;line-height:1.35;overflow-wrap:anywhere}.cm2t .link.mention{color:var(--accent);font-weight:500;padding:0}
 .cm2m{display:flex;gap:14px}.cm2m .link{padding:0;font-size:13px;color:var(--muted);font-weight:600}
 .cm2heart{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;color:var(--muted);font-size:12px;padding:4px 2px}
@@ -921,6 +921,9 @@ body.barmini .fhead3{transform:translateY(-100%)}
 .card.streak.quiet .flame{background:color-mix(in srgb,var(--streak,#FF6A2E) 14%,transparent)!important;color:var(--streak,#FF6A2E)!important}
 .card.streak.quiet .h2{font-size:15px!important}.card.streak.quiet .muted,.card.streak.quiet .small{color:var(--muted)!important;opacity:1!important}
 .card.streak.quiet svg:last-child{color:var(--muted)}
+.finedit{padding:0;color:var(--accent);font-weight:700}
+.fwex{display:flex;flex-direction:column;gap:8px;padding:8px 0;border-top:1px solid color-mix(in srgb,var(--line) 60%,transparent)}.fwex:first-of-type{border-top:0}
+.fwsets{display:flex;flex-direction:column;gap:6px}.fwset{display:grid;grid-template-columns:52px 1fr auto;align-items:center;gap:10px}.fwset .inwrap{min-width:0}.fwset .input{height:40px}
 .fgold.silver{background:linear-gradient(135deg,#F2F4F6,#A9B0B8);color:#15181b;box-shadow:0 0 14px rgba(210,218,226,.4),inset 0 1px 0 rgba(255,255,255,.6)}
 .fgold.big{height:38px;padding:0 16px 0 13px;font-size:18px;gap:6px;margin:0}.fgold.big svg{width:18px;height:18px}
 .obadge{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--accent);color:#0E0E0D;flex:none;vertical-align:middle}.obadge svg{width:10px;height:10px;stroke-width:3.2}
@@ -982,7 +985,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v155';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v156';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1380,7 +1383,9 @@ const Social = {
   photoOf(uid){ if(uid===this.me()) return Pf.photo; const p=this.people[uid]; return (p&&p.photo)||''; },
 };
 function patchLikes(key){ const n=Social.likes(key), on=Social.liked(key);
-  document.querySelectorAll(`.pact[data-a="post-like"][data-v="${CSS.escape(key)}"]`).forEach(b=>{ b.classList.toggle('liked',on); b.setAttribute('aria-pressed',on); const sp=b.querySelector('span'); if(n){ if(sp) sp.textContent=fmtN(n); else b.insertAdjacentHTML('beforeend',`<span class="num">${fmtN(n)}</span>`); } else if(sp) sp.remove(); });
+  document.querySelectorAll(`.pact[data-a="post-like"][data-v="${CSS.escape(key)}"]`).forEach(b=>{ b.classList.toggle('liked',on); b.setAttribute('aria-pressed',on); b.setAttribute('aria-label',on?'Unlike':'Like'); b.querySelectorAll('span.num').forEach(x=>x.remove());
+    const nx=b.nextElementSibling, cnt=nx&&nx.classList.contains('pcount')?nx:null;
+    if(n){ if(cnt){ const sp=cnt.querySelector('.num'); if(sp) sp.textContent=fmtK(n); } else b.insertAdjacentHTML('afterend',`<button class="pact pcount" data-a="likers-open" data-v="${esc(key)}" aria-label="See who liked this"><span class="num">${fmtK(n)}</span></button>`); } else if(cnt) cnt.remove(); });
   document.querySelectorAll(`article[data-key="${CSS.escape(key)}"] .likedline`).forEach(el=>{ el.outerHTML=likedLine(key)||'<div class="likedline"></div>'; }); }
 let SEENIO=null;
 function watchSeen(){ if(!('IntersectionObserver' in window)) return; if(!SEENIO) SEENIO=new IntersectionObserver(es=>{ let ch=false; es.forEach(e=>{ if(e.isIntersecting&&e.intersectionRatio>=.5){ const k=e.target.dataset.key; if(k&&!(Pf.seenPosts||[]).includes(k)){ Pf.seenPosts=[...(Pf.seenPosts||[]),k].slice(-400); ch=true; } SEENIO.unobserve(e.target); } }); if(ch){ clearTimeout(watchSeen.t); watchSeen.t=setTimeout(()=>Store.save(),2000); } },{threshold:.5});
@@ -1759,9 +1764,10 @@ function vToday(){
         ${plan.length?'':`<div class="muted small">${type==='rest'?'Recovery day. You can still log a session.':'No exercises yet.'} <button class="link" data-a="edit-day" data-v="${dk}">Add exercises</button></div>`}
         ${dk!==tk?`<button class="link" style="align-self:center" data-a="pick" data-v="${tk}">Back to today's plan (${esc(workoutLabel(tk))})</button>`:''}`}
     </section>
-    ${nameAsk()}${sexAsk()}${weighCard()}
+    ${nameAsk()}${sexAsk()}
     ${vProgramCard()}
     ${vChecklist()}
+    ${weighCard()}
     ${a?'':`<div class="beginbar"><button class="btn primary" data-a="start-at" data-v="0">${ic('play','sm')}${plan.length?'Begin workout':'Begin empty workout'}</button></div>`}
   </div>${tabbar()}`;
 }
@@ -2297,6 +2303,8 @@ document.addEventListener('pointerdown',e=>{ const cv=e.target.closest('#avcv');
 document.addEventListener('pointermove',e=>{ if(!AVD) return; const sh=S.sheet, g=avRegion(AVIMG,sh), k=g.s/AVD.cv.getBoundingClientRect().width, ox=AVIMG.width-g.s, oy=AVIMG.height-g.s, cl=v=>Math.max(0,Math.min(1,v));
   if(ox>1) sh.x=cl(AVD.cx-(e.clientX-AVD.x)*k/ox); if(oy>1) sh.y=cl(AVD.cy-(e.clientY-AVD.y)*k/oy); avDraw(); });
 ['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,()=>{ AVD=null; }));
+document.addEventListener('input',e=>{ const fw=e.target.dataset&&e.target.dataset.fw; if(fw&&Pf.active){ const [i,j]=fw.split(':').map(Number), st=Pf.active.items[i]&&Pf.active.items[i].sets[j]; if(st){ st.w=String(e.target.value.replace(/[^0-9.]/g,'').slice(0,6)||'0'); delete st.w0; Store.save(); } } });
+document.addEventListener('change',e=>{ if(e.target.dataset&&e.target.dataset.fw&&S.sheet&&S.sheet.kind==='finish'){ readTitle(); renderSheet(); } });
 document.addEventListener('input',e=>{ if(e.target.id==='av-zoom'&&S.sheet&&S.sheet.kind==='avcrop'){ S.sheet.z=+e.target.value; avDraw(); } });
 function findSuggestions(){ const me=Social.me(), fol=new Set(Pf.friends||[]), out=[];
   for(const [id,c] of Object.entries(Social.people||{})){ if(id===me||fol.has(id)||!c||!c.username||blockedWith(id)) continue;
@@ -2788,8 +2796,8 @@ function vSheet(){
     const sc=streakCheck(a,elapsed(a)), lv=(LEVELS[Pf.level]||'Beginner')+' minimum';
     return wrap(`<div class="rowx"><span class="h2" style="flex:1">End workout</span><button class="sbadge ${sc.ok?'on':''}" data-a="streak-info" aria-label="${sc.ok?'Counts toward your streak':'Does not count toward your streak yet'}. Tap for details">${ic('flame','sm')}${sc.ok?'Counts':'Doesn’t count'}</button></div>`,
       `<div class="stats"><div class="stat"><div class="k">Time</div><div class="v num">${fmtDur(elapsed(a))}</div></div><div class="stat"><div class="k">Sets</div><div class="v num">${marked.filter((_,k)=>true).length}</div></div><div class="stat"><div class="k">Volume</div><div class="v num" style="white-space:nowrap">${fmtBig(v)}</div></div></div>
-        <div class="card stack" style="gap:6px"><div class="rowx"><span class="h2" style="font-size:16px">Overview</span><span class="spacer"></span><span class="tag accent num">~${workoutKcal(a,Date.now())} kcal</span></div>
-          ${a.items.filter(it=>it.sets.some(s=>s.st)).map(it=>{ const d=it.sets.filter(s=>s.st), ok=d.filter(s=>s.st==='ok').length; return `<div class="exline" style="padding:6px 0"><span>${esc(exOf(it.exId).n)}${it.hurt?` <span style="color:var(--bad)">${ic('bandage','xs')}</span>`:''}</span><span class="r num">${it.cardio?`${esc(d[0].w)} min · ~${it.kcal||0} kcal`:setDots(d)}</span></div>`; }).join('')||'<span class="muted small">Nothing logged yet.</span>'}
+        <div class="card stack" style="gap:6px"><div class="rowx" style="gap:8px"><span class="h2" style="font-size:16px">Overview</span><span class="spacer"></span><span class="tag accent num">~${workoutKcal(a,Date.now())} kcal</span>${a.items.some(it=>!it.cardio&&it.sets.some(s=>s.st))?`<button class="link small finedit" data-a="fin-editw">${sh.editW?'Done':'Edit weights'}</button>`:''}</div>
+          ${sh.editW?finWeights(a):a.items.filter(it=>it.sets.some(s=>s.st)).map(it=>{ const d=it.sets.filter(s=>s.st), ok=d.filter(s=>s.st==='ok').length; return `<div class="exline" style="padding:6px 0"><span>${esc(exOf(it.exId).n)}${it.hurt?` <span style="color:var(--bad)">${ic('bandage','xs')}</span>`:''}</span><span class="r num">${it.cardio?`${esc(d[0].w)} min · ~${it.kcal||0} kcal`:setDots(d)}</span></div>`; }).join('')||'<span class="muted small">Nothing logged yet.</span>'}
           <span class="muted small">Calories are estimates.</span></div>
         ${sh.pump?`<div class="stack" style="gap:10px"><div class="rowx"><span class="h2" style="font-size:18px;flex:1">Share workout</span><button class="link small" data-a="pump-clear">Remove picture</button></div>
           <div class="ovstage photo"><canvas id="ovc" width="1080" height="1920" aria-label="Story preview"></canvas></div>
@@ -3054,7 +3062,7 @@ function render(){ if(document.body.classList.contains('swipeback')){ render._pe
   const c2=document.getElementById('car');
   if(c2){ c2.scrollLeft = sl!=null ? sl : (Pf.active.idx||0)*(c2.querySelector('.ex-card').offsetWidth+10); c2.addEventListener('scroll',onCarScroll,{passive:true}); }
   window.scrollTo(0,wy);
-  if(window.PTRHOLD){ const s2=app.querySelector('.screen'); if(s2){ s2.style.transition='none'; s2.style.transform='translateY(72px)'; } }
+  if(window.PTRHOLD){ const s2=app.querySelector('.screen'); if(s2){ s2.style.transition='none'; s2.style.transform='translateY(84px)'; } }
   if(S.route!=='splash') app.insertAdjacentHTML('beforeend',`<button class="fbk ${S.route==='app'||S.route==='session'?'intab':''} ${S.route==='session'?'insess':''} ${S.fview==='chat'&&S.tab==='friends'?'inchat':''}" data-a="feedback" aria-label="Send beta feedback">${ic('chat','sm')}<span>Feedback</span></button>`);
   if(PREVIEW) app.insertAdjacentHTML('beforeend',devPanel());
   renderSheet();
@@ -3150,12 +3158,12 @@ function boatLoading(on,label){ let el=document.getElementById('boatload'); if(o
 function ptrEl(){ let el=document.getElementById('ptr'); if(!el){ el=document.createElement('div'); el.id='ptr'; el.innerHTML=`<span class="pboat">${ic('boat')}</span>${waveSvg()}`; document.body.appendChild(el); } return el; }
 document.addEventListener('touchstart',e=>{ if(S.route!=='app'||S.sheet||window.scrollY>2||e.target.closest('.sheet,.tabbar,.invitebar,.slides,.chips,.npthumbs')) return; PTR={x0:e.touches[0].clientX,y0:e.touches[0].clientY,dy:0,scr:document.querySelector('#app .screen')}; },{passive:true});
 document.addEventListener('touchmove',e=>{ if(!PTR) return; const dy=e.touches[0].clientY-PTR.y0, dx=e.touches[0].clientX-PTR.x0; if(!PTR.dy&&Math.abs(dx)>Math.abs(dy)){ PTR=null; return; } if(dy<=0||window.scrollY>2){ if(PTR.dy) { PTR.scr.style.transform=''; ptrEl().style.opacity=0; } PTR.dy=0; return; }
-  const d=Math.min(110,dy*0.45); PTR.dy=d; PTR.scr=document.querySelector('#app .screen')||PTR.scr; PTR.scr.style.transition='none'; PTR.scr.style.transform=`translateY(${d}px)`; const el=ptrEl(); el.style.transition='none'; el.classList.remove('spin'); el.style.top=`calc(env(safe-area-inset-top,0px) + ${Math.max(4,d/2-20)}px)`; el.style.transform=`translate(-50%,0) rotate(${Math.sin(d/8)*8}deg)`; el.style.opacity=Math.max(0,Math.min(1,(d-44)/26)); if(e.cancelable) e.preventDefault(); },{passive:false});
+  const d=Math.min(110,dy*0.45); PTR.dy=d; PTR.scr=document.querySelector('#app .screen')||PTR.scr; PTR.scr.style.transition='none'; PTR.scr.style.transform=`translateY(${d}px)`; const el=ptrEl(); el.style.transition='none'; el.classList.remove('spin'); el.style.top=`calc(env(safe-area-inset-top,0px) + ${Math.max(4,d/2-20)}px)`; el.style.transform=`translate(-50%,0) rotate(${Math.sin(d/8)*8}deg)`; el.style.opacity=Math.max(0,Math.min(1,(d-56)/24)); if(e.cancelable) e.preventDefault(); },{passive:false});
 document.addEventListener('touchend',()=>{ if(!PTR) return; const {dy}=PTR; PTR=null; const scr=document.querySelector('#app .screen'); if(!scr) return; const el=ptrEl(); scr.style.transition='transform .35s cubic-bezier(.2,.8,.2,1)';
-  if(dy>=60){ window.PTRHOLD=true; scr.style.transform='translateY(72px)'; el.style.transition='none'; el.style.transform='translate(-50%,0)'; el.style.top='calc(env(safe-area-inset-top,0px) + 14px)'; el.style.opacity=1; el.classList.add('spin');
+  if(dy>=60){ window.PTRHOLD=true; scr.style.transform='translateY(84px)'; el.style.transition='none'; el.style.transform='translate(-50%,0)'; el.style.top='calc(env(safe-area-inset-top,0px) + 14px)'; el.style.opacity=1; el.classList.add('spin');
     S.feedSeed=Date.now(); S.feedN=10;
     Promise.resolve(typeof refreshSocial==='function'&&refreshSocial()).catch(()=>{}).finally(()=>setTimeout(()=>{ el.style.transition='opacity .15s'; el.style.opacity=0;
-      setTimeout(()=>{ el.classList.remove('spin'); window.PTRHOLD=false; render(); const s2=document.querySelector('#app .screen'); if(s2){ s2.style.transition='none'; s2.style.transform='translateY(72px)'; s2.offsetHeight; s2.style.transition='transform .35s cubic-bezier(.2,.8,.2,1)'; s2.style.transform=''; } },160); },900)); }
+      setTimeout(()=>{ el.classList.remove('spin'); window.PTRHOLD=false; render(); const s2=document.querySelector('#app .screen'); if(s2){ s2.style.transition='none'; s2.style.transform='translateY(84px)'; s2.offsetHeight; s2.style.transition='transform .35s cubic-bezier(.2,.8,.2,1)'; s2.style.transform=''; } },160); },900)); }
   else { el.style.transition='opacity .08s'; el.style.opacity=0; scr.style.transform=''; } },{passive:true});
 // feed photos: double tap to like, press and hold to see the stats
 let DT={t:0,k:''}, PH=null;
@@ -3279,14 +3287,24 @@ function workoutKcal(a,end){ const mins=(a.activeMs!=null?a.activeMs:elapsed(a,e
 async function saveWorkoutNow(){
     const storyDone=!!(S.sheet&&S.sheet.storyDone); 
     const a=Pf.active, title=((S.sheet&&S.sheet.title)||'Workout').trim(), pump=(S.sheet&&S.sheet.pump)||'', caption=((document.getElementById('f-cap')||{}).value||'').trim(), share=S.sheet&&S.sheet.share&&!Social.postedToday()&&!!((S.sheet&&S.sheet.pump)||'');
-    const w=workoutFrom(a,{title,pump}); if(caption) w.caption=caption;
-    const postPhoto=share&&pump&&S.sheet&&S.sheet.tone!=='none'?await portraitWithOverlay(pump):null;
+    const w=workoutFrom(a,{title,pump}); if(caption) w.caption=caption; const tone=S.sheet&&S.sheet.tone;
+    S.sheet=null; renderSheet(); boatLoading(true,share?'Posting your workout…':'Saving your workout…');
+    let posted=false;
+    try{
+    let postPhoto=null; try{ postPhoto=share&&pump&&tone!=='none'?await portraitWithOverlay(pump):null; }catch(e){ postPhoto=null; }
     for(const it of w.items){ if(it.cardio) continue; const used=num(it.sets[0].w); if(used) for(const [d] of DAYS) for(const p of Pf.plans[d]) if(p.exId===it.exId&&p.equip===it.equip) p.weight=String(used); }
-    Pf.active=null; S.rest=null; S.sheet=null; Store.save(); await Store.addWorkout(w); Social.publish();
-    if(share) await shareWorkout(w,postPhoto);
+    Pf.active=null; S.rest=null; S.sheet=null; Store.save(); try{ await Store.addWorkout(w); }catch(e){} try{ Social.publish(); }catch(e){}
+    posted=share; if(share){ try{ await shareWorkout(w,postPhoto); }catch(e){ posted=false; toast('Saved, but the post didn’t go through. Try posting it again from your profile.'); } }
+    } finally{ boatLoading(false); }
     const sug=suggestionsFor(w);
-    go('app',{tab:'me',meView:null,pview:'list'}); saveCue(); savedNote(share?'Workout saved and posted':'Workout saved');
+    go('app',{tab:'me',meView:null,pview:'list'}); saveCue(); savedNote(posted?'Workout saved and posted':'Workout saved');
     if(sug.length){ S.sheet={kind:'suggest',items:sug}; renderSheet(); } else if(!storyDone&&!w.pump){ S.sheet={kind:'export',id:w.id,style:0,tone:'light',bg:'clear'}; renderSheet(); }
+}
+function finWeights(a){ const u=Pf.unit;
+  return a.items.map((it,i)=>{ if(it.cardio) return ''; const ds=it.sets.map((s,j)=>[s,j]).filter(([s])=>s.st); if(!ds.length) return '';
+    const none=ds.every(([s])=>!num(s.w));
+    return `<div class="fwex"><div class="rowx" style="gap:8px"><b style="flex:1;min-width:0">${esc(exOf(it.exId).n)}</b><button class="chip ${none?'on':''}" data-a="fin-noweight" data-v="${i}">No weights</button></div>
+      <div class="fwsets">${ds.map(([s,j],k)=>`<label class="fwset"><span class="muted small">Set ${k+1}</span><span class="inwrap"><input class="input num" inputmode="decimal" data-fw="${i}:${j}" value="${esc(num(s.w)?s.w:'')}" placeholder="0"><span class="suf">${u}</span></span><span class="muted small num">× ${esc(s.r)}</span></label>`).join('')}</div></div>`; }).join('');
 }
 function workoutFrom(a,{title,pump}={}){ const w={id:'w_'+a.id,kind:'workout',startedAt:a.startedAt||Date.now(),endedAt:Date.now(),day:a.day,type:a.type,title:title||'Workout',unit:Pf.unit,pump:pump||'',
     items:a.items.map(it=>{ const o={exId:it.exId,equip:it.equip,cardio:!!it.cardio,repMin:it.repMin,repMax:it.repMax,sets:it.sets.filter(s=>s.st).map(s=>({w:String(s.w),r:String(s.r),st:s.st}))}; if(it.hurt) o.hurt=true; if(it.swapped) o.swapped=true; if(it.cardio){ o.cset={...(it.cset||{})}; o.kcal=it.kcal||0; } return o; }).filter(it=>it.sets.length)};
@@ -3448,6 +3466,8 @@ const A = {
   'rest-add'(){ if(S.rest){ S.rest.until+=15000; S.rest.total+=15; tick(); } },
   'rest-skip'(){ S.rest=null; render(); },
   finish(){ const a=Pf.active; S.sheetBottom=true; S.sheet={kind:'finish',style:0,tone:'light',bg:'photo',pump:a.pump||'',title:`${DAYN[a.day]} ${a.type==='rest'?'Session':TYPES[a.type]}`,share:Pf.autoShare!==false&&!Social.postedToday()}; renderSheet(); },
+  'fin-editw'(){ if(!S.sheet) return; readTitle(); S.sheet.editW=!S.sheet.editW; Store.save(); renderSheet(); },
+  'fin-noweight'(v){ const a=Pf.active, it=a&&a.items[+v]; if(!it||!S.sheet) return; readTitle(); const all=it.sets.filter(s=>s.st).every(s=>!num(s.w)); it.sets.forEach(s=>{ if(s.st){ if(all) s.w=s.w0||s.w; else { s.w0=s.w0||s.w; s.w='0'; } } }); Store.save(); renderSheet(); },
   'share-tog'(){ readTitle(); S.sheet.share=!S.sheet.share; renderSheet(); },
   'post-nofilter'(){ const sh=S.sheet; if(!sh) return; readTitle(); sh.share=true; sh.storyDone=true; return A['save-workout'](); },
   'save-private'(){ const sh=S.sheet; if(!sh) return; readTitle(); sh.share=false; sh.storyDone=true; return A['save-workout'](); },
@@ -3463,9 +3483,9 @@ const A = {
   discard(){ Pf.active=null; S.rest=null; S.sheet=null; Store.save(); go('app',{tab:homeTab()}); toast('Workout discarded'); },
   pstep(_,el){ if(/rep(Min|Max)/.test(el.dataset.f)){ Pf.defaultsTouched=true; S.obDefTouched=true; } setTimeout(()=>{ if(/rep(Min|Max)/.test(el.dataset.f)) render(); },0); const f=el.dataset.f; let v=(+Pf[f]||0)+(+el.dataset.d); if(f==='repMin') v=Math.max(1,Math.min(Pf.repMax,v)); if(f==='repMax') v=Math.max(Pf.repMin,Math.min(50,v)); Pf[f]=v; document.getElementById('f-'+f).value=v; Store.save(); },
   export(v){ S.menu=null; S.sheet={kind:'export',id:v,style:0,tone:'light',bg:'clear'}; renderSheet(); },
-  'ov-style'(v){ readTitle(); S.sheet.style=+v; renderSheet(); },
-  'ov-tone'(v){ readTitle(); S.sheet.tone=v; renderSheet(); },
-  'ov-bg'(v){ S.sheet.bg=v; renderSheet(); },
+  'ov-style'(v){ if(!S.sheet) return; readTitle(); S.sheet.style=+v; renderSheet(); },
+  'ov-tone'(v){ if(!S.sheet) return; readTitle(); S.sheet.tone=v; renderSheet(); },
+  'ov-bg'(v){ if(!S.sheet) return; S.sheet.bg=v; renderSheet(); },
   async 'ov-share'(){ const b=await overlayBlob(); if(b) shareOrSave(b,true); },
   async 'ov-save'(){ const b=await overlayBlob(); if(b) shareOrSave(b,false); },
   'post-menu'(v){ S.menu=v||null; render(); },
