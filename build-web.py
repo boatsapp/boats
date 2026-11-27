@@ -52,7 +52,7 @@ gate='''
 </body></html>
 '''
 # Static footer in the page HTML so Google's verification check (which doesn't run JavaScript) sees what BOATS is and the policy links
-foot='<p class="legal" id="sitefoot">BOATS is a workout tracker you use with friends. By continuing you agree to the <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>\n'
+foot='<p class="legal" id="sitefoot">BOATS is a workout tracker you use with friends, operated by Swole LLC. By continuing you agree to the <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>\n'
 # Boat animation while the app starts (replaced by the first screen as soon as it renders)
 boot=('<div class="bootload" role="status" aria-label="Loading BOATS"><div class="floatboat bigboat" aria-hidden="true">'
   '<span class="pboat"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15.5h18l-2.2 4H5.2z"/><path d="M12 3.5v12M12 4.5l6 9H12"/><path d="M12 7l-4.5 6.5H12"/></svg></span>'
