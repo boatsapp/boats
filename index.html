@@ -993,10 +993,11 @@ body.sideways #rotcover{display:flex}body.sideways{overflow:hidden}
 </style>
 <style id="glass">
 /* Liquid glass on gray (dark theme) */
-:root[data-theme="dark"]{ --bg:#111110; --surface:#1C1C1B; --surface-2:#262625; --line:#2E2D2B; --gl:rgba(26,34,40,.55); --gl-edge:rgba(170,215,240,.16); --gl-hi:rgba(255,255,255,.16);
-  --g-fill:rgba(255,255,255,.06); --g-fill2:rgba(255,255,255,.035); --g-edge:rgba(255,255,255,.12); --g-hi:rgba(255,255,255,.12); --g-pane:rgba(30,30,29,.72); }
+:root[data-theme="dark"]{ --bg:#0E0E0D; --surface:#1A1A19; --surface-2:#242423; --line:#2B2B29; --gl:rgba(22,22,21,.62); --gl-edge:rgba(255,255,255,.12); --gl-hi:rgba(255,255,255,.14);
+  --g-fill:rgba(255,255,255,.045); --g-fill2:rgba(255,255,255,.022); --g-edge:rgba(255,255,255,.09); --g-hi:rgba(255,255,255,.08); --g-pane:rgba(17,17,16,.86); }
 :root[data-theme="dark"] body{background:transparent}
-:root[data-theme="dark"] body::before{content:"";position:fixed;inset:-80px 0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,#242423 0%,#151514 38%,#0c0c0b 100%)}
+:root[data-theme="dark"] body::before{content:"";position:fixed;inset:-80px 0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,#161615 0%,#0E0E0D 45%,#0B0B0A 100%)}
+:root[data-theme="dark"] .igpost{background:transparent!important;border:0!important;box-shadow:none!important}
 /* cards */
 :where(:root[data-theme="dark"]) .card{background:linear-gradient(180deg,var(--g-fill),var(--g-fill2));border-color:var(--g-edge);box-shadow:inset 0 1px 0 var(--g-hi),0 8px 24px rgba(0,0,0,.28)}
 /* text boxes, toggles, chips and plain buttons blend with the glass */
@@ -1013,14 +1014,14 @@ body.sideways #rotcover{display:flex}body.sideways{overflow:hidden}
 :root[data-theme="dark"] .tabbar nav{background:var(--gl)!important;backdrop-filter:blur(26px) saturate(1.6)!important;-webkit-backdrop-filter:blur(26px) saturate(1.6)!important;border:1px solid var(--gl-edge)!important;box-shadow:inset 0 1px 0 var(--gl-hi),0 14px 34px rgba(0,0,0,.5)!important}
 /* panes: sheets, pop-ups, banners, toasts */
 :root[data-theme="dark"] .sheet{background:var(--g-pane);backdrop-filter:blur(30px) saturate(1.5);-webkit-backdrop-filter:blur(30px) saturate(1.5);border:1px solid var(--g-edge);box-shadow:inset 0 1px 0 var(--g-hi),0 30px 70px rgba(0,0,0,.55)}
-:root[data-theme="dark"] .sheet.full{background:linear-gradient(180deg,#242423 0%,#151514 38%,#0f0f0e 100%);backdrop-filter:none;-webkit-backdrop-filter:none;border:0;box-shadow:none}
-:root[data-theme="dark"] .askbox{background:rgba(34,34,33,.74);backdrop-filter:blur(30px) saturate(1.5);-webkit-backdrop-filter:blur(30px) saturate(1.5);border:1px solid var(--g-edge);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 30px 70px rgba(0,0,0,.55)}
-:root[data-theme="dark"] .notebar{background:rgba(40,40,38,.62)!important;backdrop-filter:blur(26px) saturate(1.6)!important;-webkit-backdrop-filter:blur(26px) saturate(1.6)!important;border:1px solid var(--g-edge)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 14px 34px rgba(0,0,0,.5)!important;color:var(--fg)!important}
-:root[data-theme="dark"] .toast{background:rgba(36,36,35,.74)!important;color:var(--fg)!important;backdrop-filter:blur(26px) saturate(1.6);-webkit-backdrop-filter:blur(26px) saturate(1.6);border:1px solid var(--g-edge);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 20px 50px rgba(0,0,0,.5)}
+:root[data-theme="dark"] .sheet.full{background:#0E0E0D;backdrop-filter:none;-webkit-backdrop-filter:none;border:0;box-shadow:none}
+:root[data-theme="dark"] .askbox{background:rgba(20,20,19,.86);backdrop-filter:blur(30px) saturate(1.5);-webkit-backdrop-filter:blur(30px) saturate(1.5);border:1px solid var(--g-edge);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 30px 70px rgba(0,0,0,.55)}
+:root[data-theme="dark"] .notebar{background:rgba(22,22,21,.8)!important;backdrop-filter:blur(26px) saturate(1.6)!important;-webkit-backdrop-filter:blur(26px) saturate(1.6)!important;border:1px solid var(--g-edge)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 14px 34px rgba(0,0,0,.5)!important;color:var(--fg)!important}
+:root[data-theme="dark"] .toast{background:rgba(20,20,19,.86)!important;color:var(--fg)!important;backdrop-filter:blur(26px) saturate(1.6);-webkit-backdrop-filter:blur(26px) saturate(1.6);border:1px solid var(--g-edge);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 20px 50px rgba(0,0,0,.5)}
 :root[data-theme="dark"] .toast .tico{background:var(--fg);color:var(--bg)}
-:root[data-theme="dark"] #undobar{background:rgba(36,36,35,.78);color:var(--fg);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid var(--g-edge);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 14px 34px rgba(0,0,0,.5)}#undobar button{background:var(--fg)!important;color:var(--bg)!important}
-:root[data-theme="dark"] body.feedscrolled .fhead3{background:linear-gradient(180deg,rgba(20,20,19,.8) 0%,rgba(20,20,19,.5) 70%,rgba(20,20,19,0) 100%)!important}
-:root[data-theme="dark"] .scrim{background:rgba(0,0,0,.42)}
+:root[data-theme="dark"] #undobar{background:rgba(20,20,19,.88);color:var(--fg);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid var(--g-edge);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 14px 34px rgba(0,0,0,.5)}#undobar button{background:var(--fg)!important;color:var(--bg)!important}
+:root[data-theme="dark"] body.feedscrolled .fhead3{background:linear-gradient(180deg,rgba(14,14,13,.82) 0%,rgba(14,14,13,.5) 70%,rgba(14,14,13,0) 100%)!important}
+:root[data-theme="dark"] .scrim{background:rgba(0,0,0,.5)}
 /* New in BOATS card */
 .wnbox{text-align:left!important;gap:10px!important;padding:22px 20px 18px!important;max-width:340px!important}.wnbox .wneb{font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--accent)}.wnbox b.wnt{font-family:var(--display);font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.15}.wnbox .wnx{font-size:14px;color:var(--muted);line-height:1.45}
 .wnbox .wnic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(160deg,rgba(91,192,235,.28),rgba(91,192,235,.08));border:1px solid rgba(91,192,235,.3);color:var(--accent);box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}.wnbox .askbtns{display:grid;grid-template-columns:1fr 1.3fr;gap:8px;margin-top:6px}.wnbox .askbtns .btn{margin:0}
@@ -1045,7 +1046,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v164';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v165';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1568,7 +1569,7 @@ function whatsNew(force){ const w=WHATS_NEW; if(!w||!Pf||!Pf.onboarded) return; 
 function undoToast(msg,act){ document.getElementById('undobar')?.remove(); const el=document.createElement('div'); el.id='undobar'; el.innerHTML=`<span>${esc(msg)}</span><button data-a="${act}">Undo</button>`; document.body.appendChild(el); clearTimeout(undoToast.t); undoToast.t=setTimeout(()=>el.remove(),4500); }
 function askConfirm(title,sub,yes,fn,no){ ASKFN=fn; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="alertdialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${sub?`<span class="muted small">${esc(sub)}</span>`:''}<div class="askbtns"><button class="btn" data-a="ask-no">${esc(no||'Cancel')}</button><button class="btn ${askConfirm.safe?'primary':'danger'}" data-a="ask-yes">${esc(yes)}</button></div></div></div>`; }
 let rootTheme = document.documentElement.getAttribute('data-theme');
-function applyTheme(){ const r=document.documentElement; if(Pf.theme!=='light') Pf.theme='dark'; if(Pf.theme==='system'){ if(rootTheme) r.setAttribute('data-theme',rootTheme); else r.removeAttribute('data-theme'); } else r.setAttribute('data-theme',Pf.theme); try{ const col=Pf.theme==='light'?'#F5F4F0':'#222221'; document.querySelectorAll('meta[name="theme-color"]').forEach(m=>{ m.setAttribute('content',col); m.removeAttribute('media'); }); }catch(e){} }
+function applyTheme(){ const r=document.documentElement; if(Pf.theme!=='light') Pf.theme='dark'; if(Pf.theme==='system'){ if(rootTheme) r.setAttribute('data-theme',rootTheme); else r.removeAttribute('data-theme'); } else r.setAttribute('data-theme',Pf.theme); try{ const col=Pf.theme==='light'?'#F5F4F0':'#151514'; document.querySelectorAll('meta[name="theme-color"]').forEach(m=>{ m.setAttribute('content',col); m.removeAttribute('media'); }); }catch(e){} }
 
 const TOAST_SHOW=/Enter a |microphone|recording|voice note|Max |can't|cannot|could not|couldn|first|limit|Pick |needs|failed|broke|No |not in|isn't|Add a|Give |Paste|Long-press|minimum|Something/i;
 function popCue(){ if(!Pf||!Pf.sound) return; const c=ac(); if(!c) return; const t=c.currentTime, o=c.createOscillator(), g=c.createGain(); o.type='sine'; o.frequency.setValueAtTime(620,t); o.frequency.exponentialRampToValueAtTime(980,t+.07); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.13,t+.01); g.gain.exponentialRampToValueAtTime(0.0001,t+.14); o.connect(g).connect(c.destination); o.start(t); o.stop(t+.16); }
@@ -2797,7 +2798,7 @@ function pickerList(){
 function stepper(f,val,mini){ return `<div class="stepper ${mini?'mini':''}"><button data-a="dstep" data-f="${f}" data-d="-1">−</button><input class="input num" id="d-${f}" inputmode="numeric" value="${val}" data-d="${f}"><button data-a="dstep" data-f="${f}" data-d="1">+</button></div>`; }
 function vSheet(){
   const sh=S.sheet; if(!sh) return '';
-  const BOT=sh.kind==='comments'||sh.kind==='likers';
+  const BOT=sh.kind==='comments'||sh.kind==='finish'||sh.kind==='likers';
   const wrap=(head,body)=>`<div class="scrim ${S.sheetFull?'fullscrim':''} ${BOT?'botscrim':''}" data-a="close-sheet"><div class="sheet ${S.sheetFull?'full':''} ${BOT?'bottom':''}" data-stop><div class="sheet-head"><span class="grab"></span>${head}${head.includes('data-a="close-sheet"')?'':`<button class="iconbtn sheetx" data-a="close-sheet" aria-label="Close">${ic('x')}</button>`}</div><div class="sheet-body" id="sbody">${body}</div></div></div>`;
   if(sh.kind==='calday'){ const ws=Store.workouts.filter(w=>dateKey(new Date(w.startedAt))===sh.day).sort((a,b)=>a.startedAt-b.startedAt), d=new Date(ws[0]?ws[0].startedAt:Date.now());
     return wrap(`<span class="h2">${d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})}</span>`,`<div class="list">${ws.map(w=>`<button class="li" data-a="wk-open" data-v="${esc(w.id)}"><span class="ico">${ic(typeIcon(w.type))}</span><span class="grow"><span class="t">${esc(w.title||dayWord(w.type))}</span><br><span class="s">${new Date(w.startedAt).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})} · ${fmtDur(durOf(w))}${countsForStreak(w)?' · streak credit':''}</span></span>${ic('right','sm')}</button>`).join('')}</div>`); }
@@ -2887,8 +2888,8 @@ function vSheet(){
     const a=Pf.active, marked=a.items.flatMap(it=>it.sets.filter(s=>s.st));
     const v=a.items.reduce((t,it)=>it.cardio?t:t+it.sets.filter(s=>s.st).reduce((x,s)=>x+num(s.w)*num(s.r),0),0);
     const sc=streakCheck(a,elapsed(a)), lv=(LEVELS[Pf.level]||'Beginner')+' minimum';
-    return wrap(`<div class="rowx" style="gap:8px"><button class="link fincont" data-a="close-sheet">${ic('back','sm')}Continue</button><span class="spacer"></span><button class="sbadge ${sc.ok?'on':''}" data-a="streak-info" aria-label="${sc.ok?'Counts toward your streak':'Does not count toward your streak yet'}. Tap for details">${ic('flame','sm')}${sc.ok?'Counts':'Doesn’t count'}</button><button class="iconbtn findel" data-a="discard-ask" aria-label="Discard workout">${ic('trash','sm')}</button></div>`,
-      `<h1 class="fintitle">${marked.length?'Nice work.':'Wrapping up?'}</h1><div class="finstats"><div>${ic('clock','sm')}<b class="num">${fmtDur(elapsed(a))}</b><span>Time</span></div><div>${ic('check','sm')}<b class="num">${marked.length}</b><span>Sets</span></div><div>${ic('dumbbell','sm')}<b class="num">${fmtBig(v)}</b><span>${Pf.unit} moved</span></div></div>
+    return wrap(`<div class="rowx" style="gap:8px"><span class="h2" style="flex:1">End workout</span><button class="sbadge ${sc.ok?'on':''}" data-a="streak-info" aria-label="${sc.ok?'Counts toward your streak':'Does not count toward your streak yet'}. Tap for details">${ic('flame','sm')}${sc.ok?'Counts':'Doesn’t count'}</button><button class="iconbtn findel" data-a="discard-ask" aria-label="Discard workout">${ic('trash','sm')}</button></div>`,
+      `<div class="finstats"><div>${ic('clock','sm')}<b class="num">${fmtDur(elapsed(a))}</b><span>Time</span></div><div>${ic('check','sm')}<b class="num">${marked.length}</b><span>Sets</span></div><div>${ic('dumbbell','sm')}<b class="num">${fmtBig(v)}</b><span>${Pf.unit} moved</span></div></div>
         <div class="card stack" style="gap:6px"><div class="rowx" style="gap:8px"><span class="h2" style="font-size:16px">Overview</span><span class="spacer"></span><span class="tag accent num">~${workoutKcal(a,Date.now())} kcal</span>${a.items.some(it=>!it.cardio&&it.sets.some(s=>s.st))?`<button class="link small finedit" data-a="fin-editw">${sh.editW?'Done':'Edit weights'}</button>`:''}</div>
           ${sh.editW?finWeights(a):a.items.filter(it=>it.sets.some(s=>s.st)).map(it=>{ const d=it.sets.filter(s=>s.st), ok=d.filter(s=>s.st==='ok').length; return `<div class="exline" style="padding:6px 0"><span>${esc(exOf(it.exId).n)}${it.hurt?` <span style="color:var(--bad)">${ic('bandage','xs')}</span>`:''}</span><span class="r num">${it.cardio?`${esc(d[0].w)} min · ~${it.kcal||0} kcal`:setDots(d)}</span></div>`; }).join('')||'<span class="muted small">Nothing logged yet.</span>'}</div>
         ${sh.pump?`<div class="stack" style="gap:10px"><div class="rowx"><span class="h2" style="font-size:18px;flex:1">Share workout</span><button class="link small" data-a="pump-clear">Remove picture</button></div>
@@ -2900,7 +2901,7 @@ function vSheet(){
         ${sh.pump?`${Social.postedToday()?`<div class="muted small">You’ve shared 3 posts today, so this one is saved privately.</div>`:''}<div class="finpost2"><button class="fsave" data-a="save-private">${ic('lock','sm')}<span>Save</span></button><button class="fpost" data-a="fin-post" ${Social.postedToday()?'disabled':''}>${ic('send','sm')}<span>Post</span></button></div>
                 <button class="btn fstory" data-a="fin-story">${ic('share','sm')}${sh.storyShared?'Shared to story · share again':'Share to story'}</button></div>`:''}
         ${sh.pump?'':`<span class="muted small" style="margin-top:-4px">${ic('camera','xs')} Add a photo to post it. Otherwise it saves privately.</span>
-        <div class="finend1"><button class="btn primary" data-a="save-workout">End workout</button></div>`}`);
+        <div class="finend"><button class="btn" data-a="close-sheet">Continue</button><button class="btn primary" data-a="save-workout">End</button></div>`}`);
   }
   if(sh.kind==='pump'){
     const w=Store.workouts.find(x=>x.id===sh.id); if(!w||!w.pump) return '';
@@ -3611,7 +3612,7 @@ const A = {
   's-add'(){ openPicker({mode:'session'},Pf.active.type); },
   'rest-add'(){ if(S.rest){ S.rest.until+=15000; S.rest.total+=15; tick(); } },
   'rest-skip'(){ S.rest=null; render(); },
-  finish(){ const a=Pf.active; S.sheetBottom=false; S.sheetFull=true; S.sheet={kind:'finish',style:0,tone:'light',bg:'photo',pump:a.pump||'',title:`${DAYN[a.day]} ${a.type==='rest'?'Session':TYPES[a.type]}`,share:Pf.autoShare!==false&&!Social.postedToday()}; renderSheet(); },
+  finish(){ const a=Pf.active; S.sheetBottom=true; S.sheetFull=false; S.sheet={kind:'finish',style:0,tone:'light',bg:'photo',pump:a.pump||'',title:`${DAYN[a.day]} ${a.type==='rest'?'Session':TYPES[a.type]}`,share:Pf.autoShare!==false&&!Social.postedToday()}; renderSheet(); },
   'fin-editw'(){ if(!S.sheet) return; readTitle(); S.sheet.editW=!S.sheet.editW; Store.save(); renderSheet(); },
   'fin-noweight'(v){ const a=Pf.active, it=a&&a.items[+v]; if(!it||!S.sheet) return; readTitle(); const all=it.sets.filter(s=>s.st).every(s=>!num(s.w)); it.sets.forEach(s=>{ if(s.st){ if(all) s.w=s.w0||s.w; else { s.w0=s.w0||s.w; s.w='0'; } } }); Store.save(); renderSheet(); },
   'share-tog'(){ readTitle(); S.sheet.share=!S.sheet.share; renderSheet(); },
