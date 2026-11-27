@@ -28,7 +28,8 @@ service cloud.firestore {
       allow get: if isMe(uid) || isAdmin();
       allow list: if isAdmin();
       allow create, update: if isMe(uid) && request.resource.data.email == request.auth.token.email
-        && request.resource.data.keys().hasOnly(['email','name','createdAt','lastAt']);
+        && request.resource.data.keys().hasOnly(['email','name','createdAt','lastAt','marketing']);
+      allow delete: if isMe(uid) || isAdmin();
     }
     // Full-quality photos for posts: photos/{uid}_{postId}. Signed-in users read, only the owner writes.
     match /photos/{id} {
@@ -54,6 +55,7 @@ service cloud.firestore {
       allow create: if isMe(uid) && request.resource.data.n is int
         && request.resource.data.n == get(/databases/$(database)/documents/meta/founders).data.next
         && getAfter(/databases/$(database)/documents/meta/founders).data.next == request.resource.data.n + 1;
+      allow delete: if isMe(uid) || isAdmin();
     }
     // Photos sent in DMs: only the sender and the recipient can see them.
     match /dmphotos/{id} {

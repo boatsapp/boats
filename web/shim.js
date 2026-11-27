@@ -1,8 +1,8 @@
 // Boats web: Firebase-backed stand-in for the Claude artifact runtime (db, user, downloads).
 // The app keeps calling claude.use(...); this file answers with Firebase Auth + Firestore.
 import { initializeApp } from "firebase/app";
-import { getAuth, connectAuthEmulator, onAuthStateChanged, GoogleAuthProvider, OAuthProvider, signInWithPopup, signInWithRedirect, signInWithCredential, getRedirectResult, signOut, setPersistence, browserLocalPersistence } from "firebase/auth";
-import { initializeFirestore, connectFirestoreEmulator, persistentLocalCache, memoryLocalCache, collection, doc, getDoc, getDocs, setDoc, deleteDoc, onSnapshot, query, where, limit, runTransaction } from "firebase/firestore";
+import { getAuth, connectAuthEmulator, onAuthStateChanged, GoogleAuthProvider, OAuthProvider, signInWithPopup, signInWithRedirect, signInWithCredential, getRedirectResult, signOut, setPersistence, browserLocalPersistence, deleteUser, reauthenticateWithPopup } from "firebase/auth";
+import { initializeFirestore, connectFirestoreEmulator, persistentLocalCache, memoryLocalCache, collection, doc, getDoc, getDocs, setDoc, deleteDoc, onSnapshot, query, where, limit, runTransaction, documentId } from "firebase/firestore";
 import { firebaseConfig } from "./firebase-config.js";
 
 // Install support: keep Chrome's install prompt for the in-app "Install BOATS" button, and register a tiny service worker.
@@ -89,6 +89,28 @@ const downloads = {
 };
 window.claude = { use: async k => ({ db, user, downloads })[k] || null };
 window.boatsSignOut = async () => { await signOut(auth); localStorage.clear(); location.reload(); };
+// Delete my account for good: every document I own, my username, the photos and messages I sent, then my sign-in.
+window.boatsDeleteMe = async (onStep) => {
+  const u = auth.currentUser; if(!u) throw new Error("not-signed-in");
+  const uid = u.uid, step = t => { try { onStep && onStep(t); } catch(e) {} }, del = async r => { try { await deleteDoc(r); } catch(e) {} };
+  // Make sure the sign-in is fresh first, so the last step can't fail after the data is gone.
+  try { await u.getIdToken(true); } catch(e) {}
+  step("Removing workouts and profile…");
+  try { const s = await getDocs(collection(fs, `users/${uid}/data`)); for(const d of s.docs) await del(d.ref); } catch(e) {}
+  step("Removing posts, likes and comments…");
+  for(const c of ["people", "posts", "reactions", "feedback", "accounts", "founders"]) await del(doc(fs, c, uid));
+  try { const s = await getDocs(query(collection(fs, "photos"), where(documentId(), ">=", uid + "_"), where(documentId(), "<", uid + "_\uf8ff"))); for(const d of s.docs) await del(d.ref); } catch(e) {}
+  step("Removing messages…");
+  for(const c of ["threads", "dmphotos"]){ try { const s = await getDocs(query(collection(fs, c), where("from", "==", uid))); for(const d of s.docs) await del(d.ref); } catch(e) {} }
+  try { const s = await getDocs(query(collection(fs, "usernames"), where("uid", "==", uid))); for(const d of s.docs) await del(d.ref); } catch(e) {}
+  step("Closing your account…");
+  try { await deleteUser(u); }
+  catch(e) { if(e && e.code === "auth/requires-recent-login"){ const p = (u.providerData[0] || {}).providerId === "apple.com" ? new OAuthProvider("apple.com") : new GoogleAuthProvider(); await reauthenticateWithPopup(u, p); await deleteUser(auth.currentUser); } else throw e; }
+  try { localStorage.clear(); } catch(e) {}
+  return true;
+};
+// Marketing emails: opt-in only, stored next to the account record.
+window.boatsSetMarketing = async on => { const u = auth.currentUser; if(!u) return; await setDoc(doc(fs, "accounts", u.uid), { marketing: { on: !!on, at: Date.now() } }, { merge: true }); };
 
 // Public: how many people are on BOATS (the next Founding Crew number minus one). Works before sign-in.
 window.boatsUserCount = async () => { try { const g = await getDoc(doc(fs, "meta", "founders")); return g.exists() ? Math.max(0, (g.data().next || 1) - 1) : 0; } catch(e) { return 0; } };
@@ -158,7 +180,7 @@ authReady.then(async u => {
   const ref = doc(fs, "accounts", u.uid);
   try {
     const old = await getDoc(ref);
-    await setDoc(ref, { email: u.email || "", name: u.displayName || "", createdAt: old.exists() ? (old.data().createdAt || Date.now()) : Date.now(), lastAt: Date.now() });
+    await setDoc(ref, { email: u.email || "", name: u.displayName || "", createdAt: old.exists() ? (old.data().createdAt || Date.now()) : Date.now(), lastAt: Date.now() }, { merge: true });
   } catch(e) {}
   try {
     await getDocs(query(collection(fs, "accounts"), limit(1)));   // only the owner is allowed to list accounts

@@ -211,6 +211,8 @@ body.swipeback #app .screen,body.swipeback #app .chatwrap{box-shadow:-18px 0 40p
 .fincont{display:inline-flex;align-items:center;gap:4px;padding:6px 0;color:var(--fg);font-weight:700}
 .finend1{position:sticky;bottom:0;padding:14px 0 calc(6px + env(safe-area-inset-bottom,0px));margin-top:auto;background:linear-gradient(180deg,rgba(0,0,0,0),var(--bg) 40%)}.finend1 .btn{height:56px;font-size:17px;font-weight:800;margin:0;width:100%}
 :root[data-theme="dark"] .sheet.full{background:radial-gradient(130% 42% at 50% 0%,#1f3a48 0%,#15232b 38%,rgba(15,18,20,0) 72%),#0F1214;backdrop-filter:none;-webkit-backdrop-filter:none;border:0;box-shadow:none}
+a.li{color:inherit;text-decoration:none}
+.obterms{text-align:center;margin:10px 0 0;font-size:12px;line-height:1.45}.obterms a{color:var(--fg);text-decoration:underline}
 .finend{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}.finend .btn{height:52px;margin:0}
 .finpost{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .finpost2{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}.finpost2 button{height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:8px;font:800 16px/1 inherit;font-family:inherit}.fsave{border:1.5px solid color-mix(in srgb,var(--fg) 25%,transparent);background:none;color:var(--fg)}.fpost{border:0;background:var(--fg);color:var(--bg)}.fpost:disabled{opacity:.4}
@@ -1046,7 +1048,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v165';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v166';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1223,7 +1225,7 @@ const P = {
   trash:'<path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13"/>',
   play:'<path d="M8 5.5v13l10.5-6.5z"/>',
   clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
-  dumbbell:'<path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/>',alarm:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  flag:'<path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/>',dumbbell:'<path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/>',alarm:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
   machine:'<rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 8h6M9 12h6M9 16h6"/>',
   smith:'<path d="M5 3v18M19 3v18M3 9h18"/><circle cx="12" cy="9" r="1.5"/>',
   barbell:'<path d="M2.5 12h19M6 8v8M8.5 6.5v11M18 8v8M15.5 6.5v11"/>',
@@ -1664,6 +1666,10 @@ async function setupOfficial(){ boatLoading(true,'Setting up the official BOATS 
     Pf.nameAt=0; Pf.onboarded=true; Store.save(true); Social.publish(); }
   finally{ boatLoading(false); }
   go('app',{tab:'me',meView:null}); savedNote('Official BOATS account ready'); }
+// Zero-tolerance words for anything other people can read (comments, captions, bios, messages)
+const TEXT_BLOCK=['nigg','faggot','retard','tranny','kike','wetback','raghead','towelhead','killyourself','kys','chink','gook','beaner','spic','coon','dyke'];
+function textBlocked(t){ const n=nameNorm(t), words=String(t||'').toLowerCase().split(/[^a-z0-9@]+/).map(nameNorm); return TEXT_BLOCK.some(w=>w.length>4?n.includes(w):words.includes(w)); }
+function blockedNote(){ toast('That has language that isn’t allowed on BOATS. Please change it.'); }
 function nameNorm(u){ return String(u||'').toLowerCase().replace(/[0@4]/g,m=>({'0':'o','@':'a','4':'a'})[m]).replace(/[1!|]/g,'i').replace(/3/g,'e').replace(/[5$]/g,'s').replace(/7/g,'t').replace(/8/g,'b').replace(/[^a-z]/g,''); }
 function nameStrip(x){ let p; do{ p=x; x=x.replace(/^(the|real|im|iam|its|official|not)/,'').replace(/(official|real|irl|xo|og)$/,''); }while(x!==p&&x.length>2); return x; }
 function nameRule(u){ const n=nameNorm(u), plain=String(u||'').toLowerCase().replace(/[^a-z]/g,''), bare=nameStrip(n), pbare=nameStrip(plain);
@@ -1760,7 +1766,7 @@ function vOnboard(){
     <div class="footer-actions">
       ${s>0?`<button class="btn" style="flex:none" data-a="ob-back" aria-label="Back">${ic('back')}</button>`:''}
       <button class="btn primary" data-a="ob-next">${s<3?'Continue':'Build my week'}</button>
-    </div></div>`;
+    </div>${s===0?`<p class="fine muted obterms">By continuing you agree to the <a href="/terms" target="_blank" rel="noopener">Terms</a> and <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>, including zero tolerance for objectionable content and abusive users.</p>`:''}</div>`;
 }
 
 function homeTab(){ return 'friends'; }
@@ -2699,13 +2705,19 @@ function vSettings(){
       <button class="li" data-a="sound"><span class="ico">${ic('sound')}</span><span class="grow"><span class="t">Sounds</span><br><span class="s">Workout and app sounds</span></span><span class="toggle ${Pf.sound?'on':''}"></span></button>
       <button class="li" data-a="flash"><span class="ico">${ic('bolt')}</span><span class="grow"><span class="t">Flash screen when rest ends</span><br><span class="s">A quick screen flash you can see without sound</span></span><span class="toggle ${Pf.flash?'on':''}"></span></button>
       <button class="li" data-a="vib"><span class="ico">${ic('vibrate')}</span><span class="grow"><span class="t">Vibrate when rest ends</span><br><span class="s">${false?'':'Buzzes your phone when the timer runs out'}</span></span><span class="toggle ${Pf.vibrate?'on':''}"></span></button>
+      <button class="li" data-a="mkt-tog"><span class="ico">${ic('send')}</span><span class="grow"><span class="t">Emails from BOATS</span><br><span class="s">News, tips and offers. Off unless you turn it on</span></span><span class="toggle ${Pf.mktEmail?'on':''}"></span></button>
       <button class="li" data-a="remind-open"><span class="ico">${ic('alarm')}</span><span class="grow"><span class="t">Workout reminders</span><br><span class="s">${Pf.remind&&Pf.remind.time?`Your training days at ${fmtTime12(Pf.remind.time)}`:'Add a reminder to your phone calendar'}</span></span>${ic('right','sm')}</button>
       <button class="li" data-a="pdf-export"><span class="ico">${ic('cloud')}</span><span class="grow"><span class="t">${Store.mode==='cloud'?'Synced to your Claude account':'Saved on this device only'}</span><br><span class="s">${Store.workouts.length} workout${Store.workouts.length===1?'':'s'} logged · app ${BUILD}</span></span><span class="tag">${ic('down','xs')}PDF</span></button>
     </div>
+    <div class="stack" style="gap:8px"><span class="flabel">Help and legal</span><div class="list">
+      <a class="li" href="mailto:boatsapplication@gmail.com?subject=BOATS%20support"><span class="ico">${ic('chat')}</span><span class="grow"><span class="t">Contact support</span><br><span class="s">boatsapplication@gmail.com</span></span>${ic('right','sm')}</a>
+      <a class="li" href="/terms#community" target="_blank" rel="noopener"><span class="ico">${ic('flag')}</span><span class="grow"><span class="t">Community guidelines</span><br><span class="s">Zero tolerance for abuse. Report and block anytime</span></span>${ic('right','sm')}</a>
+      <a class="li" href="/privacy" target="_blank" rel="noopener"><span class="ico">${ic('lock')}</span><span class="grow"><span class="t">Privacy policy</span></span>${ic('right','sm')}</a>
+      <a class="li" href="/terms" target="_blank" rel="noopener"><span class="ico">${ic('clip')}</span><span class="grow"><span class="t">Terms of service</span></span>${ic('right','sm')}</a></div></div>
     <div class="stack" style="gap:8px">
       <button class="btn" data-a="sign-out">Sign out</button>
       ${S.confirmErase===2?`<div class="card stack"><b>We’re sorry you’re walking the plank.</b><span class="muted small">Download your workouts first?</span><button class="btn primary" data-a="data-dl">Download my data</button><div class="rowx"><button class="btn sm danger" data-a="erase-yes">Delete</button><button class="btn sm" data-a="erase-no">Keep</button></div></div>`
-      :S.confirmErase?`<div class="card stack"><b>Delete ${esc(Pf.username||'this account')}?</b><span class="small" style="color:var(--bad);font-weight:600">Your streaks, workouts, friends, and follower info will be lost forever.</span><span class="muted small">This deletes your profile, plan, posts and every workout. It can’t be undone.</span><div class="rowx"><button class="btn sm danger" data-a="erase-next">Delete account</button><button class="btn sm" data-a="erase-no">Keep it</button></div></div>`
+      :S.confirmErase?`<div class="card stack"><b>Delete ${esc(Pf.username||'this account')}?</b><span class="small" style="color:var(--bad);font-weight:600">Your streaks, workouts, friends, and follower info will be lost forever.</span><span class="muted small">This permanently deletes your account, profile, workouts, posts, comments, likes, messages and photos. It can’t be undone.</span><div class="rowx"><button class="btn sm danger" data-a="erase-next">Delete account</button><button class="btn sm" data-a="erase-no">Keep it</button></div></div>`
       :`<button class="btn ghost danger" data-a="erase">Walk the plank</button>`}
     </div>
   <p class="fine muted" style="text-align:center;margin:8px 0 0">BOATS ${BUILD}</p>
@@ -3480,7 +3492,7 @@ const A = {
   'pump-del'(v){ const w=Store.workouts.find(x=>x.id===v); if(w){ Store.updateWorkout(w,{pump:''}); S.sheet=null; render(); toast('Picture removed'); } },
   'pump-view'(v){ S.sheet={kind:'pump',id:v}; renderSheet(); },
   'ob-back'(){ S.ob--; render(); },
-  async 'ob-next'(){ if(S.ob===0){ const bad=[]; if(usernameIssue(Pf.username)) bad.push('f-user'); if(String(Pf.town||'').trim()&&!placeValid(Pf.town)) bad.push('f-town');
+  async 'ob-next'(){ if(S.ob===0){ Pf.termsAt=Pf.termsAt||Date.now(); const bad=[]; if(usernameIssue(Pf.username)) bad.push('f-user'); if(String(Pf.town||'').trim()&&!placeValid(Pf.town)) bad.push('f-town');
       if(Pf.unit==='lb'){ if(!inLimit('ft',Pf.ft)) bad.push('f-ft'); if(!inLimit('inch',Pf.inch||0)) bad.push('f-in'); } else if(!inLimit('cm',Pf.cm)) bad.push('f-cm'); if(!inLimit('bodyweight',Pf.bodyweight)) bad.push('f-bw'); if(!Pf.sex) bad.push('f-sex');
       document.querySelectorAll('.input.bad,.field.bad').forEach(n=>n.classList.remove('bad')); if(bad.length){ bad.forEach(id=>document.getElementById(id)?.classList.add('bad')); const f=document.getElementById(bad[0]); if(f){ f.scrollIntoView({block:'center',behavior:'smooth'}); f.focus({preventScroll:true}); } return; }
       if(window.boatsClaimName){ const r=await window.boatsClaimName(Pf.username,Pf.nameClaimed); if(r==='taken'){ const i=document.getElementById('f-user'), m=document.getElementById('u-msg'); i?.classList.add('bad'); if(m) m.innerHTML=`<span style="color:var(--bad)">@${esc(Pf.username)} is already taken. Try another.</span>`; i?.focus(); return; } if(r==='ok') Pf.nameClaimed=Pf.username; } }
@@ -3573,6 +3585,7 @@ const A = {
     const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//BOATS//Workout reminders//EN','CALSCALE:GREGORIAN',...ev,'END:VCALENDAR'].join('\r\n');
     const blob=new Blob([ics],{type:'text/calendar'}), u=URL.createObjectURL(blob), a=document.createElement('a'); a.href=u; a.download='boats-workout-reminders.ics'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),8000);
     S.sheet=null; renderSheet(); render(); savedNote('Open the file to add it to your calendar'); },
+  'mkt-tog'(){ Pf.mktEmail=!Pf.mktEmail; Pf.mktAt=Date.now(); Store.save(); render(); try{ window.boatsSetMarketing&&window.boatsSetMarketing(Pf.mktEmail); }catch(e){} savedNote(Pf.mktEmail?'You’ll get emails from BOATS':'No marketing emails'); },
   flash(){ Pf.flash=!Pf.flash; Store.save(); render(); if(Pf.flash) flashScreen(); },
   's-equip'(v){ S.sheet={kind:'equip',idx:+v,plan:false}; renderSheet(); },
   's-equip-plan'(){ S.sheet.plan=!S.sheet.plan; renderSheet(); },
@@ -3619,7 +3632,7 @@ const A = {
   'post-nofilter'(){ const sh=S.sheet; if(!sh) return; readTitle(); sh.share=true; sh.storyDone=true; return A['save-workout'](); },
   'discard-ask'(){ askConfirm('Discard this workout?','Nothing from this session will be saved.','Discard',()=>A.discard(),'Keep it'); },
   'save-private'(){ const sh=S.sheet; if(!sh) return; readTitle(); sh.share=false; sh.storyDone=true; return A['save-workout'](); },
-  'fin-post'(){ const sh=S.sheet; if(!sh||!Pf.active||S.saving) return; if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit. Save it and post tomorrow.'); return; } readTitle(); sh.share=true; sh.storyDone=true; return A['save-workout'](); },
+  'fin-post'(){ const sh=S.sheet; if(!sh||!Pf.active||S.saving) return; if(textBlocked((document.getElementById('f-cap')||{}).value||'')) return blockedNote(); if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit. Save it and post tomorrow.'); return; } readTitle(); sh.share=true; sh.storyDone=true; return A['save-workout'](); },
   async 'fin-story'(){ const sh=S.sheet; if(!sh||!Pf.active) return; readTitle(); const b=await overlayBlob(); if(!b) return; try{ const f=new File([b],`boats-story-${dateKey()}.png`,{type:'image/png'}); if(navigator.canShare&&navigator.canShare({files:[f]})) await navigator.share({files:[f]}); else await shareOrSave(b,false); }catch(e){ if(e&&e.name==='AbortError') return; } if(S.sheet===sh){ sh.storyShared=true; renderSheet(); } },
   async 'fin-share'(){ const sh=S.sheet; if(!sh||!Pf.active||S.saving) return; readTitle(); const b=sh.tone==='none'?null:await overlayBlob(); if(b){ try{ const f=new File([b],`boats-story-${dateKey()}.png`,{type:'image/png'}); if(navigator.canShare&&navigator.canShare({files:[f]})) await navigator.share({files:[f]}); else await shareOrSave(b,false); }catch(e){} } if(S.sheet!==sh) S.sheet=sh; sh.share=true; sh.storyDone=true; return A['save-workout'](); },
   async 'fin-dl'(){ const sh=S.sheet; readTitle(); const b=await overlayBlob(); if(b) await shareOrSave(b,false); sh.share=true; sh.storyDone=true; return A['save-workout'](); },
@@ -3664,7 +3677,7 @@ const A = {
   'dm-new'(){ S.dmNew=!S.dmNew; render(); },
   'dm-open'(v){ setTimeout(()=>markSeen(v),300); S.personId=null; S.postsOf=null; S.dmQ=''; S.sheet=null; renderSheet(); S.chatWith=v; S.fview='chat'; S.tab='friends'; S.route='app'; Pf.dmSeen={...(Pf.dmSeen||{}),[v]:Date.now()}; Store.save(); render(); const c=document.getElementById('chat'); if(c) c.scrollTop=c.scrollHeight; },
   'dm-back'(){ S.fview='dms'; render(); },
-  'dm-send'(){ const i=document.getElementById('dm-in'), t=(i&&i.value||'').replace(/\n+/g,' ').trim(); if(!t) return; const d=Social.myDms(), u=S.chatWith; d.out[u]=[...(d.out[u]||[]),{at:Date.now(),text:t.slice(0,200)}].slice(-60); Social.saveDms(d); Pf.dmSeen={...(Pf.dmSeen||{}),[u]:Date.now()}; Store.save(); render(); const ch=document.getElementById('chat'); if(ch) ch.scrollTop=ch.scrollHeight; sendCue(); setTimeout(()=>document.getElementById('dm-in')?.focus(),30); },
+  'dm-send'(){ const i=document.getElementById('dm-in'), t=(i&&i.value||'').replace(/\n+/g,' ').trim(); if(!t) return; if(textBlocked(t)) return blockedNote(); const d=Social.myDms(), u=S.chatWith; d.out[u]=[...(d.out[u]||[]),{at:Date.now(),text:t.slice(0,200)}].slice(-60); Social.saveDms(d); Pf.dmSeen={...(Pf.dmSeen||{}),[u]:Date.now()}; Store.save(); render(); const ch=document.getElementById('chat'); if(ch) ch.scrollTop=ch.scrollHeight; sendCue(); setTimeout(()=>document.getElementById('dm-in')?.focus(),30); },
   'dm-accept'(v){ Pf.dmOk=[...new Set([...(Pf.dmOk||[]),v])]; Store.save(); render(); popCue(); },
   'dm-hide'(v){ const h=Array.isArray(Pf.dmHidden)?Object.fromEntries(Pf.dmHidden.map(x=>[x,Date.now()])):{...(Pf.dmHidden||{})}; h[v]=Date.now(); Pf.dmHidden=h; Pf.dmPins=(Pf.dmPins||[]).filter(x=>x!==v); Store.save(); if(S.fview==='chat') S.fview='dms'; render(); },
   'fl-tab'(v){ S.flTab=v; render(); },
@@ -3807,7 +3820,7 @@ const A = {
   'cm2-reply'(v,el){ const n=el.dataset.n; S.cmReply={ck:v,n}; const i=document.getElementById('cm2-in'); S.cmDraft=(i&&i.value&&!i.value.startsWith('@')?i.value:'')||('@'+n+' '); renderSheet(); setTimeout(()=>{ const x=document.getElementById('cm2-in'); if(x){ x.focus(); x.setSelectionRange(x.value.length,x.value.length); } },30); },
   'cm2-noreply'(){ S.cmReply=null; renderSheet(); },
   'cm2-emoji'(v){ const i=document.getElementById('cm2-in'); if(!i) return; i.value=(i.value+v).slice(0,150); S.cmDraft=i.value; i.focus(); },
-  'cm2-post'(){ const sh=S.sheet; if(!sh||sh.kind!=='comments') return; if(S.cmPostAt&&Date.now()-S.cmPostAt<700) return; S.cmPostAt=Date.now(); const i=document.getElementById('cm2-in'), t=(i&&i.value||'').trim(); if(!t){ i&&i.focus(); return; }
+  'cm2-post'(){ const sh=S.sheet; if(!sh||sh.kind!=='comments') return; if(S.cmPostAt&&Date.now()-S.cmPostAt<700) return; S.cmPostAt=Date.now(); const i=document.getElementById('cm2-in'), t=(i&&i.value||'').trim(); if(!t){ i&&i.focus(); return; } if(textBlocked(t)) return blockedNote();
     if(S.cmLast&&Date.now()-S.cmLast<15000){ toast('Slow down a little. You can comment again in a few seconds.'); return; } S.cmLast=Date.now();
     const key=sh.key, re=S.cmReply?+S.cmReply.ck.split('|')[3]:null, r=Social.myReacts(), list=r.comments[key]=r.comments[key]||[], o={at:Date.now(),text:t.slice(0,150)}; if(re) o.re=re; list.push(o); if(list.length>30) list.shift(); Social.saveReacts(r,true);
     S.cmReply=null; S.cmDraft=''; renderSheet(); patchPost(key); popCue(); const b=document.getElementById('sbody'); if(b&&!re) b.scrollTop=b.scrollHeight; },
@@ -3834,7 +3847,7 @@ const A = {
   async 'inst-copy'(){ let ok=false; try{ await navigator.clipboard.writeText(APP_URL); ok=true; }catch(e){ try{ const t=document.createElement('textarea'); t.value=APP_URL; document.body.appendChild(t); t.select(); ok=document.execCommand('copy'); t.remove(); }catch(_){} }
     const el=document.getElementById('instcopy'); if(el) el.textContent=ok?'Copied!':'Copy failed. Long-press the link below.'; if(ok){ S.instCopied=true; popCue(); render(); } },
   async 'inst-prompt'(){ const p=window.__bip; if(!p) return; try{ p.prompt(); const r=await p.userChoice; if(r&&r.outcome==='accepted'){ window.__bip=null; S.instDone='installed'; } }catch(e){} render(); },
-  async 'id-save'(){ const d=S.draft; if(!d) return; const u=String(d.username||'').trim(), changedName=u.toLowerCase()!==String(Pf.username||'').toLowerCase()||u!==Pf.username;
+  async 'id-save'(){ const d=S.draft; if(!d) return; if(textBlocked(d.bio)||textBlocked(d.realName)||textBlocked(d.town)) return blockedNote(); const u=String(d.username||'').trim(), changedName=u.toLowerCase()!==String(Pf.username||'').toLowerCase()||u!==Pf.username;
     const um=document.getElementById('u-msg'), say=(m)=>{ if(um) um.innerHTML=`<span style="color:var(--bad)">${esc(m)}</span>`; document.getElementById('f-user')?.focus(); };
     if(changedName){ if(nameLocked()&&!(window.boatsAdmin&&u==='Swaizy')){ say('You can only change your username once a week.'); return; } const x=usernameIssue(u); if(x){ say(x); return; }
       if(window.boatsClaimName){ const r=await window.boatsClaimName(u,Pf.nameClaimed||Pf.username); if(r==='taken'){ say(`@${u} is already taken. Try another.`); return; } if(r==='error'){ say('Could not check that name. Try again.'); return; } Pf.nameClaimed=u; } }
@@ -3862,7 +3875,7 @@ const A = {
   'np-crop-cancel'(){ const c=npCur(); c.crop=S.np.prevCrop||c.crop; S.np.editing=false; render(); },
   'np-crop-done'(){ const c=npCur(); c.photo=npRender(c.im,c.crop,1440); S.np.editing=false; render(); },
   'np-pick'(){ if(S.np&&(S.np.list||[]).length>=5){ toast('Max 5 photos per post.'); return; } const c=document.getElementById('np-cap'); if(c&&S.np) S.np.cap=c.value; S.np.replaceAt=null; S.photoFor='newpost'; const inp=document.getElementById('photo-in'); inp.multiple=true; inp.click(); },
-  async 'np-share'(){ const np=S.np; if(!np||!(np.list||[]).length) return; if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit.'); return; } const cap=(document.getElementById('np-cap')?.value||'').replace(/\r/g,'').replace(/\n{3,}/g,'\n\n').trim().slice(0,300), id='u'+uid();
+  async 'np-share'(){ const np=S.np; if(!np||!(np.list||[]).length) return; if(textBlocked(document.getElementById('np-cap')?.value||'')) return blockedNote(); if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit.'); return; } const cap=(document.getElementById('np-cap')?.value||'').replace(/\r/g,'').replace(/\n{3,}/g,'\n\n').trim().slice(0,300), id='u'+uid();
     boatLoading(true,'Posting…'); try{ const L=np.list, small=await shrinkData(L[0].photo,540,.78); const hq=await savePhotoHq(id,L[0].photo); const mthumbs=[];
       for(let k=1;k<L.length;k++){ await savePhotoHq(`${id}_${k}`,L[k].photo); mthumbs.push(await shrinkData(L[k].photo,240,.6)); }
       await Social.addPost({id,at:Date.now(),sharedAt:Date.now(),title:'',type:'',caption:cap,photo:small,hq,kind:'photo',...(L.length>1?{more:L.length-1,mthumbs}:{})}); } finally{ boatLoading(false); }
@@ -3882,7 +3895,8 @@ const A = {
     try{ const dl=window.claude&&claude.use?await claude.use('downloads'):null; if(dl){ try{ await dl.save({filename:name,data:blob}); popCue(); }catch(e){ if(e&&e.code!=='declined') toast('Could not save here.'); } return; } }catch(e){}
     try{ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },2000); }catch(e){ toast('Could not save here.'); } },
   'erase-no'(){ S.confirmErase=false; render(); },
-  async 'erase-yes'(){ await Store.eraseAccount(); applyTheme(); S.confirmErase=false; go('splash'); toast('Account deleted'); },
+  async 'erase-yes'(){ if(window.boatsDeleteMe&&Store.mode==='cloud'){ boatLoading(true,'Deleting your account…'); try{ await window.boatsDeleteMe(t=>boatLoading(true,t)); try{ await Store.eraseAccount(); }catch(e){} boatLoading(false); toast('Your account and data are deleted.'); setTimeout(()=>location.reload(),1200); }catch(e){ boatLoading(false); toast('We couldn’t finish deleting your account. Sign in again and retry, or email boatsapplication@gmail.com.'); } return; }
+    await Store.eraseAccount(); applyTheme(); S.confirmErase=false; go('splash'); toast('Account deleted'); },
 };
 function readBlock(){ document.querySelectorAll('[data-bw]').forEach(t=>{ S.sheet.weeks[+t.dataset.bw]=t.value; }); }
 function readDraft(){ const d=S.sheet&&S.sheet.draft; if(!d) return; document.querySelectorAll('input[data-d]').forEach(inp=>{ const k=inp.dataset.d; d[k]= ['weight','setting','note'].includes(k)?inp.value.trim(): Math.max(1,parseInt(inp.value)||1); }); }
