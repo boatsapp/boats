@@ -912,7 +912,8 @@ body.barmini .fhead3{transform:translateY(-100%)}
 .cdstep{display:grid;grid-template-columns:48px 1fr 48px;align-items:center;gap:8px}.cdstep button{height:44px;border-radius:12px;border:0;background:rgba(0,0,0,.25);color:var(--fg);font:700 20px/1 inherit;font-family:inherit}.cdstep span{text-align:center;font-size:15px;color:var(--fg)}.cdstep b{font-size:22px}
 .session,.session .card,#car,.ex-card{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.session input,.session textarea,#car input,#car textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 #cropcv{touch-action:none}
-@media (orientation:landscape) and (max-height:500px){ body::after{content:"Turn your phone upright to use BOATS";position:fixed;inset:0;z-index:5000;display:grid;place-items:center;background:var(--bg);color:var(--fg);font:700 18px/1.3 var(--body,system-ui);text-align:center;padding:24px} }
+#rotcover{position:fixed;inset:0;z-index:5000;display:none;flex-direction:column;gap:14px;align-items:center;justify-content:center;background:var(--bg);color:var(--fg);font-weight:700;font-size:18px;text-align:center;padding:24px;touch-action:none}
+body.sideways #rotcover{display:flex}body.sideways{overflow:hidden}
 .flash{position:fixed;top:-120px;bottom:-120px;left:-20px;right:-20px;z-index:1000;background:#fff;pointer-events:none;will-change:opacity;transform:translateZ(0);animation:flash 1.2s ease-out forwards}
 @keyframes flash{0%{opacity:.85}25%{opacity:0}45%{opacity:.6}100%{opacity:0}}
 .btn.liked{color:var(--bad);border-color:var(--bad-soft);background:var(--bad-soft)}
@@ -1000,7 +1001,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v160';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v161';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1410,9 +1411,21 @@ function patchLikes(key){ const n=Social.likes(key), on=Social.liked(key);
 let SEENIO=null;
 function watchSeen(){ if(!('IntersectionObserver' in window)) return; if(!SEENIO) SEENIO=new IntersectionObserver(es=>{ let ch=false; es.forEach(e=>{ if(e.isIntersecting&&e.intersectionRatio>=.5){ const k=e.target.dataset.key; if(k&&!(Pf.seenPosts||[]).includes(k)){ Pf.seenPosts=[...(Pf.seenPosts||[]),k].slice(-400); ch=true; } SEENIO.unobserve(e.target); } }); if(ch){ clearTimeout(watchSeen.t); watchSeen.t=setTimeout(()=>Store.save(),2000); } },{threshold:.5});
   document.querySelectorAll('#feed article[data-key]').forEach(a=>SEENIO.observe(a)); }
+// Phones stay upright: a cover while sideways, and a clean reset when turned back
+(function(){ const mq=matchMedia('(orientation:landscape) and (max-height:520px)'); let was=false;
+  const apply=()=>{ const side=mq.matches; let c=document.getElementById('rotcover'); if(!c){ c=document.createElement('div'); c.id='rotcover'; c.innerHTML='<span class="pboat" style="line-height:0">'+ic('boat')+'</span><span>Turn your phone upright to use BOATS</span>'; document.body.appendChild(c); }
+    document.body.classList.toggle('sideways',side);
+    if(was&&!side){ setTimeout(()=>{ document.documentElement.style.setProperty('--vvb','0px'); document.body.classList.remove('kbopen'); if(!S.sheet&&!askEl.innerHTML){ document.body.classList.remove('locked'); document.body.style.top=''; } window.scrollTo(0,window.scrollY); try{ render(); }catch(e){} repaint(); window.dispatchEvent(new Event('resize')); },250); }
+    was=side; };
+  try{ mq.addEventListener('change',apply); }catch(e){ mq.addListener(apply); } window.addEventListener('orientationchange',()=>setTimeout(apply,300)); document.addEventListener('DOMContentLoaded',apply); setTimeout(apply,0);
+  try{ screen.orientation&&screen.orientation.lock&&screen.orientation.lock('portrait').catch(()=>{}); }catch(e){} })();
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) repaint(); });
+window.addEventListener('pageshow',()=>repaint());
+// iPhone sometimes skips painting new content under the frosted header until you scroll: nudge a repaint
+function repaint(){ requestAnimationFrame(()=>{ const a=document.getElementById('app'); if(a){ a.style.opacity='.999'; requestAnimationFrame(()=>{ a.style.opacity=''; }); } const y=window.scrollY, max=document.documentElement.scrollHeight-innerHeight; if(max>1){ window.scrollTo(0,y>0?y-1:y+1); window.scrollTo(0,y); } }); }
 function morphFeed(f,html){ const t=document.createElement('div'); t.innerHTML=html;
   t.querySelectorAll('article[data-key]').forEach(a=>{ const old=f.querySelector(`article[data-key="${CSS.escape(a.dataset.key)}"] .ovwrap`), nw=a.querySelector('.ovwrap'); if(old&&nw) nw.replaceWith(old); });
-  f.replaceChildren(...t.childNodes); hqScan(); watchSeen(); }
+  f.replaceChildren(...t.childNodes); hqScan(); watchSeen(); repaint(); }
 const NOTE={ready:false,seen:new Set(),since:Date.now()};
 function notifyCheck(){ if(!Social.loaded||!Pf||!Pf.onboarded||!Social.ok&&!PREVIEW) return; const ev=[];
   for(const a of myActivity()){ const id=a.kind==='like'?`l|${a.uid}|${a.key}`:a.kind==='comment'?`c|${a.uid}|${a.key}|${a.at}`:`f|${a.uid}|${a.at}`;
@@ -3114,7 +3127,7 @@ function render(){ if(document.body.classList.contains('swipeback')){ render._pe
   const vk=S.route+'|'+S.tab+'|'+(S.meView||'')+'|'+(S.pview||'');
   app.querySelectorAll('.screen .tabbar, .screen .fabpost, .screen .invitebar, .session .tabbar').forEach(n=>app.appendChild(n));
   if(vk!==render._vk){ render._vk=vk; revealCards(); }
-  hqScan(); watchSeen(); dmImgScan(); setTimeout(fabCheck,50); colw();
+  hqScan(); watchSeen(); dmImgScan(); setTimeout(fabCheck,50); colw(); if(S.route==='app'&&S.tab==='friends') repaint();
 }
 // line the streak ring up under the "following" count
 function colw(){ document.querySelectorAll('.prof2').forEach(p=>{ const c=p.querySelector('.pstats>:last-child'); if(c) p.style.setProperty('--colw',c.getBoundingClientRect().width+'px'); }); }
