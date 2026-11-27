@@ -823,7 +823,10 @@ body.barmini .fhead3{transform:translateY(-100%)}
 .ex-card{flex:0 0 100%;scroll-snap-align:center;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px 14px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;min-width:0}
 .ex-card.add{align-items:center;justify-content:center;text-align:center;border-style:dashed;background:transparent}
 .sets{display:grid;grid-template-columns:24px minmax(0,1fr) minmax(0,1fr) 44px 44px;gap:7px;align-items:center}
-.sets .hd{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;text-align:center}
+.sets .hd{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;text-align:center;background:none!important;width:auto!important;height:auto!important;border-radius:0!important}
+.weigh .btn[data-a="bw-today"],.weigh .btn[data-a="bw-edit"],.cladd .btn[data-a="cl-add"],.clsec .btn[data-a="cl-add"],[data-a="cl-add"].btn{height:44px!important;min-width:92px;padding:0 16px!important;font-size:15px!important;font-weight:700!important;border-radius:12px!important;flex:none}
+#cl-new,#bw-today{height:44px!important}
+.adjbtns .btn{height:48px!important;min-height:48px;padding:0 10px!important;margin:0!important;font-size:15px!important}
 .sets .n{font-weight:700;color:var(--muted);text-align:center}
 .sets .input{height:46px;text-align:center;font-weight:600;padding:0 4px}
 .mk{width:44px;height:46px;border-radius:12px;background:var(--surface-2);display:grid;place-items:center;color:var(--faint);transition:background .12s,color .12s,transform .12s}
@@ -1008,7 +1011,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v156';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v157';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1743,7 +1746,7 @@ function targetTags(){ return []; }
 function targetTags_old(){ const t=Pf.targets, a=[]; if(t.steps) a.push(t.steps+' steps'); if(t.cal) a.push(t.cal+' cal'); if(t.protein) a.push(t.protein+' protein'); if(t.sleep) a.push(t.sleep+' sleep'); return a; }
 function weighCard(){ const last=Pf.bwLog[Pf.bwLog.length-1], today=last&&sameDay(last.t,Date.now());
   return `<section class="card rowx weigh" style="gap:10px;padding:12px 14px"><span class="ico">${ic('scale','sm')}</span>
-    ${today&&!S.bwEdit?`<span style="color:var(--good);display:inline-flex">${ic('check','sm')}</span><div style="flex:1;min-width:0"><b>${fmtN(last.w)} ${Pf.unit}</b> <span class="muted small">logged today</span></div><button class="link small" data-a="bw-edit">Update</button>`
+    ${today&&!S.bwEdit?`<span style="color:var(--good);display:inline-flex">${ic('check','sm')}</span><div style="flex:1;min-width:0"><b>${fmtN(last.w)} ${Pf.unit}</b> <span class="muted small">logged today</span></div><button class="btn" style="width:auto;flex:none" data-a="bw-edit">Update</button>`
     :`<div style="flex:1;min-width:0"><div class="inwrap"><input class="input num" id="bw-today" inputmode="decimal" placeholder="Weigh-in${last?' (last '+fmtN(last.w)+')':''}" style="height:44px"><span class="suf">${Pf.unit}</span></div></div><button class="btn sm primary" style="width:auto;flex:none;height:44px" data-a="bw-today">Log</button>`}</section>`; }
 function nameAsk(){ return S.nameTaken?`<section class="card stack" style="gap:8px;border-color:var(--bad)"><b>@${esc(Pf.username)} belongs to someone else</b><span class="muted small">Someone else has this username. Pick a new one.</span><button class="btn primary" data-a="edit-profile">Change username</button></section>`:''; }
 function realNameAsk(){ return Pf.onboarded&&!Pf.official&&!Pf.nameSkip&&!String(Pf.realName||'').trim()?`<section class="card stack" style="gap:8px"><b>Add your name</b><span class="muted small">Helps friends find you.</span><button class="btn" data-a="edit-profile">Add my name</button></section>`:''; }
@@ -1760,7 +1763,7 @@ function vChecklist(){
     ${tags.length?`<div class="rowx" style="gap:6px;flex-wrap:wrap;margin-bottom:6px">${tags.map(x=>`<span class="tag">${esc(x)}</span>`).join('')}</div>`:''}
     ${S.clDel?`<div class="card rowx" style="gap:8px;padding:10px 12px;margin-bottom:6px"><span style="flex:1;min-width:0">Remove “${esc((Pf.checklist.find(c=>c.id===S.clDel)||{}).t||'')}”?</span><button class="btn sm" style="width:auto" data-a="cl-keep">Keep</button><button class="btn sm danger" style="width:auto" data-a="cl-del" data-v="${esc(S.clDel)}">Remove</button></div>`:''}
     ${items.map(c=>`<div class="chkrow"><button class="chk ${done.has(c.id)?'on':''}" data-a="chk" data-v="${esc(c.id)}" data-hold="${esc(c.id)}"><span class="box">${ic('check','xs')}</span><span>${esc(c.t)}</span></button><button class="iconbtn chkx" data-a="cl-ask" data-v="${esc(c.id)}" aria-label="Remove ${esc(c.t)}">${ic('x','xs')}</button></div>`).join('')}
-    <div class="rowx" style="gap:8px;margin-top:8px"><input class="input" id="cl-new" maxlength="60" placeholder="Add to your list"><button class="btn" style="width:auto;flex:none" data-a="cl-add">Add</button></div>
+    <div class="rowx" style="gap:8px;margin-top:8px"><input class="input" id="cl-new" maxlength="60" placeholder="Add to your list"><button class="btn primary" style="width:auto;flex:none" data-a="cl-add">Add</button></div>
   </section>`;
 }
 // V1/V2 when the same day type appears more than once in the week (rest days never numbered)
@@ -2415,7 +2418,7 @@ function memberNo(uid){ const n=((Social.founders||{})[uid]); return n>=1&&n<=99
 // Streak ring: fills toward the next milestone (7, 30, 100, 365 days); sized to sit beside the bio
 function streakRing(uid,n,lines){ const M=[0,7,30,100,365,730], i=M.findIndex(m=>m>n), next=i<0?n+365:M[i], prev=i<0?n:M[i-1], f=Math.max(.04,Math.min(1,(n-prev)/Math.max(1,next-prev)));
   const sz=Math.max(52,Math.min(72,44+lines*7)), r=sz/2-4, C=2*Math.PI*r;
-  return `<button class="sring" data-a="ranks" data-v="${esc(uid)}" data-top="5" aria-label="${n} day streak, ${next-n} days to ${next}"><span class="srwrap" style="width:${sz}px;height:${sz}px"><svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" aria-hidden="true"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="5"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="var(--streak)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(C*f).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 ${sz/2} ${sz/2})"/></svg><span class="srin">${ic('flame','xs')}<b class="num" style="font-size:${Math.round(sz*.3)}px">${n}</b></span></span><span class="srl">day streak</span><span class="srs">${next-n} to ${next}</span></button>`; }
+  return `<button class="sring" data-a="ranks" data-v="${esc(uid)}" data-top="5" aria-label="${n} day streak, ${n} of ${next} days, ${next-n} left"><span class="srwrap" style="width:${sz}px;height:${sz}px"><svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" aria-hidden="true"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="5"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="var(--streak)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(C*f).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 ${sz/2} ${sz/2})"/></svg><span class="srin">${ic('flame','xs')}<b class="num" style="font-size:${Math.round(sz*.3)}px">${n}</b></span></span><span class="srl">day streak</span><span class="srs">${n} of ${next} · ${next-n} left</span></button>`; }
 function pinSort(list,pins){ pins=(pins||[]).filter(id=>list.some(p=>p.id===id)).slice(0,3); return [...pins.map(id=>list.find(p=>p.id===id)),...list.filter(p=>!pins.includes(p.id)).sort((a,b)=>b.at-a.at)]; }
 const pinIco=on=>on?`<i class="ppinned" aria-label="Pinned">${ic('pin','xs')}</i>`:'';
 function taggedPosts(uid){ const u=String(((cardOf(uid)||{}).username)||'').toLowerCase(); if(!u) return []; const re=new RegExp('@'+u.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?![A-Za-z0-9._])','i'), out=[];
@@ -2826,7 +2829,7 @@ function vSheet(){
           <div class="card stack fincard" style="gap:12px"><div class="field"><span class="flabel">Style</span>${chipRow('ov-style',String(sh.style||0),{0:'Weight',1:'Time',2:'Carried',3:'Rowboats'})}</div>
           <div class="field"><span class="flabel">Text</span>${seg('ov-tone',sh.tone||'light',{light:'White',dark:'Black',none:'None'})}</div></div></div>`
           :`<button class="btn" data-a="pump-finish">${ic('camera','sm')}Add pump picture</button>`}
-        ${sh.pump?'<div class="card stack fincard" style="gap:12px">':''}<div class="field"><label for="f-cap">Comment</label><input class="input" id="f-cap" maxlength="200" placeholder="How did it go? (optional)" value="${esc(sh.caption||'')}"></div>
+        ${sh.pump?'<div class="card stack fincard" style="gap:12px">':''}<div class="field"><label for="f-cap">Caption</label><input class="input" id="f-cap" maxlength="200" placeholder="Caption your workout (optional)" value="${esc(sh.caption||'')}"></div>
         ${sh.pump?`${Social.postedToday()?`<div class="muted small">You’ve shared 3 posts today, so this one is saved privately.</div>`:''}<div class="finpost"><button class="finbtn" data-a="save-private"><span class="fi">${ic('lock')}</span><span><b>Private</b><small>Only you can see it</small></span></button><button class="finbtn pub" data-a="fin-share"><span class="fi">${ic('send')}</span><span><b>Public</b><small>Post it and share your story</small></span></button></div></div>`:''}
         ${sh.pump?'':Social.postedToday()?`<div class="muted small">You’ve shared 3 workouts today, the daily limit.</div>`:!sh.pump?`<div class="muted small">${ic('camera','xs')} Add a pump picture to share this to the feed. Without one it’s saved privately to your profile.</div>`
           :`<button class="li" style="padding:6px 0" data-a="share-tog"><span class="grow"><span class="t">Post voyage</span><br><span class="s">${sh.share?'Public: friends see it in their feed':'Private: saved to your profile, only you see it'}</span></span><span class="toggle ${sh.share?'on':''}"></span></button>`}
@@ -2910,7 +2913,7 @@ function vSheet(){
           return `<div class="range" style="padding:12px 14px;gap:8px"><div class="rowx"><span class="h2 num" id="adj-l-${i}">${g.dir>0?'+':'−'}${fmtN(amt)} ${Pf.unit}</span><span class="spacer"></span><span class="muted small num" id="adj-n-${i}">${fmtN(g.top)} → ${fmtN(nw)} ${Pf.unit}</span></div>
             <input type="range" id="adj-${i}" data-adj="${i}" min="${r.min}" max="${r.max}" step="${r.step}" value="${amt}" aria-label="How much to change the weight">
             <div class="ticks"><span>${fmtN(r.min)}</span><span>Recommended ${fmtN(recAdj(g))}</span><span>${fmtN(r.max)} ${Pf.unit}</span></div></div>
-            <button class="btn primary" data-a="adj-apply" data-v="${i}">${g.dir>0?'Go up':'Go down'} to <span id="adj-b-${i}">${fmtN(nw)}</span> ${Pf.unit}</button><button class="link" data-a="adj-skip" data-v="${i}">Keep ${fmtN(g.top)} ${Pf.unit}</button>`; })()}
+            <div class="grid2 adjbtns"><button class="btn" data-a="adj-skip" data-v="${i}">Keep weight</button><button class="btn primary" data-a="adj-apply" data-v="${i}">${g.dir>0?'Increase weight':'Decrease weight'}<span id="adj-b-${i}" hidden>${fmtN(nw)}</span></button></div>`; })()}
       </div>`}).join('')+`<button class="btn primary" data-a="close-sheet">Done</button>`);
   }
   if(sh.kind==='block'){ const b=BLOCKS[Pf.goal]||BLOCKS.maintain;
