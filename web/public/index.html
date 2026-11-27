@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#18303B">
+<meta name="theme-color" content="#222221">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -1013,23 +1013,39 @@ body.sideways #rotcover{display:flex}body.sideways{overflow:hidden}
   .bootmark,.shinymark{animation-name:shine!important;animation-duration:2.6s!important;animation-iteration-count:infinite!important;animation-timing-function:linear!important}}
 </style>
 <style id="glass">
-/* Ocean mist + liquid glass (dark theme) */
-:root[data-theme="dark"]{ --bg:#0F1214; --surface:#192024; --surface-2:#232B30; --line:#28323A; --gl:rgba(26,34,40,.55); --gl-edge:rgba(170,215,240,.16); --gl-hi:rgba(255,255,255,.16); }
+/* Liquid glass on gray (dark theme) */
+:root[data-theme="dark"]{ --bg:#111110; --surface:#1C1C1B; --surface-2:#262625; --line:#2E2D2B; --gl:rgba(26,34,40,.55); --gl-edge:rgba(170,215,240,.16); --gl-hi:rgba(255,255,255,.16);
+  --g-fill:rgba(255,255,255,.06); --g-fill2:rgba(255,255,255,.035); --g-edge:rgba(255,255,255,.12); --g-hi:rgba(255,255,255,.12); --g-pane:rgba(30,30,29,.72); }
 :root[data-theme="dark"] body{background:transparent}
-:root[data-theme="dark"] body::before{content:"";position:fixed;inset:-80px 0;z-index:-1;pointer-events:none;background:radial-gradient(130% 48% at 50% 0%,#21404f 0%,rgba(24,40,50,.6) 34%,rgba(15,18,20,0) 72%),radial-gradient(90% 35% at 100% 100%,rgba(40,90,115,.22),rgba(0,0,0,0) 70%)}
-:where(:root[data-theme="dark"]) .card{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.028));border-color:rgba(255,255,255,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.07)}
+:root[data-theme="dark"] body::before{content:"";position:fixed;inset:-80px 0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,#242423 0%,#151514 38%,#0c0c0b 100%)}
+/* cards */
+:where(:root[data-theme="dark"]) .card{background:linear-gradient(180deg,var(--g-fill),var(--g-fill2));border-color:var(--g-edge);box-shadow:inset 0 1px 0 var(--g-hi),0 8px 24px rgba(0,0,0,.28)}
+/* text boxes, toggles, chips and plain buttons blend with the glass */
+:where(:root[data-theme="dark"]) .input{background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+:where(:root[data-theme="dark"]) .input:focus{border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.07)}
+:where(:root[data-theme="dark"]) .seg{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+:where(:root[data-theme="dark"]) .seg button.on{background:rgba(255,255,255,.13);box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+:where(:root[data-theme="dark"]) .chip{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1)}
+:where(:root[data-theme="dark"]) .btn:not(.primary):not(.danger):not(.ghost){background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.11);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+:where(:root[data-theme="dark"]) .btn.primary{box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 6px 18px rgba(0,0,0,.3)}
+:where(:root[data-theme="dark"]) .stepper button{background:rgba(255,255,255,.06)}
+:root[data-theme="dark"] .finstats>div{background:linear-gradient(180deg,var(--g-fill),var(--g-fill2));border:1px solid var(--g-edge);box-shadow:inset 0 1px 0 var(--g-hi)}
+/* menu bar: unchanged glass */
 :root[data-theme="dark"] .tabbar nav{background:var(--gl)!important;backdrop-filter:blur(26px) saturate(1.6)!important;-webkit-backdrop-filter:blur(26px) saturate(1.6)!important;border:1px solid var(--gl-edge)!important;box-shadow:inset 0 1px 0 var(--gl-hi),0 14px 34px rgba(0,0,0,.5)!important}
-:root[data-theme="dark"] .sheet{background:rgba(19,25,29,.8);backdrop-filter:blur(30px) saturate(1.5);-webkit-backdrop-filter:blur(30px) saturate(1.5);border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 30px 70px rgba(0,0,0,.55)}
-:root[data-theme="dark"] .askbox{background:rgba(22,29,34,.78);backdrop-filter:blur(30px) saturate(1.5);-webkit-backdrop-filter:blur(30px) saturate(1.5);border:1px solid var(--gl-edge);box-shadow:inset 0 1px 0 var(--gl-hi),0 30px 70px rgba(0,0,0,.55)}
-:root[data-theme="dark"] .notebar{background:rgba(26,34,40,.62)!important;backdrop-filter:blur(26px) saturate(1.6)!important;-webkit-backdrop-filter:blur(26px) saturate(1.6)!important;border:1px solid var(--gl-edge)!important;box-shadow:inset 0 1px 0 var(--gl-hi),0 14px 34px rgba(0,0,0,.5)!important;color:var(--fg)!important}
-:root[data-theme="dark"] .toast{background:rgba(24,31,36,.74)!important;color:var(--fg)!important;backdrop-filter:blur(26px) saturate(1.6);-webkit-backdrop-filter:blur(26px) saturate(1.6);border:1px solid var(--gl-edge);box-shadow:inset 0 1px 0 var(--gl-hi),0 20px 50px rgba(0,0,0,.5)}
+/* panes: sheets, pop-ups, banners, toasts */
+:root[data-theme="dark"] .sheet{background:var(--g-pane);backdrop-filter:blur(30px) saturate(1.5);-webkit-backdrop-filter:blur(30px) saturate(1.5);border:1px solid var(--g-edge);box-shadow:inset 0 1px 0 var(--g-hi),0 30px 70px rgba(0,0,0,.55)}
+:root[data-theme="dark"] .sheet.full{background:linear-gradient(180deg,#242423 0%,#151514 38%,#0f0f0e 100%);backdrop-filter:none;-webkit-backdrop-filter:none;border:0;box-shadow:none}
+:root[data-theme="dark"] .askbox{background:rgba(34,34,33,.74);backdrop-filter:blur(30px) saturate(1.5);-webkit-backdrop-filter:blur(30px) saturate(1.5);border:1px solid var(--g-edge);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 30px 70px rgba(0,0,0,.55)}
+:root[data-theme="dark"] .notebar{background:rgba(40,40,38,.62)!important;backdrop-filter:blur(26px) saturate(1.6)!important;-webkit-backdrop-filter:blur(26px) saturate(1.6)!important;border:1px solid var(--g-edge)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 14px 34px rgba(0,0,0,.5)!important;color:var(--fg)!important}
+:root[data-theme="dark"] .toast{background:rgba(36,36,35,.74)!important;color:var(--fg)!important;backdrop-filter:blur(26px) saturate(1.6);-webkit-backdrop-filter:blur(26px) saturate(1.6);border:1px solid var(--g-edge);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 20px 50px rgba(0,0,0,.5)}
 :root[data-theme="dark"] .toast .tico{background:var(--fg);color:var(--bg)}
-:root[data-theme="dark"] #undobar{background:rgba(24,31,36,.78);color:var(--fg);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid var(--gl-edge);box-shadow:inset 0 1px 0 var(--gl-hi),0 14px 34px rgba(0,0,0,.5)}#undobar button{background:var(--fg)!important;color:var(--bg)!important}
-:root[data-theme="dark"] body.feedscrolled .fhead3{background:linear-gradient(180deg,rgba(15,20,24,.78) 0%,rgba(15,20,24,.5) 70%,rgba(15,20,24,0) 100%)!important}
-:root[data-theme="dark"] .scrim{background:rgba(5,10,14,.45)}
+:root[data-theme="dark"] #undobar{background:rgba(36,36,35,.78);color:var(--fg);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid var(--g-edge);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 14px 34px rgba(0,0,0,.5)}#undobar button{background:var(--fg)!important;color:var(--bg)!important}
+:root[data-theme="dark"] body.feedscrolled .fhead3{background:linear-gradient(180deg,rgba(20,20,19,.8) 0%,rgba(20,20,19,.5) 70%,rgba(20,20,19,0) 100%)!important}
+:root[data-theme="dark"] .scrim{background:rgba(0,0,0,.42)}
 /* New in BOATS card */
 .wnbox{text-align:left!important;gap:10px!important;padding:22px 20px 18px!important;max-width:340px!important}.wnbox .wneb{font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--accent)}.wnbox b.wnt{font-family:var(--display);font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.15}.wnbox .wnx{font-size:14px;color:var(--muted);line-height:1.45}
 .wnbox .wnic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(160deg,rgba(91,192,235,.28),rgba(91,192,235,.08));border:1px solid rgba(91,192,235,.3);color:var(--accent);box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}.wnbox .askbtns{display:grid;grid-template-columns:1fr 1.3fr;gap:8px;margin-top:6px}.wnbox .askbtns .btn{margin:0}
+.wnbox .wnic{background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.05))!important;border:1px solid rgba(255,255,255,.18)!important;color:var(--fg)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.25)!important}
 </style>
 
 <div id="app"><div class="bootload" role="status" aria-label="Loading BOATS"><div class="floatboat bigboat" aria-hidden="true"><span class="pboat"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15.5h18l-2.2 4H5.2z"/><path d="M12 3.5v12M12 4.5l6 9H12"/><path d="M12 7l-4.5 6.5H12"/></svg></span><span class="pwave"><svg viewBox="0 0 120 10" width="120" height="10" aria-hidden="true"><path d="M0 5 Q7.5 0 15 5 T30 5 T45 5 T60 5 T75 5 T90 5 T105 5 T120 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span></div></div></div>
@@ -1052,7 +1068,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v163';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v164';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1575,7 +1591,7 @@ function whatsNew(force){ const w=WHATS_NEW; if(!w||!Pf||!Pf.onboarded) return; 
 function undoToast(msg,act){ document.getElementById('undobar')?.remove(); const el=document.createElement('div'); el.id='undobar'; el.innerHTML=`<span>${esc(msg)}</span><button data-a="${act}">Undo</button>`; document.body.appendChild(el); clearTimeout(undoToast.t); undoToast.t=setTimeout(()=>el.remove(),4500); }
 function askConfirm(title,sub,yes,fn,no){ ASKFN=fn; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="alertdialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${sub?`<span class="muted small">${esc(sub)}</span>`:''}<div class="askbtns"><button class="btn" data-a="ask-no">${esc(no||'Cancel')}</button><button class="btn ${askConfirm.safe?'primary':'danger'}" data-a="ask-yes">${esc(yes)}</button></div></div></div>`; }
 let rootTheme = document.documentElement.getAttribute('data-theme');
-function applyTheme(){ const r=document.documentElement; if(Pf.theme!=='light') Pf.theme='dark'; if(Pf.theme==='system'){ if(rootTheme) r.setAttribute('data-theme',rootTheme); else r.removeAttribute('data-theme'); } else r.setAttribute('data-theme',Pf.theme); try{ const col=Pf.theme==='light'?'#F5F4F0':'#18303B'; document.querySelectorAll('meta[name="theme-color"]').forEach(m=>{ m.setAttribute('content',col); m.removeAttribute('media'); }); }catch(e){} }
+function applyTheme(){ const r=document.documentElement; if(Pf.theme!=='light') Pf.theme='dark'; if(Pf.theme==='system'){ if(rootTheme) r.setAttribute('data-theme',rootTheme); else r.removeAttribute('data-theme'); } else r.setAttribute('data-theme',Pf.theme); try{ const col=Pf.theme==='light'?'#F5F4F0':'#222221'; document.querySelectorAll('meta[name="theme-color"]').forEach(m=>{ m.setAttribute('content',col); m.removeAttribute('media'); }); }catch(e){} }
 
 const TOAST_SHOW=/Enter a |microphone|recording|voice note|Max |can't|cannot|could not|couldn|first|limit|Pick |needs|failed|broke|No |not in|isn't|Add a|Give |Paste|Long-press|minimum|Something/i;
 function popCue(){ if(!Pf||!Pf.sound) return; const c=ac(); if(!c) return; const t=c.currentTime, o=c.createOscillator(), g=c.createGain(); o.type='sine'; o.frequency.setValueAtTime(620,t); o.frequency.exponentialRampToValueAtTime(980,t+.07); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.13,t+.01); g.gain.exponentialRampToValueAtTime(0.0001,t+.14); o.connect(g).connect(c.destination); o.start(t); o.stop(t+.16); }
