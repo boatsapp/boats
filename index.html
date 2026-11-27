@@ -163,7 +163,7 @@ body.swipeback{background:var(--bg)!important;overflow:hidden;touch-action:none}
 .modbox{border-style:dashed}.modw summary{cursor:pointer;list-style:none}.modw .exline{padding:4px 0}.modmsg{padding:4px 0;border-top:1px solid var(--line);font-size:14px;word-break:break-word}
 .rangenote{display:block;font-size:12px;color:var(--bad);margin-top:4px}
 .ckrow{display:flex;gap:10px;align-items:flex-start}.ckbox{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;margin-top:1px}.ckrow.ok .ckbox{background:var(--good);border-color:var(--good);color:#fff}
-.splitchips{display:grid;grid-template-columns:1fr 1fr;gap:8px}.splitchip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:inherit;text-align:left}.splitchip b{font-size:15px}.splitchip small{font-size:11.5px;color:var(--muted);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.splitchip.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}.splitchip .rtag{font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
+.splitchips{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:8px}.splitchip{position:relative;padding-right:30px!important}.rtag{position:absolute;top:9px;right:9px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accent);padding:0!important;margin:0!important;font-size:0!important}.rtag svg{width:11px;height:11px;fill:currentColor}.rtag.inl{position:static}.splitchip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:inherit;text-align:left}.splitchip b{font-size:15px}.splitchip small{font-size:11.5px;color:var(--muted);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.splitchip.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}.splitchip .rtag{font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
 .reqtxt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;white-space:normal;word-break:break-word}
 .dmtools{display:flex;align-items:center;gap:14px;align-self:center;padding-right:2px}
 .dmtools button{border:0;background:none;padding:0;color:#fff;display:grid;place-items:center}
@@ -203,6 +203,11 @@ body.swipeback #app .screen,body.swipeback #app .chatwrap{box-shadow:-18px 0 40p
 .fabpost.fadeaway{opacity:0;pointer-events:none;transform:scale(.85)}
 .fbk.insess{bottom:calc(var(--tab-h) + 14px + env(safe-area-inset-bottom,0px))}
 .fincard{padding:14px}
+.finstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.finstats>div{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:12px;border-radius:14px;background:var(--surface)}.finstats svg{color:var(--muted)}.finstats b{font-family:var(--display);font-size:20px;font-weight:800;white-space:nowrap}.finstats span{font-size:12px;color:var(--muted)}
+.rmtime{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;-webkit-appearance:none;appearance:none;text-align:left}.rmtime::-webkit-date-and-time-value{text-align:left}
+.findel{color:var(--bad)!important}
+.fincap{position:relative}.fincap .input{width:100%;padding-right:54px}.fincam{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:12px;border:0;background:var(--surface-2,#2a2a28);color:var(--fg);display:grid;place-items:center}
+.finend{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}.finend .btn{height:52px;margin:0}
 .finpost{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .finpost2{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}.finpost2 button{height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:8px;font:800 16px/1 inherit;font-family:inherit}.fsave{border:1.5px solid color-mix(in srgb,var(--fg) 25%,transparent);background:none;color:var(--fg)}.fpost{border:0;background:var(--fg);color:var(--bg)}.fpost:disabled{opacity:.4}
 .fstory{height:46px}
@@ -912,7 +917,7 @@ body.barmini .fhead3{transform:translateY(-100%)}
 .cdstep{display:grid;grid-template-columns:48px 1fr 48px;align-items:center;gap:8px}.cdstep button{height:44px;border-radius:12px;border:0;background:rgba(0,0,0,.25);color:var(--fg);font:700 20px/1 inherit;font-family:inherit}.cdstep span{text-align:center;font-size:15px;color:var(--fg)}.cdstep b{font-size:22px}
 .session,.session .card,#car,.ex-card{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.session input,.session textarea,#car input,#car textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 #cropcv{touch-action:none}
-#rotcover{position:fixed;inset:0;z-index:5000;display:none;flex-direction:column;gap:14px;align-items:center;justify-content:center;background:var(--bg);color:var(--fg);font-weight:700;font-size:18px;text-align:center;padding:24px;touch-action:none}
+#rotcover .pwave svg{animation-play-state:running!important}#rotcover{position:fixed;inset:0;z-index:5000;display:none;flex-direction:column;gap:14px;align-items:center;justify-content:center;background:var(--bg);color:var(--fg);font-weight:700;font-size:18px;text-align:center;padding:24px;touch-action:none}
 body.sideways #rotcover{display:flex}body.sideways{overflow:hidden}
 .flash{position:fixed;top:-120px;bottom:-120px;left:-20px;right:-20px;z-index:1000;background:#fff;pointer-events:none;will-change:opacity;transform:translateZ(0);animation:flash 1.2s ease-out forwards}
 @keyframes flash{0%{opacity:.85}25%{opacity:0}45%{opacity:.6}100%{opacity:0}}
@@ -1001,7 +1006,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v161';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v162';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1413,7 +1418,7 @@ function watchSeen(){ if(!('IntersectionObserver' in window)) return; if(!SEENIO
   document.querySelectorAll('#feed article[data-key]').forEach(a=>SEENIO.observe(a)); }
 // Phones stay upright: a cover while sideways, and a clean reset when turned back
 (function(){ const mq=matchMedia('(orientation:landscape) and (max-height:520px)'); let was=false;
-  const apply=()=>{ const side=mq.matches; let c=document.getElementById('rotcover'); if(!c){ c=document.createElement('div'); c.id='rotcover'; c.innerHTML='<span class="pboat" style="line-height:0">'+ic('boat')+'</span><span>Turn your phone upright to use BOATS</span>'; document.body.appendChild(c); }
+  const apply=()=>{ const side=mq.matches; let c=document.getElementById('rotcover'); if(!c){ c=document.createElement('div'); c.id='rotcover'; c.innerHTML='<div class="floatboat bigboat" aria-hidden="true"><span class="pboat">'+ic('boat')+'</span>'+waveSvg()+'</div><span>Turn your phone upright to use BOATS</span>'; document.body.appendChild(c); }
     document.body.classList.toggle('sideways',side);
     if(was&&!side){ setTimeout(()=>{ document.documentElement.style.setProperty('--vvb','0px'); document.body.classList.remove('kbopen'); if(!S.sheet&&!askEl.innerHTML){ document.body.classList.remove('locked'); document.body.style.top=''; } window.scrollTo(0,window.scrollY); try{ render(); }catch(e){} repaint(); window.dispatchEvent(new Event('resize')); },250); }
     was=side; };
@@ -1518,7 +1523,7 @@ function savedNote(t){ const el=document.createElement('div'); el.className='sav
 function askInfo(title,sub){ ASKFN=null; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="alertdialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${sub?`<span class="muted small">${esc(sub)}</span>`:''}<div class="askbtns"><button class="btn primary" data-a="ask-no">OK</button></div></div></div>`; }
 function fmtTime12(t){ const [h,m]=String(t||'0:0').split(':').map(Number); return `${((h+11)%12)+1}:${String(m||0).padStart(2,'0')} ${h<12?'AM':'PM'}`; }
 function undoToast(msg,act){ document.getElementById('undobar')?.remove(); const el=document.createElement('div'); el.id='undobar'; el.innerHTML=`<span>${esc(msg)}</span><button data-a="${act}">Undo</button>`; document.body.appendChild(el); clearTimeout(undoToast.t); undoToast.t=setTimeout(()=>el.remove(),4500); }
-function askConfirm(title,sub,yes,fn,no){ ASKFN=fn; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="alertdialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${sub?`<span class="muted small">${esc(sub)}</span>`:''}<div class="askbtns"><button class="btn" data-a="ask-no">${esc(no||'Cancel')}</button><button class="btn danger" data-a="ask-yes">${esc(yes)}</button></div></div></div>`; }
+function askConfirm(title,sub,yes,fn,no){ ASKFN=fn; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="alertdialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${sub?`<span class="muted small">${esc(sub)}</span>`:''}<div class="askbtns"><button class="btn" data-a="ask-no">${esc(no||'Cancel')}</button><button class="btn ${askConfirm.safe?'primary':'danger'}" data-a="ask-yes">${esc(yes)}</button></div></div></div>`; }
 let rootTheme = document.documentElement.getAttribute('data-theme');
 function applyTheme(){ const r=document.documentElement; if(Pf.theme!=='light') Pf.theme='dark'; if(Pf.theme==='system'){ if(rootTheme) r.setAttribute('data-theme',rootTheme); else r.removeAttribute('data-theme'); } else r.setAttribute('data-theme',Pf.theme); try{ const col=Pf.theme==='light'?'#F5F4F0':'#0E0E0D'; document.querySelectorAll('meta[name="theme-color"]').forEach(m=>{ m.setAttribute('content',col); m.removeAttribute('media'); }); }catch(e){} }
 
@@ -1673,7 +1678,7 @@ const SPLITS={
 function recSplit(){ return ({beginner:'full',intermediate:'ul',advanced:'ppl'})[Pf.level||'beginner']||'full'; }
 function curSplit(){ return Object.keys(SPLITS).find(k=>SPLITS[k].days.every((t,i)=>Pf.split[DAYS[i][0]]===t)&&(S.route!=='onboard'||(S.obSet&&S.obSet.size===7))); }
 function popularSplits(){ const r=recSplit(), cur=curSplit(), order=[r,...['ppl','ul','bro','full'].filter(k=>k!==r)];
-  return `<div class="stack" style="gap:8px"><span class="flabel">Popular splits</span><div class="splitchips">${order.map(k=>{ const sp=SPLITS[k]; return `<button class="splitchip ${k===cur?'on':''}" data-a="split-use" data-v="${k}" aria-pressed="${k===cur}"><b>${esc(sp.n)}</b>${k===r?'<span class="rtag">Recommended</span>':''}<small>${esc(sp.d)}</small></button>`; }).join('')}</div></div>`; }
+  return `<div class="stack" style="gap:8px"><span class="flabel">Popular splits</span><div class="splitchips">${order.map(k=>{ const sp=SPLITS[k]; return `<button class="splitchip ${k===cur?'on':''}" data-a="split-use" data-v="${k}" aria-pressed="${k===cur}"><b>${esc(sp.n)}</b>${k===r?`<span class="rtag" aria-label="Recommended">${ic('star','xs')}</span>`:''}<small>${esc(sp.d)}</small></button>`; }).join('')}</div><span class="muted small rowx" style="gap:5px"><span class="rtag inl">${ic('star','xs')}</span>Recommended for your goal</span></div>`; }
 function splitShareRow(){ return `<button class="li card" style="padding:12px 16px" data-a="share-split"><span class="grow"><span class="t">Make my split public</span><br><span class="s">Others can view and copy it from your profile</span></span><span class="toggle ${Pf.shareSplit?'on':''}"></span></button>`; }
 
 /* ---------- views ---------- */
@@ -2470,7 +2475,7 @@ function profileBlock(uid,c,me){
 }
 function splitPayload(){ const types={}; for(const [k] of DAYS){ const t=Pf.split[k]; if(String(t).startsWith('x_')) types[t]=TYPES[t]; }
   return {split:{...Pf.split},types,plans:Object.fromEntries(DAYS.map(([k])=>[k,(Pf.plans[k]||[]).slice(0,14).map(p=>{ const e=exOf(p.exId); return {exId:p.exId,n:e.n,c:e.c,equip:p.equip||'',sets:p.sets||3,repMin:p.repMin||0,repMax:p.repMax||0,min:p.min||0}; })]))}; }
-function vPosts(){ const uid=S.postsOf, ps=(((Social.posts[uid]||{}).items)||[]).filter(p=>p.photo).sort((a,b)=>b.at-a.at);
+function vPosts(){ const uid=S.postsOf, all=(((Social.posts[uid]||{}).items)||[]).filter(p=>p.photo).sort((a,b)=>b.at-a.at), from=S.postsKey?all.findIndex(p=>uid+':'+p.id===S.postsKey):-1, ps=from>0?all.slice(from):all;
   return `<div class="screen">
     <div class="rowx" style="gap:6px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="posts-back" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">Posts</span></div>
     <div class="stack" id="feed" style="gap:26px">${ps.length?ps.map(p=>postCard(uid,p,uid===Social.me())).join(''):'<div class="card muted">No posts yet.</div>'}</div>
@@ -2631,7 +2636,6 @@ function vSettings(){
     <div><button class="link rowx" style="gap:4px" data-a="profile">${ic('back','sm')}Profile</button></div>
     <div class="rowx"><div class="stack" style="gap:4px"><span class="eyebrow">Profile</span><h1 class="h1">Settings</h1></div><span class="spacer"></span>${window.boatsAdmin?`<button class="iconbtn admbtn" data-a="admin" aria-label="Data center">${ic('chart')}</button>`:''}</div>
     ${isStandalone()?'':`<button class="btn primary instbtn" data-a="install">${ic('dl','sm')}Download App to Phone</button>`}
-    ${privacyNote()}
     <div class="stack" style="gap:8px"><span class="flabel">Sharing</span>
       <button class="li card" style="padding:12px 16px" data-a="show" data-v="status"><span class="grow"><span class="t">Gym status and streak</span><br><span class="s">Shown on your profile</span></span><span class="small muted" style="margin-right:6px">${Pf.show.status?'Public':'Private'}</span><span class="toggle ${Pf.show.status?'on':''}"></span></button>
       <button class="li card" style="padding:12px 16px" data-a="autoshare"><span class="grow"><span class="t">Share workouts by default</span><br><span class="s">Posts are public by default</span></span><span class="toggle ${Pf.autoShare!==false?'on':''}"></span></button>
@@ -2649,9 +2653,9 @@ function vSettings(){
       <div class="list">${[['heart','Apple Health','Body weight, workouts, steps, calories'],['heart','Android Health','Health Connect, including Samsung Health']].map(([i,n,d])=>`<div class="li"><span class="ico">${ic(i)}</span><span class="grow"><span class="t">${n}</span><br><span class="s">${d}</span></span><span class="tag">Soon</span></div>`).join('')}</div>
     <div class="list">
       <button class="li" data-a="sound"><span class="ico">${ic('sound')}</span><span class="grow"><span class="t">Sounds</span><br><span class="s">Workout and app sounds</span></span><span class="toggle ${Pf.sound?'on':''}"></span></button>
-      <button class="li" data-a="remind-open"><span class="ico">${ic('alarm')}</span><span class="grow"><span class="t">Workout reminders</span><br><span class="s">${Pf.remind&&Pf.remind.time?`Your training days at ${fmtTime12(Pf.remind.time)}`:'Add a reminder to your phone calendar'}</span></span>${ic('right','sm')}</button>
       <button class="li" data-a="flash"><span class="ico">${ic('bolt')}</span><span class="grow"><span class="t">Flash screen when rest ends</span><br><span class="s">A quick screen flash you can see without sound</span></span><span class="toggle ${Pf.flash?'on':''}"></span></button>
       <button class="li" data-a="vib"><span class="ico">${ic('vibrate')}</span><span class="grow"><span class="t">Vibrate when rest ends</span><br><span class="s">${false?'':'Buzzes your phone when the timer runs out'}</span></span><span class="toggle ${Pf.vibrate?'on':''}"></span></button>
+      <button class="li" data-a="remind-open"><span class="ico">${ic('alarm')}</span><span class="grow"><span class="t">Workout reminders</span><br><span class="s">${Pf.remind&&Pf.remind.time?`Your training days at ${fmtTime12(Pf.remind.time)}`:'Add a reminder to your phone calendar'}</span></span>${ic('right','sm')}</button>
       <button class="li" data-a="pdf-export"><span class="ico">${ic('cloud')}</span><span class="grow"><span class="t">${Store.mode==='cloud'?'Synced to your Claude account':'Saved on this device only'}</span><br><span class="s">${Store.workouts.length} workout${Store.workouts.length===1?'':'s'} logged · app ${BUILD}</span></span><span class="tag">${ic('down','xs')}PDF</span></button>
     </div>
     <div class="stack" style="gap:8px">
@@ -2840,25 +2844,20 @@ function vSheet(){
     const a=Pf.active, marked=a.items.flatMap(it=>it.sets.filter(s=>s.st));
     const v=a.items.reduce((t,it)=>it.cardio?t:t+it.sets.filter(s=>s.st).reduce((x,s)=>x+num(s.w)*num(s.r),0),0);
     const sc=streakCheck(a,elapsed(a)), lv=(LEVELS[Pf.level]||'Beginner')+' minimum';
-    return wrap(`<div class="rowx"><span class="h2" style="flex:1">End workout</span><button class="sbadge ${sc.ok?'on':''}" data-a="streak-info" aria-label="${sc.ok?'Counts toward your streak':'Does not count toward your streak yet'}. Tap for details">${ic('flame','sm')}${sc.ok?'Counts':'Doesn’t count'}</button></div>`,
-      `<div class="stats"><div class="stat"><div class="k">Time</div><div class="v num">${fmtDur(elapsed(a))}</div></div><div class="stat"><div class="k">Sets</div><div class="v num">${marked.filter((_,k)=>true).length}</div></div><div class="stat"><div class="k">Volume</div><div class="v num" style="white-space:nowrap">${fmtBig(v)}</div></div></div>
+    return wrap(`<div class="rowx" style="gap:8px"><span class="h2" style="flex:1">End workout</span><button class="sbadge ${sc.ok?'on':''}" data-a="streak-info" aria-label="${sc.ok?'Counts toward your streak':'Does not count toward your streak yet'}. Tap for details">${ic('flame','sm')}${sc.ok?'Counts':'Doesn’t count'}</button><button class="iconbtn findel" data-a="discard-ask" aria-label="Discard workout">${ic('trash','sm')}</button></div>`,
+      `<div class="finstats"><div>${ic('clock','sm')}<b class="num">${fmtDur(elapsed(a))}</b><span>Time</span></div><div>${ic('check','sm')}<b class="num">${marked.length}</b><span>Sets</span></div><div>${ic('dumbbell','sm')}<b class="num">${fmtBig(v)}</b><span>${Pf.unit} moved</span></div></div>
         <div class="card stack" style="gap:6px"><div class="rowx" style="gap:8px"><span class="h2" style="font-size:16px">Overview</span><span class="spacer"></span><span class="tag accent num">~${workoutKcal(a,Date.now())} kcal</span>${a.items.some(it=>!it.cardio&&it.sets.some(s=>s.st))?`<button class="link small finedit" data-a="fin-editw">${sh.editW?'Done':'Edit weights'}</button>`:''}</div>
-          ${sh.editW?finWeights(a):a.items.filter(it=>it.sets.some(s=>s.st)).map(it=>{ const d=it.sets.filter(s=>s.st), ok=d.filter(s=>s.st==='ok').length; return `<div class="exline" style="padding:6px 0"><span>${esc(exOf(it.exId).n)}${it.hurt?` <span style="color:var(--bad)">${ic('bandage','xs')}</span>`:''}</span><span class="r num">${it.cardio?`${esc(d[0].w)} min · ~${it.kcal||0} kcal`:setDots(d)}</span></div>`; }).join('')||'<span class="muted small">Nothing logged yet.</span>'}
-          <span class="muted small">Calories are estimates.</span></div>
+          ${sh.editW?finWeights(a):a.items.filter(it=>it.sets.some(s=>s.st)).map(it=>{ const d=it.sets.filter(s=>s.st), ok=d.filter(s=>s.st==='ok').length; return `<div class="exline" style="padding:6px 0"><span>${esc(exOf(it.exId).n)}${it.hurt?` <span style="color:var(--bad)">${ic('bandage','xs')}</span>`:''}</span><span class="r num">${it.cardio?`${esc(d[0].w)} min · ~${it.kcal||0} kcal`:setDots(d)}</span></div>`; }).join('')||'<span class="muted small">Nothing logged yet.</span>'}</div>
         ${sh.pump?`<div class="stack" style="gap:10px"><div class="rowx"><span class="h2" style="font-size:18px;flex:1">Share workout</span><button class="link small" data-a="pump-clear">Remove picture</button></div>
           <div class="ovstage photo"><canvas id="ovc" width="1080" height="1920" aria-label="Story preview"></canvas></div>
           <div class="card stack fincard" style="gap:12px"><div class="field"><span class="flabel">Style</span>${chipRow('ov-style',String(sh.style||0),{0:'Weight',1:'Time',2:'Carried',3:'Rowboats'})}</div>
           <div class="field"><span class="flabel">Text</span>${seg('ov-tone',sh.tone||'light',{light:'White',dark:'Black',none:'None'})}</div></div></div>`
-          :`<button class="btn" data-a="pump-finish">${ic('camera','sm')}Add pump picture</button>`}
-        ${sh.pump?'<div class="card stack fincard" style="gap:12px">':''}<div class="field"><label for="f-cap">Caption</label><input class="input" id="f-cap" maxlength="200" placeholder="Caption your workout (optional)" value="${esc(sh.caption||'')}"></div>
+          :''}
+        ${sh.pump?'<div class="card stack fincard" style="gap:12px">':''}<div class="fincap"><input class="input" id="f-cap" maxlength="200" placeholder="Caption your workout (optional)" value="${esc(sh.caption||'')}" aria-label="Caption">${sh.pump?'':`<button class="fincam" data-a="pump-finish" aria-label="Add a pump picture to post it">${ic('camera','sm')}</button>`}</div>
         ${sh.pump?`${Social.postedToday()?`<div class="muted small">You’ve shared 3 posts today, so this one is saved privately.</div>`:''}<div class="finpost2"><button class="fsave" data-a="save-private">${ic('lock','sm')}<span>Save</span></button><button class="fpost" data-a="fin-post" ${Social.postedToday()?'disabled':''}>${ic('send','sm')}<span>Post</span></button></div>
-        <div class="muted small" style="text-align:center;margin-top:-2px">Save keeps it private on your profile. Post shares it to the feed.</div>
-        <button class="btn fstory" data-a="fin-story">${ic('share','sm')}${sh.storyShared?'Shared to story · share again':'Share to story'}</button></div>`:''}
-        ${sh.pump?'':Social.postedToday()?`<div class="muted small">You’ve shared 3 workouts today, the daily limit.</div>`:!sh.pump?`<div class="muted small">${ic('camera','xs')} Add a pump picture to share this to the feed. Without one it’s saved privately to your profile.</div>`
-          :`<button class="li" style="padding:6px 0" data-a="share-tog"><span class="grow"><span class="t">Post voyage</span><br><span class="s">${sh.share?'Public: friends see it in their feed':'Private: saved to your profile, only you see it'}</span></span><span class="toggle ${sh.share?'on':''}"></span></button>`}
-        ${sh.pump?'':`<button class="btn primary" data-a="save-workout">End workout</button>`}
-        ${sh.pump?'':`<button class="btn" data-a="close-sheet">Not done</button>`}
-        <button class="btn ghost danger" data-a="discard">Discard workout</button>`);
+                <button class="btn fstory" data-a="fin-story">${ic('share','sm')}${sh.storyShared?'Shared to story · share again':'Share to story'}</button></div>`:''}
+        ${sh.pump?'':`<span class="muted small" style="margin-top:-4px">${ic('camera','xs')} Add a photo to post it. Otherwise it saves privately.</span>
+        <div class="finend"><button class="btn" data-a="close-sheet">Continue</button><button class="btn primary" data-a="save-workout">End</button></div>`}`);
   }
   if(sh.kind==='pump'){
     const w=Store.workouts.find(x=>x.id===sh.id); if(!w||!w.pump) return '';
@@ -2908,7 +2907,7 @@ function vSheet(){
   if(sh.kind==='remind'){ const days=DAYS.filter(([d])=>Pf.split[d]&&Pf.split[d]!=='rest');
     return wrap(`<div class="rowx"><span class="h2" style="flex:1">Workout reminders</span><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>`,
       `<p class="muted" style="margin:0">Get a reminder on each training day. It goes into your phone’s calendar, so it pops up even when BOATS is closed.</p>
-       <div class="field"><label for="rm-time">Reminder time</label><input class="input" id="rm-time" type="time" value="${esc(sh.time)}"></div>
+       <div class="field"><label for="rm-time">Reminder time</label><input class="input rmtime" id="rm-time" type="time" value="${esc(sh.time)}"></div>
        <div class="field"><span class="flabel">Training days</span><div class="rowx" style="gap:6px;flex-wrap:wrap">${days.length?days.map(([d,l])=>`<span class="tag">${l.slice(0,3)} · ${esc(workoutLabel(d))}</span>`).join(''):'<span class="muted small">No training days yet. Set your weekly split first.</span>'}</div></div>
        <button class="btn primary" data-a="remind-ics" ${days.length?'':'disabled'}>${ic('alarm','sm')}Add to my calendar</button>
        <span class="muted small">Change your split later? Add the reminders again and delete the old ones in your calendar.</span>`); }
@@ -3099,7 +3098,7 @@ function devPanel(){
 const VSTACK=[]; let VK='';
 // Page history for back buttons: always return to the page you were on
 const NAVH=[]; const NAVF=['route','tab','fview','meView','personId','plist','postsOf','chatWith','flTab'];
-function navPush(){ const o={y:window.scrollY}; NAVF.forEach(k=>o[k]=S[k]&&typeof S[k]==='object'?{...S[k]}:S[k]); const t=NAVH[NAVH.length-1]; if(t&&NAVF.every(k=>JSON.stringify(t[k])===JSON.stringify(o[k]))) return; NAVH.push(o); if(NAVH.length>30) NAVH.shift(); }
+function navPush(){ const o={y:window.scrollY}; NAVF.forEach(k=>o[k]=S[k]&&typeof S[k]==='object'?{...S[k]}:S[k]); const same=t=>t&&NAVF.every(k=>JSON.stringify(t[k])===JSON.stringify(o[k])); const j=NAVH.findIndex(same); if(j>=0){ NAVH.length=j; } NAVH.push(o); if(NAVH.length>30) NAVH.shift(); }
 function navBack(){ const o=NAVH.pop(); if(!o) return false; NAVF.forEach(k=>S[k]=o[k]); S.sheet=null; renderSheet(); render(); window.scrollTo(0,o.y||0); return true; }
 const viewKey=()=>JSON.stringify([S.route,S.tab,S.fview,S.meView,S.personId,S.postsOf,S.plist&&S.plist.uid+S.plist.tab,S.chatWith&&S.fview==='chat'?S.chatWith:'',S.planDay]);
 function render(){ if(document.body.classList.contains('swipeback')){ render._pend=true; return; } render._pend=false; const oldHTML=app.innerHTML, oldY=window.scrollY, k=viewKey();
@@ -3142,11 +3141,12 @@ document.addEventListener('touchmove',e=>{ if(e.target.closest&&e.target.closest
 // Swipe left or right on a main page to move between Feed, Plan, Lift, Progress and Profile
 const TABS=['friends','plan','today','progress','me']; let TSWP=null;
 function tabRoot(){ return S.route==='app'&&!S.sheet&&!askEl.innerHTML&&!S.personId&&!S.postsOf&&!S.plist&&!S.fview&&!S.meView&&!S.planDay&&TABS.includes(S.tab); }
-document.addEventListener('touchstart',e=>{ TSWP=null; if(!tabRoot()||e.touches.length>1) return; if(e.target.closest('.slides,.carousel,#car,#dots,input,textarea,select,[data-sw],.npthumbs,#cropcv,#avcv,.chat,.seg,.chips,.chipscroll,.gymrow,.actchips,.tagline,.wkpick,.splitchips,.tabbar,.range,[type=range],.heat,.sheet,.fhead3')) return;
-  const back=[...document.querySelectorAll('#app [aria-label="Back"]')].find(b=>b.offsetParent!==null); if(back) return;
-  TSWP={x:e.touches[0].clientX,y:e.touches[0].clientY,on:false,dx:0,i:TABS.indexOf(S.tab)}; },{passive:true});
+function tabLeftOnly(){ return S.route==='app'&&!S.sheet&&!askEl.innerHTML&&!!S.postsOf&&TABS.includes(S.tab); }
+document.addEventListener('touchstart',e=>{ TSWP=null; const lo=tabLeftOnly(); if(!(tabRoot()||lo)||e.touches.length>1) return; if(e.target.closest('.slides,.carousel,#car,#dots,input,textarea,select,[data-sw],.npthumbs,#cropcv,#avcv,.chat,.seg,.chips,.chipscroll,.gymrow,.actchips,.tagline,.wkpick,.splitchips,.tabbar,.range,[type=range],.heat,.sheet,.fhead3')) return;
+  const back=[...document.querySelectorAll('#app [aria-label="Back"]')].find(b=>b.offsetParent!==null); if(back&&!lo) return;
+  TSWP={x:e.touches[0].clientX,y:e.touches[0].clientY,on:false,dx:0,i:TABS.indexOf(S.tab),lo}; },{passive:true});
 document.addEventListener('touchmove',e=>{ if(!TSWP) return; const dx=e.touches[0].clientX-TSWP.x, dy=e.touches[0].clientY-TSWP.y;
-  if(!TSWP.on){ if(Math.abs(dx)<12&&Math.abs(dy)<12) return; if(Math.abs(dy)>Math.abs(dx)*.8){ TSWP=null; return; } TSWP.on=true; TSWP.pg=document.querySelector('#app .screen'); if(PTR) PTR=null; if(TSWP.pg){ TSWP.pg.style.transition='none'; TSWP.pg.style.willChange='transform,filter'; } }
+  if(!TSWP.on){ if(Math.abs(dx)<12&&Math.abs(dy)<12) return; if(Math.abs(dy)>Math.abs(dx)*.8||(TSWP.lo&&dx>0)){ TSWP=null; return; } TSWP.on=true; TSWP.pg=document.querySelector('#app .screen'); if(PTR) PTR=null; if(TSWP.pg){ TSWP.pg.style.transition='none'; TSWP.pg.style.willChange='transform,filter'; } }
   if(e.cancelable) e.preventDefault(); const nx=TSWP.i+(dx<0?1:-1), edge=nx<0||nx>=TABS.length, d=edge?dx/4:dx; TSWP.dx=dx;
   if(TSWP.pg){ const f=Math.min(1,Math.abs(d)/innerWidth); TSWP.pg.style.transform=`translateX(${d}px)`; TSWP.pg.style.filter=`blur(${(f*6).toFixed(2)}px)`; TSWP.pg.style.opacity=String(1-f*.35); } },{passive:false});
 document.addEventListener('touchend',()=>{ if(!TSWP) return; const t=TSWP; TSWP=null; if(!t.on||!t.pg) return; const nx=t.i+(t.dx<0?1:-1), ok=Math.abs(t.dx)>innerWidth*.22&&nx>=0&&nx<TABS.length, pg=t.pg;
@@ -3483,7 +3483,7 @@ const A = {
   's-go'(v){ if(S.dotDragAt&&Date.now()-S.dotDragAt<400) return; document.getElementById('car').scrollTo({left:(+v)*cardW(),behavior:'smooth'}); },
   's-mark'(v){
     const [i,j,kind]=v.split('.'), it=Pf.active.items[+i], s=it.sets[+j];
-    { const run=Pf.active.items.findIndex(x=>x.cardio&&x.tRun); if(run>=0&&!it.cardio&&!s.st){ const cn=exOf(Pf.active.items[run].exId).n; askConfirm('Pause cardio first',`Your ${cn} timer is still running. You can’t do ${exOf(it.exId).n} at the same time.`,'Pause cardio and log set',()=>{ A['c-toggle'](String(run)); A['s-mark'](v); },'Keep cardio going'); return; } }
+    { const run=Pf.active.items.findIndex(x=>x.cardio&&x.tRun); if(run>=0&&!it.cardio&&!s.st){ const cn=exOf(Pf.active.items[run].exId).n; askConfirm('Pause cardio first',`Your ${cn} timer is still running. You can’t do ${exOf(it.exId).n} at the same time.`,'Pause',()=>{ A['c-toggle'](String(run)); A['s-mark'](v); },'Keep going'); return; } }
     s.st = s.st===kind ? null : kind; if(!s.st) Pf.active.celebrated=false;
     if(s.st&&!it.cardio&&!num(s.r)) s.r=String(s.pr||it.repMax);
     if(s.st==='ok'&&!it.cardio&&num(s.r)<it.repMin) s.r=String(it.repMin);
@@ -3572,6 +3572,7 @@ const A = {
   'fin-noweight'(v){ const a=Pf.active, it=a&&a.items[+v]; if(!it||!S.sheet) return; readTitle(); const all=it.sets.filter(s=>s.st).every(s=>!num(s.w)); it.sets.forEach(s=>{ if(s.st){ if(all) s.w=s.w0||s.w; else { s.w0=s.w0||s.w; s.w='0'; } } }); Store.save(); renderSheet(); },
   'share-tog'(){ readTitle(); S.sheet.share=!S.sheet.share; renderSheet(); },
   'post-nofilter'(){ const sh=S.sheet; if(!sh) return; readTitle(); sh.share=true; sh.storyDone=true; return A['save-workout'](); },
+  'discard-ask'(){ askConfirm('Discard this workout?','Nothing from this session will be saved.','Discard',()=>A.discard(),'Keep it'); },
   'save-private'(){ const sh=S.sheet; if(!sh) return; readTitle(); sh.share=false; sh.storyDone=true; return A['save-workout'](); },
   'fin-post'(){ const sh=S.sheet; if(!sh||!Pf.active||S.saving) return; if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit. Save it and post tomorrow.'); return; } readTitle(); sh.share=true; sh.storyDone=true; return A['save-workout'](); },
   async 'fin-story'(){ const sh=S.sheet; if(!sh||!Pf.active) return; readTitle(); const b=await overlayBlob(); if(!b) return; try{ const f=new File([b],`boats-story-${dateKey()}.png`,{type:'image/png'}); if(navigator.canShare&&navigator.canShare({files:[f]})) await navigator.share({files:[f]}); else await shareOrSave(b,false); }catch(e){ if(e&&e.name==='AbortError') return; } if(S.sheet===sh){ sh.storyShared=true; renderSheet(); } },
@@ -3704,7 +3705,7 @@ const A = {
     try{ if(Store.db&&Store.uid){ const ref=Store.db.collection('feedback').doc(Store.uid); let prev=[]; try{ const g=await ref.get(); prev=((g&&g.data&&g.data())||{}).items||[]; }catch(e){} await ref.set({items:[...prev,item].slice(-100)}); } else { Pf.feedbackLocal=[...(Pf.feedbackLocal||[]),item].slice(-50); Store.save(); } }
     catch(e){ toast('Could not send that. Try again in a moment.'); return; }
     S.sheet.sent=true; renderSheet(); popCue(); },
-  'posts-open'(v){ navPush(); const [uid]=v.split(':'); S.sheet=null; renderSheet(); S.postsFrom=window.scrollY; S.postsOf=uid; S.route='app'; render(); requestAnimationFrame(()=>{ const a=document.querySelector(`article[data-key="${CSS.escape(v)}"]`); window.scrollTo(0,a?a.getBoundingClientRect().top+window.scrollY-12:0); }); },
+  'posts-open'(v){ if(!S.postsOf) navPush(); const [uid]=v.split(':'); S.sheet=null; renderSheet(); if(!S.postsOf) S.postsFrom=window.scrollY; S.postsOf=uid; S.postsKey=v; S.route='app'; render(); window.scrollTo(0,0); return; requestAnimationFrame(()=>{ const a=document.querySelector(`article[data-key="${CSS.escape(v)}"]`); window.scrollTo(0,a?a.getBoundingClientRect().top+window.scrollY-12:0); }); },
   'posts-back'(){ if(navBack()) return; S.postsOf=null; render(); window.scrollTo(0,S.postsFrom||0); },
   'person-back'(){ const ck=S.backComments, lk=S.backLikers; if(navBack()){ S.backComments=null; S.backLikers=null; if(ck) A['cm-open'](ck); else if(lk) A['likers-open'](lk); return; } S.personId=null; render(); window.scrollTo(0,S.personFrom||0); if(S.backComments){ const k=S.backComments; S.backComments=null; A['cm-open'](k); } else if(S.backLikers){ const k=S.backLikers; S.backLikers=null; A['likers-open'](k); } },
   async 'pdf-export'(){ boatLoading(true,'Making your PDF…'); try{ const blob=await buildPdf(); const name=`boats-${(Pf.username||'workouts').replace(/[^a-z0-9._-]/gi,'')}-${dateKey()}.pdf`;
