@@ -30,8 +30,7 @@ head='''<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#F5F4F0" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0E0E0D" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0E0E0D">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -70,6 +69,7 @@ open(os.path.join(pub,'manifest.webmanifest'),'w').write('''{
   "id": "/",
   "start_url": "/",
   "scope": "/",
+  "orientation": "portrait",
   "display": "standalone",
   "background_color": "#0E0E0D",
   "theme_color": "#F5F4F0",

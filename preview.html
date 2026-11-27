@@ -900,7 +900,12 @@ body.barmini .fhead3{transform:translateY(-100%)}
 .ring circle{fill:none;stroke-width:9}
 .ring .ring-bg{stroke:var(--surface-2)} .ring .ring-fg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 1s linear} .ring .ring-fg.over{stroke:var(--good)}
 .ring-txt{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
-.flash{position:fixed;inset:0;z-index:100;background:#fff;pointer-events:none;animation:flash 1.2s ease-out forwards}
+#bio-n.full{color:var(--bad);font-weight:700}
+.cdstep{display:grid;grid-template-columns:48px 1fr 48px;align-items:center;gap:8px}.cdstep button{height:44px;border-radius:12px;border:0;background:rgba(0,0,0,.25);color:var(--fg);font:700 20px/1 inherit;font-family:inherit}.cdstep span{text-align:center;font-size:15px;color:var(--fg)}.cdstep b{font-size:22px}
+.session,.session .card,#car,.ex-card{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.session input,.session textarea,#car input,#car textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+#cropcv{touch-action:none}
+@media (orientation:landscape) and (max-height:500px){ body::after{content:"Turn your phone upright to use BOATS";position:fixed;inset:0;z-index:5000;display:grid;place-items:center;background:var(--bg);color:var(--fg);font:700 18px/1.3 var(--body,system-ui);text-align:center;padding:24px} }
+.flash{position:fixed;top:-120px;bottom:-120px;left:-20px;right:-20px;z-index:1000;background:#fff;pointer-events:none;will-change:opacity;transform:translateZ(0);animation:flash 1.2s ease-out forwards}
 @keyframes flash{0%{opacity:.85}25%{opacity:0}45%{opacity:.6}100%{opacity:0}}
 .btn.liked{color:var(--bad);border-color:var(--bad-soft);background:var(--bad-soft)}
 .done-wrap{position:fixed;inset:0;z-index:45;display:grid;place-items:center;padding:24px max(20px,env(safe-area-inset-left,0px));background:color-mix(in srgb,var(--bg) 70%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:fadeS .25s ease}
@@ -988,7 +993,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v157';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v158';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1424,6 +1429,9 @@ function refreshSocial(){ setTimeout(notifyCheck,0);
 
 /* ---------- sound ---------- */
 let AC=null, NOISE=null;
+try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){}
+document.addEventListener('touchstart',()=>{ try{ if(AC&&AC.state!=='running') AC.resume(); }catch(e){} },{passive:true,capture:true});
+document.addEventListener('visibilitychange',()=>{ try{ if(!document.hidden&&AC&&AC.state!=='running') AC.resume(); }catch(e){} });
 function ac(){ try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); if(AC.state!=='running') AC.resume().catch(()=>{}); }catch(e){ AC=null; } return AC; }
 // iPhones pause web audio after the screen locks or another app plays sound; wake it on every touch so dings keep working
 let AU=false; document.addEventListener('pointerdown',()=>{ if(!Pf||!Pf.sound) return; const c=ac(); if(c&&!AU){ try{ const b=c.createBuffer(1,1,22050), s=c.createBufferSource(); s.buffer=b; s.connect(c.destination); s.start(0); AU=true; }catch(e){} } },true);
@@ -1485,7 +1493,7 @@ function savedNote(t){ const el=document.createElement('div'); el.className='sav
 function askInfo(title,sub){ ASKFN=null; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="alertdialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${sub?`<span class="muted small">${esc(sub)}</span>`:''}<div class="askbtns"><button class="btn primary" data-a="ask-no">OK</button></div></div></div>`; }
 function askConfirm(title,sub,yes,fn,no){ ASKFN=fn; askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox" data-stop role="alertdialog" aria-label="${esc(title)}"><b>${esc(title)}</b>${sub?`<span class="muted small">${esc(sub)}</span>`:''}<div class="askbtns"><button class="btn" data-a="ask-no">${esc(no||'Cancel')}</button><button class="btn danger" data-a="ask-yes">${esc(yes)}</button></div></div></div>`; }
 let rootTheme = document.documentElement.getAttribute('data-theme');
-function applyTheme(){ const r=document.documentElement; if(Pf.theme!=='light') Pf.theme='dark'; if(Pf.theme==='system'){ if(rootTheme) r.setAttribute('data-theme',rootTheme); else r.removeAttribute('data-theme'); } else r.setAttribute('data-theme',Pf.theme); }
+function applyTheme(){ const r=document.documentElement; if(Pf.theme!=='light') Pf.theme='dark'; if(Pf.theme==='system'){ if(rootTheme) r.setAttribute('data-theme',rootTheme); else r.removeAttribute('data-theme'); } else r.setAttribute('data-theme',Pf.theme); try{ const col=Pf.theme==='light'?'#F5F4F0':'#0E0E0D'; document.querySelectorAll('meta[name="theme-color"]').forEach(m=>{ m.setAttribute('content',col); m.removeAttribute('media'); }); }catch(e){} }
 
 const TOAST_SHOW=/Enter a |microphone|recording|voice note|Max |can't|cannot|could not|couldn|first|limit|Pick |needs|failed|broke|No |not in|isn't|Add a|Give |Paste|Long-press|minimum|Something/i;
 function popCue(){ if(!Pf||!Pf.sound) return; const c=ac(); if(!c) return; const t=c.currentTime, o=c.createOscillator(), g=c.createGain(); o.type='sine'; o.frequency.setValueAtTime(620,t); o.frequency.exponentialRampToValueAtTime(980,t+.07); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.13,t+.01); g.gain.exponentialRampToValueAtTime(0.0001,t+.14); o.connect(g).connect(c.destination); o.start(t); o.stop(t+.16); }
@@ -1603,7 +1611,10 @@ function townMsg(){ const t=String(dv('town')||'').trim(); if(!t) return '<span 
 function showTownSug(){ const i=document.getElementById('f-town'), box=document.getElementById('town-sug'); if(!i||!box) return; const m=placeValid(i.value)?[]:placeMatches(i.value);
   box.innerHTML=m.map(n=>`<button type="button" role="option" data-a="town-pick" data-v="${esc(n)}">${ic('pin','xs')}${esc(n)}</button>`).join(''); box.hidden=!m.length; i.setAttribute('aria-expanded',String(!!m.length)); }
 function privacyNote(){ return `<div class="card small" style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px">${ic('lock','sm')}<span>Everything here stays <b>private</b> until you make it public.</span></div>`; }
-const BIOFIELD=()=>`<div class="field"><label for="f-bio">About the Captain</label><textarea class="input" id="f-bio" maxlength="130" rows="3" placeholder="In fewer than 3 lines" data-f="bio" style="height:auto;padding:12px 14px;resize:none">${esc(dv('bio'))}</textarea></div>`;
+const BIOFIELD=()=>`<div class="field"><div class="rowx" style="gap:8px"><label for="f-bio" style="flex:1">About the Captain</label><span class="muted small num" id="bio-n">${bioLines(dv('bio'))}/3 lines</span></div><textarea class="input" id="f-bio" maxlength="130" rows="3" placeholder="Up to 3 lines" data-f="bio" style="height:auto;padding:12px 14px;resize:none">${esc(dv('bio'))}</textarea></div>`;
+function bioLines(txt){ txt=String(txt||''); if(!txt.trim()) return 0; try{ const sc=document.querySelector('#app .screen'), cs=sc&&getComputedStyle(sc), cw=sc?sc.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight):Math.min(innerWidth,520)-32;
+  let m=document.getElementById('biomeasure'); if(!m){ m=document.createElement('div'); m.id='biomeasure'; m.setAttribute('aria-hidden','true'); m.style.cssText='position:fixed;left:-9999px;top:0;visibility:hidden;pointer-events:none'; m.innerHTML='<div class="prof prof2"><div class="pinforow"><div class="pinfo"><p class="bio2" style="margin:0;white-space:pre-line;display:block;-webkit-line-clamp:unset;overflow:visible"></p></div><span class="sring"></span></div></div>'; document.body.appendChild(m); }
+  m.style.width=cw+'px'; const pEl=m.querySelector('p'); pEl.textContent=txt.replace(/\n$/,'\n\u200b'); const lh=parseFloat(getComputedStyle(pEl).lineHeight)||20; return Math.max(1,Math.round(pEl.scrollHeight/lh)); }catch(e){ return 1; } }
 const NAMEFIELD=gap=>`<label for="f-name" ${gap?'style="margin-top:10px"':''}>Your name <span class="muted" style="font-weight:500">(optional)</span></label><input class="input" id="f-name" maxlength="40" placeholder="Your name (optional)" autocomplete="off" autocorrect="off" value="${esc(dv('realName'))}" data-f="realName">`;
 function idFields(withBio,ob){
   return `<div class="rowx idrow" style="gap:16px;align-items:flex-start">
@@ -1676,7 +1687,7 @@ function vOnboard(){
     </div></div>`;
 }
 
-function homeTab(){ if(!Store.workouts.length) return 'friends'; const u=lsGet('boats.usage')||{}; return (u.lift||0)>(u.feed||0)?'today':'friends'; }
+function homeTab(){ return 'friends'; }
 // Only reopen a workout in progress if it's actually live (started in the last 3 hours)
 const liveWorkout = () => !!(Pf.active&&Date.now()-(Pf.active.startedAt||0)<3*3600e3);
 // Time spent on the feed vs. the workout side (Lift, Plan, Progress, a workout), counted on this phone
@@ -2396,7 +2407,7 @@ function memberNo(uid){ const n=((Social.founders||{})[uid]); return n>=1&&n<=99
 // Streak ring: fills toward the next milestone (7, 30, 100, 365 days); sized to sit beside the bio
 function streakRing(uid,n,lines){ const M=[0,7,30,100,365,730], i=M.findIndex(m=>m>n), next=i<0?n+365:M[i], prev=i<0?n:M[i-1], f=Math.max(.04,Math.min(1,(n-prev)/Math.max(1,next-prev)));
   const sz=Math.max(52,Math.min(72,44+lines*7)), r=sz/2-4, C=2*Math.PI*r;
-  return `<button class="sring" data-a="ranks" data-v="${esc(uid)}" data-top="5" aria-label="${n} day streak, ${n} of ${next} days, ${next-n} left"><span class="srwrap" style="width:${sz}px;height:${sz}px"><svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" aria-hidden="true"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="5"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="var(--streak)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(C*f).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 ${sz/2} ${sz/2})"/></svg><span class="srin">${ic('flame','xs')}<b class="num" style="font-size:${Math.round(sz*.3)}px">${n}</b></span></span><span class="srl">day streak</span><span class="srs">${n} of ${next} · ${next-n} left</span></button>`; }
+  return `<button class="sring" data-a="ranks" data-v="${esc(uid)}" data-top="5" aria-label="${n} day streak, ${n} of ${next} days, ${next-n} left"><span class="srwrap" style="width:${sz}px;height:${sz}px"><svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" aria-hidden="true"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="5"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="var(--streak)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(C*f).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 ${sz/2} ${sz/2})"/></svg><span class="srin">${ic('flame','xs')}<b class="num" style="font-size:${Math.round(sz*.3)}px">${n}</b></span></span><span class="srl">day streak</span><span class="srs">${next-n} left</span></button>`; }
 function pinSort(list,pins){ pins=(pins||[]).filter(id=>list.some(p=>p.id===id)).slice(0,3); return [...pins.map(id=>list.find(p=>p.id===id)),...list.filter(p=>!pins.includes(p.id)).sort((a,b)=>b.at-a.at)]; }
 const pinIco=on=>on?`<i class="ppinned" aria-label="Pinned">${ic('pin','xs')}</i>`:'';
 function taggedPosts(uid){ const u=String(((cardOf(uid)||{}).username)||'').toLowerCase(); if(!u) return []; const re=new RegExp('@'+u.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?![A-Za-z0-9._])','i'), out=[];
@@ -2563,6 +2574,7 @@ function vInstall(){ const pl=S.instTab||'ios', steps=INSTALL_STEPS[pl], i=Math.
     <span class="muted small" style="text-align:center">Check off each step to continue.</span>
   </div>${tabbar()}`; }
 let CRD=null;
+document.addEventListener('touchmove',e=>{ if(e.target.closest&&e.target.closest('#cropcv,#avcv')&&e.cancelable) e.preventDefault(); },{passive:false});
 document.addEventListener('pointerdown',e=>{ const cv=e.target.closest('#cropcv'), cur=npCur(); if(!cv||!S.np||!S.np.editing||!cur) return; e.preventDefault(); CRD={cv,x:e.clientX,y:e.clientY,cx:cur.crop.x,cy:cur.crop.y}; });
 document.addEventListener('pointermove',e=>{ if(!CRD) return; const cur=npCur(); if(!cur) return; const NPIMG=cur.im, np={crop:cur.crop}, g=npRegion(NPIMG,np.crop), k=g.sw/CRD.cv.getBoundingClientRect().width, ox=NPIMG.width-g.sw, oy=NPIMG.height-g.sh, cl=v=>Math.max(0,Math.min(1,v));
   if(ox>1) np.crop.x=cl(CRD.cx-(e.clientX-CRD.x)*k/ox); if(oy>1) np.crop.y=cl(CRD.cy-(e.clientY-CRD.y)*k/oy); npDraw(); });
@@ -2632,7 +2644,7 @@ function cardioCard(it,i){
   const settings = k==='fixed' ? `<div class="field"><span class="flabel">Effort</span><div class="seg" role="radiogroup">${[['easy','Easy'],['mod','Moderate'],['hard','Hard']].map(([v,l])=>`<button class="${(c.int||'mod')===v?'on':''}" data-a="c-int" data-v="${i}.${v}" role="radio" aria-checked="${(c.int||'mod')===v}">${l}</button>`).join('')}</div></div>`
     : k==='tread' ? `<div class="grid2">${field('speed','Speed',Pf.unit==='lb'?'mph':'km/h')}${field('incline','Incline','%')}</div>`
     : k==='res' ? field('res','Resistance','level','numeric') : field('level','Level','','numeric');
-  if(done) return `<div class="card" style="background:var(--good-soft);border-color:transparent"><div class="rowx"><span class="ico" style="background:var(--good);color:#fff">${ic('check','sm')}</span><div style="flex:1;min-width:0"><b>${esc(it.sets[0].w)} min logged</b><div class="muted small">About ${it.kcal||cardioKcal(it,num(it.sets[0].w))} kcal (estimate)</div></div><div class="stepper mini" style="flex:none"><button data-a="c-adj" data-v="${i}" data-d="-1" aria-label="1 minute less">−</button><input class="input num" value="${esc(it.sets[0].w)}" readonly aria-label="Minutes logged"><button data-a="c-adj" data-v="${i}" data-d="1" aria-label="1 minute more">+</button></div></div><button class="link" style="align-self:flex-start;margin-top:8px" data-a="c-undo" data-v="${i}">Undo</button></div>${settings}`;
+  if(done) return `<div class="card stack cdone" style="gap:12px;background:var(--good-soft);border-color:transparent"><div class="rowx" style="gap:12px"><span class="ico" style="background:var(--good);color:#fff;flex:none">${ic('check','sm')}</span><div style="flex:1;min-width:0"><b>${esc(it.sets[0].w)} min logged</b><div class="muted small">About ${it.kcal||cardioKcal(it,num(it.sets[0].w))} kcal (estimate)</div></div><button class="btn sm" style="width:auto;flex:none" data-a="c-undo" data-v="${i}">Undo</button></div><div class="cdstep"><button data-a="c-adj" data-v="${i}" data-d="-1" aria-label="1 minute less">−</button><span class="num"><b>${esc(it.sets[0].w)}</b> min</span><button data-a="c-adj" data-v="${i}" data-d="1" aria-label="1 minute more">+</button></div></div>${settings}`;
   return `<div class="cardio">
     <div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="${R}" class="ring-bg"/><circle cx="60" cy="60" r="${R}" class="ring-fg ${over?'over':''}" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-frac)}" data-cring="${i}"/></svg>
       <div class="ring-txt"><div class="clock num" data-cleft="${i}">${over?'+'+fmtUp(el-target):fmtClock(target-el)}</div><div class="muted small">${over?'past goal':'of '+(num(it.min)||20)+' min'}</div></div></div>
@@ -3082,7 +3094,7 @@ let RIO=null, DBL=null;
 document.addEventListener('dragstart',e=>{ if(e.target.closest&&e.target.closest('img,a,button')) e.preventDefault(); });
 setInterval(()=>{ if(askEl.querySelector('img[data-hq]')) hqScan(); },400);
 document.addEventListener('contextmenu',e=>{ if(e.target.tagName==='IMG') e.preventDefault(); });
-if(window.visualViewport){ const kb=()=>{ const v=visualViewport, r=document.documentElement.style; { const gap=Math.round(document.documentElement.clientHeight-(v.offsetTop+v.height)); r.setProperty('--vvb',(document.body.classList.contains('kbopen')||Math.abs(gap)<2||v.scale>1.01?0:-gap)+'px'); } r.setProperty('--vvh',Math.round(v.height)+'px'); r.setProperty('--vvt',Math.round(v.offsetTop)+'px'); document.body.classList.toggle('kbopen',innerHeight-v.height>150); const c=document.getElementById('chat'); if(c&&S.fview==='chat'&&c.dataset.end!=='0') c.scrollTop=c.scrollHeight; }; visualViewport.addEventListener('resize',kb); visualViewport.addEventListener('scroll',kb); window.addEventListener('scroll',()=>requestAnimationFrame(kb),{passive:true}); window.addEventListener('resize',kb); document.addEventListener('touchend',()=>setTimeout(kb,350),{passive:true}); kb(); }
+if(window.visualViewport){ const kb=()=>{ const v=visualViewport, r=document.documentElement.style; { const gap=Math.round(document.documentElement.clientHeight-(v.offsetTop+v.height)); r.setProperty('--vvb',(document.body.classList.contains('kbopen')||gap<2||v.scale>1.01?0:-gap)+'px'); } r.setProperty('--vvh',Math.round(v.height)+'px'); r.setProperty('--vvt',Math.round(v.offsetTop)+'px'); document.body.classList.toggle('kbopen',innerHeight-v.height>150); const c=document.getElementById('chat'); if(c&&S.fview==='chat'&&c.dataset.end!=='0') c.scrollTop=c.scrollHeight; }; visualViewport.addEventListener('resize',kb); visualViewport.addEventListener('scroll',kb); window.addEventListener('scroll',()=>requestAnimationFrame(kb),{passive:true}); window.addEventListener('resize',kb); document.addEventListener('touchend',()=>setTimeout(kb,350),{passive:true}); kb(); }
 // In a chat the page itself never moves: only a message list that's long enough to scroll can be dragged.
 document.addEventListener('touchmove',e=>{ if(e.target.closest&&e.target.closest('.photoview')){ if(e.cancelable) e.preventDefault(); return; } if(!document.body.classList.contains('chatopen')) return; const c=e.target.closest&&e.target.closest('#chat'); if(!c||c.scrollHeight<=c.clientHeight+1){ if(e.cancelable) e.preventDefault(); } },{passive:false});
 let PSW=null;
@@ -3159,7 +3171,7 @@ async function buildPdf(){ const M=50, W=612, H=792; const pages=[[]]; let y=H-M
   return makePdf(pages); }
 function boatLoading(on,label){ let el=document.getElementById('boatload'); if(on){ if(!el){ el=document.createElement('div'); el.id='boatload'; document.body.appendChild(el); } el.setAttribute('role','status'); el.innerHTML=`<div class="bl"><span class="pboat">${ic('boat')}</span>${waveSvg()}<span class="small">${esc(label||'Uploading…')}</span></div>`; el.hidden=false; } else if(el) el.hidden=true; }
 function ptrEl(){ let el=document.getElementById('ptr'); if(!el){ el=document.createElement('div'); el.id='ptr'; el.innerHTML=`<span class="pboat">${ic('boat')}</span>${waveSvg()}`; document.body.appendChild(el); } return el; }
-document.addEventListener('touchstart',e=>{ if(S.route!=='app'||S.sheet||window.scrollY>2||e.target.closest('.sheet,.tabbar,.invitebar,.slides,.chips,.npthumbs')) return; PTR={x0:e.touches[0].clientX,y0:e.touches[0].clientY,dy:0,scr:document.querySelector('#app .screen')}; },{passive:true});
+document.addEventListener('touchstart',e=>{ if(S.route!=='app'||S.sheet||window.scrollY>2||e.target.closest('.sheet,.tabbar,.invitebar,.chips,.npthumbs,#cropcv,#avcv')) return; PTR={x0:e.touches[0].clientX,y0:e.touches[0].clientY,dy:0,scr:document.querySelector('#app .screen')}; },{passive:true});
 document.addEventListener('touchmove',e=>{ if(!PTR) return; const dy=e.touches[0].clientY-PTR.y0, dx=e.touches[0].clientX-PTR.x0; if(!PTR.dy&&Math.abs(dx)>Math.abs(dy)){ PTR=null; return; } if(dy<=0||window.scrollY>2){ if(PTR.dy) { PTR.scr.style.transform=''; ptrEl().style.opacity=0; } PTR.dy=0; return; }
   const d=Math.min(110,dy*0.45); PTR.dy=d; PTR.scr=document.querySelector('#app .screen')||PTR.scr; PTR.scr.style.transition='none'; PTR.scr.style.transform=`translateY(${d}px)`; const el=ptrEl(); el.style.transition='none'; el.classList.remove('spin'); el.style.top=`calc(env(safe-area-inset-top,0px) + ${Math.max(4,d/2-20)}px)`; el.style.transform=`translate(-50%,0) rotate(${Math.sin(d/8)*8}deg)`; el.style.opacity=Math.max(0,Math.min(1,(d-56)/24)); if(e.cancelable) e.preventDefault(); },{passive:false});
 document.addEventListener('touchend',()=>{ if(!PTR) return; const {dy}=PTR; PTR=null; const scr=document.querySelector('#app .screen'); if(!scr) return; const el=ptrEl(); scr.style.transition='transform .35s cubic-bezier(.2,.8,.2,1)';
@@ -3655,7 +3667,7 @@ const A = {
   'cm2-reply'(v,el){ const n=el.dataset.n; S.cmReply={ck:v,n}; const i=document.getElementById('cm2-in'); S.cmDraft=(i&&i.value&&!i.value.startsWith('@')?i.value:'')||('@'+n+' '); renderSheet(); setTimeout(()=>{ const x=document.getElementById('cm2-in'); if(x){ x.focus(); x.setSelectionRange(x.value.length,x.value.length); } },30); },
   'cm2-noreply'(){ S.cmReply=null; renderSheet(); },
   'cm2-emoji'(v){ const i=document.getElementById('cm2-in'); if(!i) return; i.value=(i.value+v).slice(0,150); S.cmDraft=i.value; i.focus(); },
-  'cm2-post'(){ const sh=S.sheet; if(!sh||sh.kind!=='comments') return; const i=document.getElementById('cm2-in'), t=(i&&i.value||'').trim(); if(!t){ i&&i.focus(); return; }
+  'cm2-post'(){ const sh=S.sheet; if(!sh||sh.kind!=='comments') return; if(S.cmPostAt&&Date.now()-S.cmPostAt<700) return; S.cmPostAt=Date.now(); const i=document.getElementById('cm2-in'), t=(i&&i.value||'').trim(); if(!t){ i&&i.focus(); return; }
     if(S.cmLast&&Date.now()-S.cmLast<15000){ toast('Slow down a little. You can comment again in a few seconds.'); return; } S.cmLast=Date.now();
     const key=sh.key, re=S.cmReply?+S.cmReply.ck.split('|')[3]:null, r=Social.myReacts(), list=r.comments[key]=r.comments[key]||[], o={at:Date.now(),text:t.slice(0,150)}; if(re) o.re=re; list.push(o); if(list.length>30) list.shift(); Social.saveReacts(r,true);
     S.cmReply=null; S.cmDraft=''; renderSheet(); patchPost(key); popCue(); const b=document.getElementById('sbody'); if(b&&!re) b.scrollTop=b.scrollHeight; },
@@ -3812,7 +3824,9 @@ function onInput(e){
       it.sets.forEach((s,n)=>{ if(n>+j&&!s.st&&!s.wEdited){ s.w=t.value; const f=document.querySelector(`[data-set="${i}.${n}.w"]`); if(f) f.value=t.value; } }); }
     Store.save(); return; }
   if(t.id==='f-user'&&!window.boatsAdmin&&/[A-Z]/.test(t.value)){ const p=t.selectionStart; t.value=t.value.toLowerCase(); t.setSelectionRange(p,p); }
-  if(t.id==='f-bio'){ let n=0; const v=t.value.replace(/\n/g,()=>++n<=2?'\n':' '); if(v!==t.value) t.value=v; }
+  if(t.id==='f-bio'){ let n=0; const v=t.value.replace(/\n/g,()=>++n<=2?'\n':' '); if(v!==t.value) t.value=v; let ln=bioLines(t.value); const prev=t.dataset.prev!=null?t.dataset.prev:(dv('bio')||'');
+    if(ln>3&&t.value.length>prev.length){ const pos=Math.max(0,(t.selectionStart||0)-(t.value.length-prev.length)); t.value=prev; try{ t.setSelectionRange(pos,pos); }catch(_){} ln=bioLines(prev); const c=document.getElementById('bio-n'); if(c){ c.classList.add('full'); setTimeout(()=>c.classList.remove('full'),700); } }
+    t.dataset.prev=t.value; const c=document.getElementById('bio-n'); if(c) c.textContent=`${ln}/3 lines`; }
   if(t.dataset.f&&S.draft&&S.meView==='edit'&&S.route==='app'&&(t.dataset.f in S.draft)){ S.draft[t.dataset.f]=t.value; if(t.id==='f-town'){ showTownSug(); const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); } if(t.id==='f-user'){ const m=document.getElementById('u-msg'); if(m) m.innerHTML=userMsg(); } const b=document.getElementById('idsave'); if(b) b.disabled=!draftDirty(); return; }
   if(t.dataset.f&&limitOf(t.dataset.f)&&!t.closest('.stepper')){ const ok=t.value===''||inLimit(t.dataset.f,t.value), w=t.closest('.inwrap')||t; t.classList.toggle('bad',!ok); let h=w.nextElementSibling; if(!(h&&h.classList.contains('rangenote'))) h=null; if(!ok){ if(!h){ h=document.createElement('span'); h.className='rangenote'; w.after(h); } h.textContent='Enter '+limitOf(t.dataset.f)[2]; if(S.route==='onboard'){ Pf[t.dataset.f]=''; Store.save(); } return; } if(h) h.remove(); }
   if(t.dataset.f && !t.closest('.stepper')){ Pf[t.dataset.f]=t.value; if(t.id==='f-town'){ showTownSug(); const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); } if(t.id==='f-user'){ const m=document.getElementById('u-msg'); if(m) m.innerHTML=userMsg(); } Store.save(); return; }
@@ -3837,6 +3851,7 @@ function autoMark(i,j){
   if(!was) S.rest={until:Date.now()+Pf.rest*1000,total:Pf.rest};
   render(); maybeCelebrate();
 }
+document.addEventListener('pointerdown',e=>{ const b=e.target.closest&&e.target.closest('[data-a="cm2-post"]'); if(!b) return; e.preventDefault(); A['cm2-post'](); },true);
 document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.id==='cm2-in'){ e.preventDefault(); A['cm2-post'](); return; } if(e.key==='Enter'&&e.target.closest&&e.target.closest('.cmbox')){ e.preventDefault(); e.target.closest('.cmbox').querySelector('.cmpost').click(); } if(e.key==='Enter'&&e.target.id==='dm-in'){ e.preventDefault(); A['dm-send'](); const t=document.getElementById('dm-in'); if(t) t.style.height=''; } if(e.key==='Enter'&&e.target.id==='bw-today'){ e.preventDefault(); A['bw-today'](); } if(e.key==='Enter'&&e.target.dataset&&e.target.dataset.set) e.target.blur(); if(e.key==='Enter'&&e.target.id==='cl-new'){ e.preventDefault(); A['cl-add'](); } });
 function onChange(e){
   const t=e.target;
