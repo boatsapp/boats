@@ -224,6 +224,8 @@ body.swipeback #app .screen,body.swipeback #app .chatwrap{box-shadow:-18px 0 40p
 .fbk.insess{bottom:calc(var(--tab-h) + 14px + env(safe-area-inset-bottom,0px))}
 .fincard{padding:14px}
 .finpost{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.finpost2{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}.finpost2 button{height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:8px;font:800 16px/1 inherit;font-family:inherit}.fsave{border:1.5px solid color-mix(in srgb,var(--fg) 25%,transparent);background:none;color:var(--fg)}.fpost{border:0;background:var(--fg);color:var(--bg)}.fpost:disabled{opacity:.4}
+.fstory{height:46px}
 .finbtn{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:14px;border-radius:18px;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-align:left}
 .finbtn .fi{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2,#2a2a28)}
 .finbtn b{display:block;font-size:16px}.finbtn small{display:block;color:var(--muted);font-size:12px;line-height:1.3;margin-top:2px}
@@ -331,6 +333,8 @@ body.locked{position:fixed;left:0;right:0;overflow:hidden}
 .cm2t{font-size:16px;line-height:1.38}
 .cm2m{gap:18px;margin-top:2px}.cm2m .link{font-size:14.5px;font-weight:600}
 .cm2heart{min-width:44px;padding:6px 0 0;gap:4px;font-size:13.5px;font-weight:600}.cm2heart svg{width:22px!important;height:22px!important}
+.cm2.pinned{flex-wrap:wrap}.cm2pin{flex-basis:100%;display:flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:var(--muted);margin:-6px 0 -4px 50px}.cm2pin svg{width:12px;height:12px}
+.cm2[data-pinck]{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .cm2more{display:flex;align-items:center;gap:12px;margin:-8px 0 0 50px;border:0;background:none;padding:2px 0;color:var(--muted);font:600 14.5px/1.2 inherit;font-family:inherit}.cm2more::before{content:"";width:28px;height:1px;background:color-mix(in srgb,var(--muted) 60%,transparent)}
 .cm2emoji{padding:2px 4px}.cm2emoji button{font-size:30px}
 .cm2foot{gap:12px;padding-top:12px}
@@ -836,6 +840,7 @@ body.barmini .fhead3{transform:translateY(-100%)}
 .sets .input.no{background:var(--miss-soft,#2B1D1A);border-color:transparent}
 .dots{display:flex;justify-content:center;gap:6px;padding:6px 0 4px}
 .dots button{width:7px;height:7px;border-radius:50%;background:var(--line);padding:0}
+#dots{touch-action:none;padding:12px 10px;margin:-6px auto;width:max-content;max-width:100%}#dots.drag button{transform:scale(1.25)}
 .dots button.on{background:var(--fg);width:20px;border-radius:4px}
 .dots button.g-all{background:var(--good)} .dots button.g-some{background:var(--warn)} .dots button.g-none{background:var(--miss,#B85A4D)}
 .dots{align-items:center}
@@ -1015,7 +1020,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v158';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v159';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1381,7 +1386,7 @@ const Social = {
   },
   card(){
     const sh=Pf.show, last=Store.workouts[0];
-    return { pins:(Pf.pinnedPosts||[]).slice(0,3), blocked:(Pf.blocked||[]).slice(-500), username:(Pf.username||'Lifter').slice(0,40), bio:(Pf.bio||'').slice(0,150), link:linkOf(Pf.link), name:String(Pf.realName||'').trim().slice(0,40), photo: Pf.photo||'', photoHq: Pf.photoHq||0, town: sh.town&&placeValid(Pf.town)?Pf.town.trim():'', goal: sh.goal?Pf.goal:'', wcount: sh.status?Store.workouts.length:null, following:(Pf.friends||[]).slice(0,500), splitPub:Pf.shareSplit?splitPayload():null, followedAt:Object.fromEntries(Object.entries(Pf.followedAt||{}).filter(([k])=>(Pf.friends||[]).includes(k))),
+    return { cpins:Object.fromEntries(Object.entries(Pf.cmPins||{}).slice(-60)), pins:(Pf.pinnedPosts||[]).slice(0,3), blocked:(Pf.blocked||[]).slice(-500), username:(Pf.username||'Lifter').slice(0,40), bio:(Pf.bio||'').slice(0,150), link:linkOf(Pf.link), name:String(Pf.realName||'').trim().slice(0,40), photo: Pf.photo||'', photoHq: Pf.photoHq||0, town: sh.town&&placeValid(Pf.town)?Pf.town.trim():'', goal: sh.goal?Pf.goal:'', wcount: sh.status?Store.workouts.length:null, following:(Pf.friends||[]).slice(0,500), splitPub:Pf.shareSplit?splitPayload():null, followedAt:Object.fromEntries(Object.entries(Pf.followedAt||{}).filter(([k])=>(Pf.friends||[]).includes(k))),
       height: sh.height?heightStr():'', weight: sh.weight&&Pf.bodyweight?`${Pf.bodyweight} ${Pf.unit}`:'',
       status: sh.status?{ activeSince:Pf.active&&!Pf.active.pausedAt&&(cardioRunning()||Date.now()-(Pf.active.lastAct||Pf.active.startedAt||0)<IDLE_PAUSE)?Pf.active.startedAt:0, liveAt:Pf.active?(cardioRunning()?Date.now():(Pf.active.lastAct||Pf.active.startedAt||0)):0, lastAt:last?last.startedAt:0, lastTitle:last?last.title:'', streak:streak() }:null };
   },
@@ -1673,7 +1678,7 @@ function splitShareRow(){ return `<button class="li card" style="padding:12px 16
 
 /* ---------- views ---------- */
 function vSplash(){
-  const accts=S.ready?Store.accounts():[];
+  const all0=S.ready?Store.accounts():[], real0=all0.filter(x=>x.p.onboarded), accts=real0.length?real0:all0;
   const status = !S.ready ? 'Connecting…' : Store.mode==='preview' ? 'Preview: nothing is saved' : Store.mode==='cloud' ? 'Signed in' : Store.note==='Not signed in' ? 'Not signed in' : `Offline${Store.note?' ('+Store.note+')':''}`;
   const picking = S.ready && S.picker && accts.length>1;
   return `<div class="splash">
@@ -1681,7 +1686,7 @@ function vSplash(){
     <div class="auth fadein" style="animation-delay:.1s">
       ${picking?`<span class="flabel">Choose an account</span>
         <div class="list">${accts.map(({id,p,n})=>`<button class="li" data-a="pick-acct" data-v="${esc(id)}">${avatar(p.username||'?',p.photo,null)}<span class="grow"><span class="t">${esc(p.username||'My account')}</span><br><span class="s">${p.onboarded?`${n} workout${n===1?'':'s'}`:'Setup not finished'}</span></span>${ic('right','sm')}</button>`).join('')}</div>
-        <button class="btn" data-a="new-acct">${ic('plus','sm')}Create new account</button>`
+        ${real0.length?'':`<button class="btn" data-a="new-acct">${ic('plus','sm')}Create new account</button>`}`
       :`<button class="btn soonbtn" data-a="soon" data-v="Apple">Continue with Apple<span class="soontag">Coming soon</span></button>
         ${Store.mode==='cloud'?`<button class="btn primary" data-a="login">Continue</button>`:`<button class="btn gbtn" data-a="g-in" ${S.signing||!S.ready?'disabled':''}><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>${S.signing?'Signing in…':'Continue with Google'}</button>`}
         <p class="fine">Free to use. Sign in with Google to save your workouts and see your friends. Apple sign-in is coming soon.</p>`}
@@ -1865,7 +1870,7 @@ function vHistory(list=Store.workouts){
       return `<article class="card post">
         <div class="who">${avatar(Pf.username,Pf.photo,null)}<span style="flex:1;min-width:0"><b>${d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}</b><br><span class="muted small">${d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})}</span></span>
         ${isShared(w.id)?`<button class="tag visbtn pub" data-a="vis-tog" data-v="${w.id}" aria-label="Public. Tap to make private">${ic('eye','xs')}</button>`:`<button class="tag visbtn" data-a="vis-tog" data-v="${w.id}" aria-label="Private. Tap to share to the feed">${ic('lock','xs')}</button>`}
-        <button class="iconbtn" data-a="export" data-v="${w.id}" aria-label="Export a story overlay">${ic('share','sm')}</button><button class="iconbtn" data-a="post-menu" data-v="${w.id}" aria-label="Delete workout">${ic('trash','sm')}</button></div>
+        <button class="iconbtn" data-a="export" data-v="${w.id}" aria-label="Share or post this workout">${ic('share','sm')}</button><button class="iconbtn" data-a="post-menu" data-v="${w.id}" aria-label="Delete workout">${ic('trash','sm')}</button></div>
         ${S.menu===w.id?`<div class="card rowx" style="gap:8px;padding:10px 12px"><span style="flex:1;min-width:0">Delete this workout?</span><button class="btn sm" style="width:auto" data-a="post-menu" data-v="">Cancel</button><button class="btn sm danger" style="width:auto" data-a="del-post" data-v="${w.id}">Delete</button></div>`:''}
         ${w.caption?`<p style="margin:0">${esc(w.caption)}</p>`:''}
         ${w.pump?`<button data-a="pump-view" data-v="${w.id}" aria-label="Open pump picture"><img class="pump" src="${esc(w.pump)}" alt="Pump picture from ${esc(w.title)}" loading="lazy"></button>`:''}
@@ -2119,9 +2124,10 @@ function cmTree(key,max){ const all=Social.comments(key), top=all.filter(c=>!c.r
   return top.slice(-max).map(c=>line(c)+kids(c).slice(0,2).map(k=>line(k,true)).join('')).join(''); }
 const fmtK = n => n>=1000?(Math.round(n/100)/10).toFixed(1).replace(/\.0$/,'')+'K':String(n);
 const ckOf = (key,c) => `c|${key}|${c.uid}|${c.at}`;
+function cmPinOf(key){ const [owner,pid]=key.split(':'); return owner===Social.me()?(Pf.cmPins||{})[pid]:(((Social.people[owner]||{}).cpins)||{})[pid]; }
 function feedComments(key,owner){ const all=Social.comments(key), top=all.filter(c=>!c.re), kids=c=>all.filter(x=>x.re===c.at).sort((a,b)=>a.at-b.at);
   const sc=c=>Social.likes(ckOf(key,c)); const own=top.filter(c=>c.uid===owner).sort((a,b)=>b.at-a.at), oth=top.filter(c=>c.uid!==owner).sort((a,b)=>sc(b)-sc(a)||a.at-b.at);
-  const extra=(S.cmShow||{})[key]||0, shown=[...own.slice(0,1+(extra?own.length:0)), ...oth.slice(0,1+extra)], more=top.length-shown.length;
+  const pin=cmPinOf(key), pc=pin&&top.find(c=>ckOf(key,c)===pin); const extra=(S.cmShow||{})[key]||0; let shown=[...own.slice(0,1+(extra?own.length:0)), ...oth.slice(0,1+extra)]; if(pc){ shown=[pc,...shown.filter(c=>c!==pc)].slice(0,Math.max(2,shown.length)); } const more=top.length-shown.length;
   const row=(c,sub,parent)=>{ const ck=ckOf(key,c), n=Social.likes(ck), on=Social.liked(ck);
     return `<div class="cmt ${sub?'sub':''}"><div class="cmrow"><span class="cmtx"><button class="link" data-a="${c.uid===Social.me()?'tab':'person'}" data-v="${c.uid===Social.me()?'me':esc(c.uid)}"><b>${esc(Social.nameOf(c.uid))}</b></button> ${mentionHtml(c.text)}</span><button class="cmheart ${on?'on':''}" data-a="cm-like" data-v="${esc(ck)}" aria-label="${on?'Unlike':'Like'} comment">${ic('heart','xs')}</button></div>
       <div class="cmmeta">${ago(c.at)}${n?` · ${fmtK(n)} like${n===1?'':'s'}`:''} · <button class="link" data-a="fcm-reply" data-v="${esc(ckOf(key,parent||c))}">Reply</button>${c.uid===Social.me()||owner===Social.me()?` · <button class="link" data-a="cm-del" data-v="${esc(ck)}">Delete</button>`:''}</div></div>`; };
@@ -2746,9 +2752,9 @@ function vSheet(){
   const wrap=(head,body)=>`<div class="scrim ${S.sheetFull?'fullscrim':''} ${BOT?'botscrim':''}" data-a="close-sheet"><div class="sheet ${S.sheetFull?'full':''} ${BOT?'bottom':''}" data-stop><div class="sheet-head"><span class="grab"></span>${head}${head.includes('data-a="close-sheet"')?'':`<button class="iconbtn sheetx" data-a="close-sheet" aria-label="Close">${ic('x')}</button>`}</div><div class="sheet-body" id="sbody">${body}</div></div></div>`;
   if(sh.kind==='calday'){ const ws=Store.workouts.filter(w=>dateKey(new Date(w.startedAt))===sh.day).sort((a,b)=>a.startedAt-b.startedAt), d=new Date(ws[0]?ws[0].startedAt:Date.now());
     return wrap(`<span class="h2">${d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})}</span>`,`<div class="list">${ws.map(w=>`<button class="li" data-a="wk-open" data-v="${esc(w.id)}"><span class="ico">${ic(typeIcon(w.type))}</span><span class="grow"><span class="t">${esc(w.title||dayWord(w.type))}</span><br><span class="s">${new Date(w.startedAt).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})} · ${fmtDur(durOf(w))}${countsForStreak(w)?' · streak credit':''}</span></span>${ic('right','sm')}</button>`).join('')}</div>`); }
-  if(sh.kind==='comments'){ const key=sh.key, [owner]=key.split(':'), all=Social.comments(key), top=all.filter(c=>!c.re).sort((a,b)=>Social.likes(ckOf(key,b))-Social.likes(ckOf(key,a))||a.at-b.at), kids=c=>all.filter(x=>x.re===c.at).sort((a,b)=>a.at-b.at), me=Social.me();
+  if(sh.kind==='comments'){ const key=sh.key, [owner]=key.split(':'), all=Social.comments(key), pin=cmPinOf(key), top=all.filter(c=>!c.re).sort((a,b)=>(ckOf(key,b)===pin)-(ckOf(key,a)===pin)||Social.likes(ckOf(key,b))-Social.likes(ckOf(key,a))||a.at-b.at), kids=c=>all.filter(x=>x.re===c.at).sort((a,b)=>a.at-b.at), me=Social.me();
     const row=(c,sub,parent)=>{ const ck=ckOf(key,c), n=Social.likes(ck), on=Social.liked(ck), byAuthor=c.uid!==owner&&!!(((Social.reacts||{})[owner]||{}).likes||{})[ck], go=c.uid===me?'data-a="tab" data-v="me"':`data-a="person" data-v="${esc(c.uid)}"`;
-      return `<div class="cm2 ${sub?'sub':''}"><button class="cm2av" ${go} aria-label="${esc(Social.nameOf(c.uid))}">${avatar(Social.nameOf(c.uid),Social.photoOf(c.uid),null)}</button>
+      return `<div class="cm2 ${sub?'sub':''} ${ck===pin?'pinned':''}" ${!sub&&owner===me?`data-pinck="${esc(ck)}"`:''}>${ck===pin?`<span class="cm2pin">${ic('pin','xs')}Pinned</span>`:''}<button class="cm2av" ${go} aria-label="${esc(Social.nameOf(c.uid))}">${avatar(Social.nameOf(c.uid),Social.photoOf(c.uid),null)}</button>
         <div class="cm2b"><div class="cm2h"><button class="link" ${go}><b>${esc(Social.nameOf(c.uid))}</b></button>${fbadge(c.uid)}<span class="muted">${ago(c.at)}</span>${c.uid===owner?'<span class="muted">· Author</span>':''}${byAuthor?`<span class="muted">· <span style="color:#ff4d5e">${ic('heart','xs')}</span> by author</span>`:''}</div>
         <div class="cm2t">${mentionHtml(c.text)}</div>
         <div class="cm2m"><button class="link" data-a="cm2-reply" data-v="${esc(ckOf(key,parent||c))}" data-n="${esc(Social.nameOf(c.uid))}">Reply</button>${c.uid===me?`<button class="link" data-a="cm-edit" data-v="${esc(ck)}">Edit</button>`:''}${c.uid===me||owner===me||(window.boatsAdmin&&Pf.modMode)?`<button class="link" data-a="cm-del" data-v="${esc(ck)}">Delete</button>`:''}</div></div>
@@ -2841,7 +2847,9 @@ function vSheet(){
           <div class="field"><span class="flabel">Text</span>${seg('ov-tone',sh.tone||'light',{light:'White',dark:'Black',none:'None'})}</div></div></div>`
           :`<button class="btn" data-a="pump-finish">${ic('camera','sm')}Add pump picture</button>`}
         ${sh.pump?'<div class="card stack fincard" style="gap:12px">':''}<div class="field"><label for="f-cap">Caption</label><input class="input" id="f-cap" maxlength="200" placeholder="Caption your workout (optional)" value="${esc(sh.caption||'')}"></div>
-        ${sh.pump?`${Social.postedToday()?`<div class="muted small">You’ve shared 3 posts today, so this one is saved privately.</div>`:''}<div class="finpost"><button class="finbtn" data-a="save-private"><span class="fi">${ic('lock')}</span><span><b>Private</b><small>Only you can see it</small></span></button><button class="finbtn pub" data-a="fin-share"><span class="fi">${ic('send')}</span><span><b>Public</b><small>Post it and share your story</small></span></button></div></div>`:''}
+        ${sh.pump?`${Social.postedToday()?`<div class="muted small">You’ve shared 3 posts today, so this one is saved privately.</div>`:''}<div class="finpost2"><button class="fsave" data-a="save-private">${ic('lock','sm')}<span>Save</span></button><button class="fpost" data-a="fin-post" ${Social.postedToday()?'disabled':''}>${ic('send','sm')}<span>Post</span></button></div>
+        <div class="muted small" style="text-align:center;margin-top:-2px">Save keeps it private on your profile. Post shares it to the feed.</div>
+        <button class="btn fstory" data-a="fin-story">${ic('share','sm')}${sh.storyShared?'Shared to story · share again':'Share to story'}</button></div>`:''}
         ${sh.pump?'':Social.postedToday()?`<div class="muted small">You’ve shared 3 workouts today, the daily limit.</div>`:!sh.pump?`<div class="muted small">${ic('camera','xs')} Add a pump picture to share this to the feed. Without one it’s saved privately to your profile.</div>`
           :`<button class="li" style="padding:6px 0" data-a="share-tog"><span class="grow"><span class="t">Post voyage</span><br><span class="s">${sh.share?'Public: friends see it in their feed':'Private: saved to your profile, only you see it'}</span></span><span class="toggle ${sh.share?'on':''}"></span></button>`}
         ${sh.pump?'':`<button class="btn primary" data-a="save-workout">End workout</button>`}
@@ -2887,10 +2895,12 @@ function vSheet(){
     return wrap(`<div class="rowx"><div style="flex:1;min-width:0"><span class="h2">Share your workout</span><div class="muted small">${esc(dayWord(w.type))} · ${shortDate(w.startedAt)}</div></div><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>`,
       `<div class="ovstage ${sh.bg==='photo'?'photo':sh.tone}"><canvas id="ovc" width="1080" height="1920" aria-label="Story overlay preview"></canvas></div>
        <div class="field"><span class="flabel">Style</span>${chipRow('ov-style',String(sh.style),{0:'Weight',1:'Time',2:'Carried',3:'Rowboats'})}</div>
-       <div class="grid2"><div class="field"><span class="flabel">Text</span>${seg('ov-tone',sh.tone,{light:'White',dark:'Black'})}</div>
-       ${w.pump?`<div class="field"><span class="flabel">Background</span>${seg('ov-bg',sh.bg,{clear:'Clear',photo:'Pump pic'})}</div>`:''}</div>
-       <button class="btn primary" data-a="ov-share">${ic('share','sm')}Share to Instagram or Snapchat</button>
-       <button class="btn" data-a="ov-save">Download</button>`); }
+       <div class="field"><span class="flabel">Text</span>${seg('ov-tone',sh.tone,w.pump?{light:'White',dark:'Black',none:'None'}:{light:'White',dark:'Black'})}</div>
+       ${w.pump?`<div class="field"><span class="flabel">Background</span>${seg('ov-bg',sh.bg,{clear:'Clear',photo:'Pump pic'})}</div>`:''}
+       ${isShared(w.id)?`<div class="card rowx" style="gap:10px;padding:12px 14px"><span style="color:var(--good);display:inline-flex">${ic('check','sm')}</span><span style="flex:1">Posted to your feed</span></div>`
+         :w.pump?`<button class="btn primary" data-a="ex-post" data-v="${esc(w.id)}" ${Social.postedToday()?'disabled':''}>${ic('send','sm')}Post to feed</button>${Social.postedToday()?'<div class="muted small">You’ve shared 3 posts today. Post this one tomorrow.</div>':''}`
+         :`<button class="btn primary" data-a="pump-add" data-v="${esc(w.id)}">${ic('camera','sm')}Add a photo to post it</button>`}
+       <div class="grid2"><button class="btn" data-a="ov-share">${ic('share','sm')}Share to story</button><button class="btn" data-a="ov-save">${ic('dl','sm')}Download</button></div>`); }
   if(sh.kind==='wk'){ const w=Store.workouts.find(x=>x.id===sh.id); if(!w) return '';
     return wrap(`<div class="rowx"><span class="h2">${esc(dayWord(w.type))}</span><span class="spacer"></span><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>`,
       `${vHistory([w])}`); }
@@ -3118,10 +3128,23 @@ document.addEventListener('contextmenu',e=>{ if(e.target.tagName==='IMG') e.prev
 if(window.visualViewport){ const kb=()=>{ const v=visualViewport, r=document.documentElement.style; { const gap=Math.round(document.documentElement.clientHeight-(v.offsetTop+v.height)); r.setProperty('--vvb',(document.body.classList.contains('kbopen')||gap<2||v.scale>1.01?0:-gap)+'px'); } r.setProperty('--vvh',Math.round(v.height)+'px'); r.setProperty('--vvt',Math.round(v.offsetTop)+'px'); document.body.classList.toggle('kbopen',innerHeight-v.height>150); const c=document.getElementById('chat'); if(c&&S.fview==='chat'&&c.dataset.end!=='0') c.scrollTop=c.scrollHeight; }; visualViewport.addEventListener('resize',kb); visualViewport.addEventListener('scroll',kb); window.addEventListener('scroll',()=>requestAnimationFrame(kb),{passive:true}); window.addEventListener('resize',kb); document.addEventListener('touchend',()=>setTimeout(kb,350),{passive:true}); kb(); }
 // In a chat the page itself never moves: only a message list that's long enough to scroll can be dragged.
 document.addEventListener('touchmove',e=>{ if(e.target.closest&&e.target.closest('.photoview')){ if(e.cancelable) e.preventDefault(); return; } if(!document.body.classList.contains('chatopen')) return; const c=e.target.closest&&e.target.closest('#chat'); if(!c||c.scrollHeight<=c.clientHeight+1){ if(e.cancelable) e.preventDefault(); } },{passive:false});
+// Hold a comment on your own post to pin or unpin it
+let CPH=null;
+document.addEventListener('pointerdown',e=>{ const r=e.target.closest&&e.target.closest('.cm2[data-pinck]'); if(!r||e.target.closest('button,a,input')&&!e.target.closest('.cm2t')) return; const ck=r.dataset.pinck; CPH={x:e.clientX,y:e.clientY,t:setTimeout(()=>{ CPH=null; S.noClick=Date.now(); const key=ck.split('|')[1], pid=key.split(':')[1], on=(Pf.cmPins||{})[pid]===ck;
+  askConfirm(on?'Unpin this comment?':'Pin this comment?',on?'It goes back to its normal spot.':'It shows first under your post for everyone.',on?'Unpin':'Pin',()=>{ const m={...(Pf.cmPins||{})}; if(on) delete m[pid]; else m[pid]=ck; Pf.cmPins=m; Store.save(); Social.publish(); renderSheet(); patchPost(key); savedNote(on?'Comment unpinned':'Comment pinned'); }); },480)}; });
+document.addEventListener('pointermove',e=>{ if(CPH&&Math.hypot(e.clientX-CPH.x,e.clientY-CPH.y)>10){ clearTimeout(CPH.t); CPH=null; } });
+['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,()=>{ if(CPH){ clearTimeout(CPH.t); CPH=null; } }));
+// Slide a finger along the exercise dots to jump between exercises
+let DOTD=null;
+document.addEventListener('touchstart',e=>{ const d=e.target.closest&&e.target.closest('#dots'); if(!d) return; DOTD={d,last:-1,moved:false,x:e.touches[0].clientX}; },{passive:true});
+document.addEventListener('touchmove',e=>{ if(!DOTD) return; const t=e.touches[0]; if(!DOTD.moved&&Math.abs(t.clientX-DOTD.x)<6) return; DOTD.moved=true; DOTD.d.classList.add('drag'); if(e.cancelable) e.preventDefault();
+  const bs=[...DOTD.d.querySelectorAll('button[data-a="s-go"]')]; if(!bs.length) return; let best=0, bd=1e9; bs.forEach((b,k)=>{ const r=b.getBoundingClientRect(), dd=Math.abs(r.left+r.width/2-t.clientX); if(dd<bd){ bd=dd; best=k; } });
+  if(best!==DOTD.last){ DOTD.last=best; const car=document.getElementById('car'); if(car) car.scrollTo({left:best*cardW(),behavior:'auto'}); bs.forEach((b,k)=>b.classList.toggle('on',k===best)); try{ navigator.vibrate&&navigator.vibrate(5); }catch(_){} } },{passive:false});
+document.addEventListener('touchend',()=>{ if(!DOTD) return; if(DOTD.moved){ S.dotDragAt=Date.now(); DOTD.d.classList.remove('drag'); } DOTD=null; },{passive:true});
 let PSW=null;
 document.addEventListener('touchcancel',()=>{ if(PTR&&PTR.scr){ PTR.scr.style.transition='transform .25s'; PTR.scr.style.transform=''; try{ ptrEl().style.opacity=0; }catch(e){} } PTR=null;
   if(PSW&&PSW.pg){ PSW.pg.style.transition='transform .2s'; PSW.pg.style.transform=''; } PSW=null; document.body.classList.remove('swipeback'); try{ behindHide(); }catch(e){} if(render._pend) render(); },{passive:true});
-document.addEventListener('touchstart',e=>{ if(S.sheet||document.getElementById('ask').innerHTML||S.route!=='app'&&S.route!=='onboard') return; if(e.target.closest('.slides,.carousel,#car,input,textarea,[data-sw],.npthumbs,#cropcv,#avcv,.chat,.seg,.chips')) return;
+document.addEventListener('touchstart',e=>{ if(S.sheet||document.getElementById('ask').innerHTML||S.route!=='app'&&S.route!=='onboard') return; if(e.target.closest('.slides,.carousel,#car,#dots,input,textarea,[data-sw],.npthumbs,#cropcv,#avcv,.chat,.seg,.chips')) return;
   const back=[...document.querySelectorAll('#app [aria-label="Back"], #app [data-a="profile"], #app [data-a="settings"].link')].find(b=>b.offsetParent!==null); if(!back) return;
   const pg=document.querySelector('#app .chatwrap')||document.querySelector('#app .screen'); PSW={x:e.touches[0].clientX,y:e.touches[0].clientY,back,pg,on:false}; },{passive:true});
 function behindShow(){ document.getElementById('behind')?.remove(); const top=VSTACK[VSTACK.length-1]; if(!top) return; const el=document.createElement('div'); el.id='behind'; el.setAttribute('aria-hidden','true');
@@ -3367,8 +3390,8 @@ const A = {
   soon(){ toast('Apple and Google sign-in are coming soon.'); },
   soon(v){ toast(`${v} sign-in isn't ready yet. Use Google for now.`); },
   'g-in'(el){ if(!window.boatsSignIn) return; S.signing=true; render(); window.boatsSignIn('google').finally(()=>{ S.signing=false; render(); }); },
-  login(){ if(!S.ready){ S.waiting='login'; render(); return; } const a=Store.accounts(); if(!a.length) return A['new-acct'](); if(a.length===1) return A['pick-acct'](a[0].id); S.picker=true; render(); },
-  async 'new-acct'(){ if(!S.ready){ S.waiting='new'; render(); return; } Store.create(); if(window.boatsOfficialReady&&await window.boatsOfficialReady){ await setupOfficial(); return; } Social.publish(); go('onboard',{ob:0}); },
+  login(){ if(!S.ready){ S.waiting='login'; render(); return; } const a0=Store.accounts(), r0=a0.filter(x=>x.p.onboarded), a=r0.length?r0:a0; if(!a.length) return A['new-acct'](); if(a.length===1) return A['pick-acct'](a[0].id); S.picker=true; render(); },
+  async 'new-acct'(){ if(!S.ready){ S.waiting='new'; render(); return; } { const r=Store.accounts().filter(x=>x.p.onboarded); if(r.length){ toast('You already have a BOATS account on this sign-in. Opening it.'); return A['pick-acct'](r[0].id); } } Store.create(); if(window.boatsOfficialReady&&await window.boatsOfficialReady){ await setupOfficial(); return; } Social.publish(); go('onboard',{ob:0}); },
   async 'pick-acct'(v){ Store.use(v); Social.last=''; if(!Pf.onboarded&&window.boatsOfficialReady&&await window.boatsOfficialReady){ await setupOfficial(); return; } Social.publish(); if(Pf.onboarded) go(liveWorkout()?'session':'app',{tab:homeTab(),pick:null,planDay:null}); else go('onboard',{ob:0}); },
   splash(){ S.sheet=null; S.picker=true; go('splash'); },
   unit(v){ Pf.unit=v; Store.save(); render(); },
@@ -3425,9 +3448,10 @@ const A = {
   's-att'(v){ const it=Pf.active.items[S.sheet.idx]; it.attach=it.attach===v?'':v; if(S.sheet.plan&&it.pid){ const p=(Pf.plans[Pf.active.day]||[]).find(x=>x.pid===it.pid); if(p) p.attach=it.attach; } Store.save(); render(); renderSheet(); },
   'w-resume'(){ const a=Pf.active; if(!a||!a.pausedAt) return; a.pausedMs=(a.pausedMs||0)+(Date.now()-a.pausedAt); a.pausedAt=null; touchActive(); Store.save(); render(); toast('Workout resumed'); },
   'pump-mid'(){ S.photoFor='active'; document.getElementById('cam-in').click(); },
-  's-go'(v){ document.getElementById('car').scrollTo({left:(+v)*cardW(),behavior:'smooth'}); },
+  's-go'(v){ if(S.dotDragAt&&Date.now()-S.dotDragAt<400) return; document.getElementById('car').scrollTo({left:(+v)*cardW(),behavior:'smooth'}); },
   's-mark'(v){
     const [i,j,kind]=v.split('.'), it=Pf.active.items[+i], s=it.sets[+j];
+    { const run=Pf.active.items.findIndex(x=>x.cardio&&x.tRun); if(run>=0&&!it.cardio&&!s.st){ const cn=exOf(Pf.active.items[run].exId).n; askConfirm('Pause cardio first',`Your ${cn} timer is still running. You can’t do ${exOf(it.exId).n} at the same time.`,'Pause cardio and log set',()=>{ A['c-toggle'](String(run)); A['s-mark'](v); },'Keep cardio going'); return; } }
     s.st = s.st===kind ? null : kind; if(!s.st) Pf.active.celebrated=false;
     if(s.st&&!it.cardio&&!num(s.r)) s.r=String(s.pr||it.repMax);
     if(s.st==='ok'&&!it.cardio&&num(s.r)<it.repMin) s.r=String(it.repMin);
@@ -3453,7 +3477,7 @@ const A = {
     Store.save(); render(); toast(it.hurt?(it.cardio?'Take it easy this week.':'Weight cut 50% for this week. Go easy.'):'Back to normal'); },
   'inj-still'(v){ const it=Pf.active.items[+v], k=keyOf(it.exId,it.equip); Pf.injured={...(Pf.injured||{}),[k]:{...(Pf.injured||{})[k],at:Date.now()}}; it.injAsk=false; Store.save(); render(); },
   'inj-ok'(v){ const it=Pf.active.items[+v], k=keyOf(it.exId,it.equip), base=((Pf.injured||{})[k]||{}).w; Pf.injured={...(Pf.injured||{})}; delete Pf.injured[k]; it.injAsk=false; it.inj=false; it.hurt=false; if(base) it.sets.forEach(x=>{ if(!x.st) x.w=String(base); }); Store.save(); render(); popCue(); },
-  'c-toggle'(v){ const it=Pf.active.items[+v]; ac(); if(it.tRun){ it.tEl=(it.tEl||0)+Date.now()-it.tRun; it.tRun=0; } else { it.tRun=Date.now(); } Store.save(); render(); },
+  'c-toggle'(v){ const it=Pf.active.items[+v]; ac(); if(!it.tRun){ const other=Pf.active.items.findIndex((x,k)=>k!==+v&&x.cardio&&x.tRun); if(other>=0){ const o=Pf.active.items[other]; o.tEl=(o.tEl||0)+Date.now()-o.tRun; o.tRun=0; toast(`Paused ${exOf(o.exId).n}. One cardio timer at a time.`); } } if(it.tRun){ it.tEl=(it.tEl||0)+Date.now()-it.tRun; it.tRun=0; } else { it.tRun=Date.now(); } Store.save(); render(); },
   'c-reset'(v){ const it=Pf.active.items[+v]; it.tEl=0; it.tRun=0; it.tAlert=false; Store.save(); render(); },
   'c-min'(v,el){ const it=Pf.active.items[+v]; it.min=Math.max(5,(num(it.min)||20)+(+el.dataset.d)); it.tAlert=cardioEl(it)>=it.min*60000; Store.save(); render(); },
   'c-done'(v){ const it=Pf.active.items[+v], el=cardioEl(it); it.tEl=el; it.tRun=0; const m=Math.max(1,Math.round((el>=30000?el:(num(it.min)||20)*60000)/60000));
@@ -3507,6 +3531,8 @@ const A = {
   'share-tog'(){ readTitle(); S.sheet.share=!S.sheet.share; renderSheet(); },
   'post-nofilter'(){ const sh=S.sheet; if(!sh) return; readTitle(); sh.share=true; sh.storyDone=true; return A['save-workout'](); },
   'save-private'(){ const sh=S.sheet; if(!sh) return; readTitle(); sh.share=false; sh.storyDone=true; return A['save-workout'](); },
+  'fin-post'(){ const sh=S.sheet; if(!sh||!Pf.active||S.saving) return; if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit. Save it and post tomorrow.'); return; } readTitle(); sh.share=true; sh.storyDone=true; return A['save-workout'](); },
+  async 'fin-story'(){ const sh=S.sheet; if(!sh||!Pf.active) return; readTitle(); const b=await overlayBlob(); if(!b) return; try{ const f=new File([b],`boats-story-${dateKey()}.png`,{type:'image/png'}); if(navigator.canShare&&navigator.canShare({files:[f]})) await navigator.share({files:[f]}); else await shareOrSave(b,false); }catch(e){ if(e&&e.name==='AbortError') return; } if(S.sheet===sh){ sh.storyShared=true; renderSheet(); } },
   async 'fin-share'(){ const sh=S.sheet; if(!sh||!Pf.active||S.saving) return; readTitle(); const b=sh.tone==='none'?null:await overlayBlob(); if(b){ try{ const f=new File([b],`boats-story-${dateKey()}.png`,{type:'image/png'}); if(navigator.canShare&&navigator.canShare({files:[f]})) await navigator.share({files:[f]}); else await shareOrSave(b,false); }catch(e){} } if(S.sheet!==sh) S.sheet=sh; sh.share=true; sh.storyDone=true; return A['save-workout'](); },
   async 'fin-dl'(){ const sh=S.sheet; readTitle(); const b=await overlayBlob(); if(b) await shareOrSave(b,false); sh.share=true; sh.storyDone=true; return A['save-workout'](); },
   async 'save-workout'(){
@@ -3518,14 +3544,16 @@ const A = {
   'adj-skip'(v){ const g=S.sheet.items[+v]; g.done=`Keeping ${fmtN(g.top)} ${Pf.unit}`; Pf.adjusted[keyOf(g.exId,g.equip)]=Date.now(); Store.save(); renderSheet(); },
   discard(){ Pf.active=null; S.rest=null; S.sheet=null; Store.save(); go('app',{tab:homeTab()}); toast('Workout discarded'); },
   pstep(_,el){ if(/rep(Min|Max)/.test(el.dataset.f)){ Pf.defaultsTouched=true; S.obDefTouched=true; } setTimeout(()=>{ if(/rep(Min|Max)/.test(el.dataset.f)) render(); },0); const f=el.dataset.f; let v=(+Pf[f]||0)+(+el.dataset.d); if(f==='repMin') v=Math.max(1,Math.min(Pf.repMax,v)); if(f==='repMax') v=Math.max(Pf.repMin,Math.min(50,v)); Pf[f]=v; document.getElementById('f-'+f).value=v; Store.save(); },
-  export(v){ S.menu=null; S.sheet={kind:'export',id:v,style:0,tone:'light',bg:'clear'}; renderSheet(); },
+  export(v){ S.menu=null; const w=Store.workouts.find(x=>x.id===v); S.sheet={kind:'export',id:v,style:0,tone:'light',bg:w&&w.pump?'photo':'clear'}; renderSheet(); },
+  async 'ex-post'(v){ const sh=S.sheet, w=Store.workouts.find(x=>x.id===v); if(!sh||!w||!w.pump||S.saving) return; if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit.'); return; }
+    S.saving=true; boatLoading(true,'Posting your workout…'); try{ const photo=sh.tone==='none'?null:await portraitWithOverlay(w.pump); S.sheet=null; renderSheet(); await shareWorkout(w,photo); render(); savedNote('Posted to your feed'); popCue(); }catch(e){ toast('That didn’t post. Try again.'); } finally{ S.saving=false; boatLoading(false); } },
   'ov-style'(v){ if(!S.sheet) return; readTitle(); S.sheet.style=+v; renderSheet(); },
   'ov-tone'(v){ if(!S.sheet) return; readTitle(); S.sheet.tone=v; renderSheet(); },
   'ov-bg'(v){ if(!S.sheet) return; S.sheet.bg=v; renderSheet(); },
   async 'ov-share'(){ const b=await overlayBlob(); if(b) shareOrSave(b,true); },
   async 'ov-save'(){ const b=await overlayBlob(); if(b) shareOrSave(b,false); },
   'post-menu'(v){ S.menu=v||null; render(); },
-  async 'vis-tog'(v){ const w=Store.workouts.find(x=>x.id===v); if(!w) return; if(isShared(v)) return A['wk-unshare'](v);
+  async 'vis-tog'(v){ const w=Store.workouts.find(x=>x.id===v); if(!w) return; if(isShared(v)) return A['wk-unshare'](v); return A.export(v);
     if(!w.pump){ S.shareAfterPhoto=v; toast('Add a pump picture to share it'); S.photoFor=v; document.getElementById('photo-in').click(); return; } return A['wk-share'](v); },
   async 'del-post'(v){ S.menu=null; if(S.sheet&&S.sheet.kind==='wk') S.sheet=null; renderSheet(); await Store.removeWorkout(v); render(); toast('Workout deleted'); },
   'block-open'(){ S.sheetFull=true; S.sheet={kind:'block',weeks:Pf.program&&Pf.program.weeks?[...Pf.program.weeks]:blockDraft()}; renderSheet(); },
@@ -3892,7 +3920,7 @@ function onChange(e){
           try{ const d=Social.myDms(); let msg; if(window.boatsDmPhoto){ const id=await window.boatsDmPhoto.save(u,at,big); DMIMG[id]=big; msg={at,photo:id,text:''}; } else msg={at,pimg:await shrinkData(big,320,.6),text:''};
             d.out[u]=[...(d.out[u]||[]),msg].slice(-60); Social.saveDms(d); const ch=document.getElementById('chat'); if(ch){ ch.innerHTML=chatMsgs(u); ch.scrollTop=ch.scrollHeight; } popCue(); }catch(e){ toast('Could not send that photo.'); } finally{ boatLoading(false); } })(); }
       else if(target==='finish'){ if(S.sheet&&S.sheet.kind==='finish'){ readTitle(); S.sheet.pump=url; renderSheet(); } }
-      else { const w=Store.workouts.find(x=>x.id===target); if(w){ Store.updateWorkout(w,{pump:url}); render(); if(S.shareAfterPhoto===target){ S.shareAfterPhoto=null; A['wk-share'](target); } else toast('Pump picture added'); } }
+      else { const w=Store.workouts.find(x=>x.id===target); if(w){ Store.updateWorkout(w,{pump:url}); if(S.sheet&&S.sheet.kind==='export'&&S.sheet.id===target){ S.sheet.bg='photo'; } render(); if(S.sheet&&S.sheet.kind==='export'){ toast('Photo added. Pick your overlay and post.'); } else if(S.shareAfterPhoto===target){ S.shareAfterPhoto=null; A['wk-share'](target); } else toast('Pump picture added'); } }
     }).catch(e=>toast(e&&e.message==='small'?(target==='avatar'?'That picture is too small. Pick one that is at least 200 pixels wide.':'That photo is too low quality. Pick one that is at least 600 pixels on its shortest side.'):'That file is not an image Boats can read.'));
   }
 }
@@ -3905,7 +3933,7 @@ async function drawOverlayInto(c){
   try{ await Promise.all([document.fonts.load('900 100px "Inter Tight"'),document.fonts.load('700 40px "Inter Tight"'),document.fonts.load('600 30px "Inter"')]); }catch(e){}
   const x=c.getContext('2d'), W=1080, H=1920; x.clearRect(0,0,W,H);
   if(sh.bg==='photo'&&w.pump){ try{ const im=await loadImg(w.pump); const sc=Math.max(W/im.width,H/im.height), iw=im.width*sc, ih=im.height*sc; x.drawImage(im,Math.floor((W-iw)/2)-1,Math.floor((H-ih)/2)-1,Math.ceil(iw)+2,Math.ceil(ih)+2); }catch(e){} }
-  if(sh.kind==='finish'&&sh.tone==='none'&&w.pump){ try{ const im=await loadImg(w.pump); const sc=Math.max(W/im.width,H/im.height), iw=im.width*sc, ih=im.height*sc; x.drawImage(im,(W-iw)/2,(H-ih)/2,iw,ih); }catch(e){} return; }
+  if((sh.kind==='finish'||sh.kind==='export')&&sh.tone==='none'&&w.pump){ try{ const im=await loadImg(w.pump); const sc=Math.max(W/im.width,H/im.height), iw=im.width*sc, ih=im.height*sc; x.drawImage(im,(W-iw)/2,(H-ih)/2,iw,ih); }catch(e){} return; }
   const light=sh.tone!=='dark', fg=light?'#ffffff':'#111111', sub=fg, acc=fg;
   const D='"Inter Tight","Inter",system-ui,sans-serif', T='"Inter",system-ui,sans-serif';
   const {v}=volume(w), unit=w.unit||Pf.unit, st=streak(), dur=fmtDur(durOf(w)), day=dayWord(w.type), date=longDate(w.startedAt), wt=fmtN(Math.round(v));
