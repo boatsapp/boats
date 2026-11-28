@@ -1075,7 +1075,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v169';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v170';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1521,9 +1521,9 @@ function morphFeed(f,html){ const t=document.createElement('div'); t.innerHTML=h
 const NOTE={ready:false,seen:new Set(),since:Date.now()};
 function notifyCheck(){ if(!Social.loaded||!Pf||!Pf.onboarded||!Social.ok&&!PREVIEW) return; const ev=[];
   for(const a of myActivity()){ const id=a.kind==='like'?`l|${a.uid}|${a.key}`:a.kind==='comment'?`c|${a.uid}|${a.key}|${a.at}`:`f|${a.uid}|${a.at}`;
-    if(NOTE.seen.has(id)) continue; NOTE.seen.add(id); if(!NOTE.ready) continue; if(a.kind!=='like'&&a.at<NOTE.since) continue; ev.push(a); }
+    if(NOTE.seen.has(id)) continue; NOTE.seen.add(id); if(!NOTE.ready||!isUnread(a)) continue; if(a.kind!=='like'&&a.at<NOTE.since) continue; ev.push(a); }
   for(const t of dmThreads()){ for(const m of t.msgs){ if(m.me) continue; const id=`d|${t.u}|${m.at}`; if(NOTE.seen.has(id)) continue; NOTE.seen.add(id); if(!NOTE.ready||m.at<NOTE.since||t.req) continue; if(S.fview==='chat'&&S.chatWith===t.u) continue; ev.push({kind:'dm',uid:t.u,at:m.at,text:m.audio?'sent a voice note':m.photo||m.pimg?'sent a photo':m.text}); } }
-  NOTE.ready=true; if(ev.length) showNote(ev[ev.length-1],ev.length); }
+  NOTE.ready=true; if(ev.length){ const dm=ev.filter(e=>e.kind==='dm').length; showNote(ev[ev.length-1],Math.max(ev.length,actUnreadList().length+dm)); } }
 function showNote(e,n){ const who=esc(Social.nameOf(e.uid)), txt=e.kind==='like'?'liked your post':e.kind==='comment'?`commented: ${esc(String(e.text||'').slice(0,60))}`:e.kind==='follow'?'joined your crew':`<span class="muted">${esc(String(e.text||'').slice(0,70))}</span>`;
   document.getElementById('notebar')?.remove(); const el=document.createElement('button'); el.id='notebar'; el.className='notebar'; el.dataset.a='note-open'; el.dataset.v=JSON.stringify({k:e.kind,u:e.uid,key:e.key||''});
   el.innerHTML=`${avatar(Social.nameOf(e.uid),Social.photoOf(e.uid),null)}<span class="nb-t"><b>${who}</b> ${e.kind==='dm'?'<br>':''}${txt}${n>1?` <span class="muted">· +${n-1} more</span>`:''}</span>${e.photo?`<img src="${esc(e.photo)}" alt="">`:''}`;
@@ -2242,7 +2242,11 @@ function myActivity(){ const me=Social.me(), out=[];
   for(const p of Social.myPosts()){ const key=me+':'+p.id;
     for(const [u,r] of Object.entries(Social.reacts||{})){ if(u===me||!r) continue; if(r.likes&&r.likes[key]) out.push({kind:'like',uid:u,key,at:p.at,photo:p.photo}); for(const c of ((r.comments&&r.comments[key])||[])) out.push({kind:'comment',uid:u,key,at:c.at,text:c.text,photo:p.photo}); } }
   return out.sort((a,b)=>b.at-a.at); }
-function actUnread(){ const a=myActivity(); return a.some(x=>x.at>(Pf.actSeen||0)); }
+// Unread = not seen when you last opened the heart. Likes carry the post's time, so they're tracked by id.
+const likeIdOf = a => a.uid+'|'+a.key;
+function isUnread(a){ if(a.kind==='like'){ if(Array.isArray(Pf.likeSeen)) return !Pf.likeSeen.includes(likeIdOf(a)); return a.at>(Pf.actSeen||0); } return a.at>(Pf.actSeen||0); }
+function actUnreadList(){ return myActivity().filter(isUnread); }
+function actUnread(){ return actUnreadList().length>0; }
 /* moderation: block (both ways), mute (hide someone's posts), hide one post, report */
 function modOf(uid){ const m=(Social.mod||{})[uid]; if(!m||(m.status!=='suspended'&&m.status!=='deleted')) return null; if(m.status==='suspended'&&m.until&&m.until<Date.now()) return null; return m; }
 function modBlocked(){ const m=Social&&Social.me&&modOf(Social.me()); return !!m&&!window.boatsAdmin; }
@@ -3800,7 +3804,7 @@ const A = {
       :row(sc.timeOk,`${R.min}+ minutes of training`,`${sc.mins||0} min so far`)+row(sc.setsOk,`${R.sets} working sets across 2 exercises`,`or ${R.sets+1} sets in one exercise · ${sc.total||0} logged`);
     infoBox(sc.ok?'Counts toward your streak':'Doesn’t count yet',`<div class="stack" style="gap:10px;text-align:left"><span class="muted small">${esc(L)} minimum</span>${rows}</div>`); },
   'rank-open'(v){ S.sheet.open=S.sheet.open===v?null:v; renderSheet(); },
-  activity(){ S.actSeenAt=Pf.actSeen||0; S.fview='activity'; S.actF='all'; Pf.actSeen=Date.now(); Store.save(); window.scrollTo(0,0); render(); },
+  activity(){ S.actSeenAt=Pf.actSeen||0; S.fview='activity'; S.actF='all'; Pf.actSeen=Date.now(); Pf.likeSeen=myActivity().filter(a=>a.kind==='like').map(likeIdOf).slice(0,3000); document.getElementById('notebar')?.remove(); Store.save(); window.scrollTo(0,0); render(); },
   'act-back'(){ if(S.fview==='find'&&navBack()) return; S.fview=null; window.scrollTo(0,0); render(); },
   dms(){ S.personId=null; S.postsOf=null; S.fview='dms'; S.dmTab='main'; S.dmNew=false; window.scrollTo(0,0); render(); },
   'dm-pin'(v){ const p=Pf.dmPins||[]; if(p.includes(v)) Pf.dmPins=p.filter(x=>x!==v); else { if(p.length>=5){ askInfo('Maximum of 5 pins','Unpin a chat to pin another one.'); return; } Pf.dmPins=[...p,v]; } Store.save(); render(); popCue(); },
