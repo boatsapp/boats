@@ -163,7 +163,7 @@ body.swipeback{background:var(--bg)!important;overflow:hidden;touch-action:none}
 .modbox{border-style:dashed}.modw summary{cursor:pointer;list-style:none}.modw .exline{padding:4px 0}.modmsg{padding:4px 0;border-top:1px solid var(--line);font-size:14px;word-break:break-word}
 .rangenote{display:block;font-size:12px;color:var(--bad);margin-top:4px}
 .ckrow{display:flex;gap:10px;align-items:flex-start}.ckbox{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;margin-top:1px}.ckrow.ok .ckbox{background:var(--good);border-color:var(--good);color:#fff}
-.splitchips{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:8px}.splitchip{position:relative;padding-right:30px!important}.rtag{position:absolute;top:9px;right:9px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accent);padding:0!important;margin:0!important;font-size:0!important}.rtag svg{width:11px;height:11px;fill:currentColor}.rtag.inl{position:static}.splitchip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:inherit;text-align:left}.splitchip b{font-size:15px}.splitchip small{font-size:11.5px;color:var(--muted);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.splitchip.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}.splitchip .rtag{font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
+.splitchips{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:8px}.splitchip{position:relative}.spname{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}.rtxt{font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--good)}.rtag{position:absolute;top:9px;right:9px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accent);padding:0!important;margin:0!important;font-size:0!important}.rtag svg{width:11px;height:11px;fill:currentColor}.rtag.inl{position:static}.splitchip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:inherit;text-align:left}.splitchip b{font-size:15px}.splitchip small{font-size:11.5px;color:var(--muted);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.splitchip.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}.splitchip .rtag{font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
 .reqtxt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;white-space:normal;word-break:break-word}
 .dmtools{display:flex;align-items:center;gap:14px;align-self:center;padding-right:2px}
 .dmtools button{border:0;background:none;padding:0;color:#fff;display:grid;place-items:center}
@@ -924,7 +924,10 @@ body.barmini .fhead3{transform:translateY(-100%)}
 .session,.session .card,#car,.ex-card{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.session input,.session textarea,#car input,#car textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 #cropcv{touch-action:none}
 #rotcover .pwave svg{animation-play-state:running!important}#rotcover{position:fixed;inset:0;z-index:5000;display:none;flex-direction:column;gap:14px;align-items:center;justify-content:center;background:var(--bg);color:var(--fg);font-weight:700;font-size:18px;text-align:center;padding:24px;touch-action:none}
-body.sideways #rotcover{display:flex}body.sideways{overflow:hidden}
+body.sideways #rotcover{display:flex}
+/* v167 seamless status bar (black-translucent): pad for the notch, paint the band in page color */
+.screen{padding-top:calc(20px + env(safe-area-inset-top,0px))}.fhead3{margin-top:calc(-20px - env(safe-area-inset-top,0px))!important}.session{padding-top:env(safe-area-inset-top,0px)}.sheet.full{padding-top:env(safe-area-inset-top,0px)}.chatpage{padding-top:calc(12px + env(safe-area-inset-top,0px))!important}body::after{content:'';position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:35;pointer-events:none}body.chatopen::after{display:none}body.sideways{overflow:hidden}body.sideways #app,body.sideways #sheet,body.sideways #ask,body.sideways .toast,body.sideways #undobar{visibility:hidden!important}
+#rotcover{top:-200px!important;bottom:-200px!important;left:-200px!important;right:-200px!important;z-index:2147483000!important}
 .flash{position:fixed;top:-120px;bottom:-120px;left:-20px;right:-20px;z-index:1000;background:#fff;pointer-events:none;will-change:opacity;transform:translateZ(0);animation:flash 1.2s ease-out forwards}
 @keyframes flash{0%{opacity:.85}25%{opacity:0}45%{opacity:.6}100%{opacity:0}}
 .btn.liked{color:var(--bad);border-color:var(--bad-soft);background:var(--bad-soft)}
@@ -1025,6 +1028,20 @@ body.sideways #rotcover{display:flex}body.sideways{overflow:hidden}
 :root[data-theme="dark"] body.feedscrolled .fhead3{background:linear-gradient(180deg,rgba(14,14,13,.82) 0%,rgba(14,14,13,.5) 70%,rgba(14,14,13,0) 100%)!important}
 :root[data-theme="dark"] .scrim{background:rgba(0,0,0,.5)}
 /* New in BOATS card */
+.gymcard{align-items:stretch!important;gap:10px!important;padding:22px 20px 18px!important}.gymcard .askbtns{display:grid;grid-template-columns:1fr 1.3fr;gap:8px;margin-top:6px}.gymcard .askbtns .btn{margin:0}
+.gymava{position:relative;align-self:center;width:84px;height:84px}.gymava .ring{display:grid;place-items:center;width:84px;height:84px;border-radius:50%;background:conic-gradient(var(--good),#7ad38f,var(--good))}.gymava .ring .av{width:76px;height:76px;margin:0;border:3px solid var(--bg);font-size:24px}.gymava .ring .av i,.gymava .ring .av::after{display:none}
+.livedot{position:absolute;right:4px;bottom:4px;width:16px;height:16px;border-radius:50%;background:var(--good);border:3px solid var(--bg);animation:livep 1.6s ease-in-out infinite}@keyframes livep{0%,100%{box-shadow:0 0 0 0 rgba(79,194,131,.6)}50%{box-shadow:0 0 0 6px rgba(79,194,131,0)}}
+.gymlive{align-self:center;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--good)}
+.gymb .ring{position:relative}.gymb .ring::after{content:"";position:absolute;right:2px;bottom:2px;width:14px;height:14px;border-radius:50%;background:var(--good);border:3px solid var(--bg)}
+.gymlbl{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:2px 0 -4px}.gymlbl i{width:7px;height:7px;border-radius:50%;background:var(--good);animation:livep 1.6s ease-in-out infinite}
+body.kbopen .tabbar,body.kbopen .fbk,body.kbopen .beginbar{opacity:0!important;pointer-events:none!important;transition:opacity .15s}
+.cfghead{gap:6px}.cfgt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.cfgt b{font:800 19px/1.15 var(--display);letter-spacing:-.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cfgt span{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sheet .equip button{min-height:58px!important;padding:8px 6px!important;font-size:13px!important}.sheet .field{gap:6px}
+.beginbar{z-index:26!important;translate:0 var(--vvb,0px)}
+.beginbar .btn{height:58px!important;min-width:min(340px,100%);font-size:17px!important;font-weight:800!important;letter-spacing:-.01em;border-radius:18px!important;box-shadow:0 0 0 1px rgba(255,255,255,.35),0 0 28px rgba(255,255,255,.22),0 12px 30px rgba(0,0,0,.55)!important;animation:startglow 2.8s ease-in-out infinite}
+.beginbar .btn svg{width:20px;height:20px}
+@keyframes startglow{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.35),0 0 22px rgba(255,255,255,.16),0 12px 30px rgba(0,0,0,.55)}50%{box-shadow:0 0 0 1px rgba(255,255,255,.5),0 0 34px rgba(255,255,255,.3),0 12px 30px rgba(0,0,0,.55)}}
+@media (prefers-reduced-motion:reduce){.beginbar .btn{animation:none}}
 .wnbox{text-align:left!important;gap:10px!important;padding:22px 20px 18px!important;max-width:340px!important}.wnbox .wneb{font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--accent)}.wnbox b.wnt{font-family:var(--display);font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.15}.wnbox .wnx{font-size:14px;color:var(--muted);line-height:1.45}
 .wnbox .wnic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(160deg,rgba(91,192,235,.28),rgba(91,192,235,.08));border:1px solid rgba(91,192,235,.3);color:var(--accent);box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}.wnbox .askbtns{display:grid;grid-template-columns:1fr 1.3fr;gap:8px;margin-top:6px}.wnbox .askbtns .btn{margin:0}
 .wnbox .wnic{background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.05))!important;border:1px solid rgba(255,255,255,.18)!important;color:var(--fg)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.25)!important}
@@ -1049,7 +1066,7 @@ function places(){ if(PL) return PL; const rank=new Map(PLACES_TOP.split('|').ma
 const placeValid = t => !!t && places().set.has(String(t).trim().toLowerCase());
 function placeMatches(q){ q=String(q||'').trim().toLowerCase().replace(/\s+/g,' '); if(q.length<2) return []; const out=[];
   for(const x of places().list){ if(x.lc.startsWith(q)||x.lc.replace(',','').startsWith(q)){ out.push(x.n); if(out.length>=6) break; } } return out; }
-const BUILD = 'v166';   // preview copy: nothing is saved, resets on every open
+const BUILD = 'v167';   // preview copy: nothing is saved, resets on every open
 /* ---------- data ---------- */
 const EX = [
  ['chest-press','Chest Press','push','Chest · Triceps · Front delts',1],
@@ -1250,7 +1267,7 @@ const P = {
   boat:'<path d="M3 15.5h18l-2.2 4H5.2z"/><path d="M12 3.5v12M12 4.5l6 9H12"/><path d="M12 7l-4.5 6.5H12"/>',
   plate:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2"/><path d="M12 5.5v2M12 16.5v2M5.5 12h2M16.5 12h2"/>',
   health:'<path d="M3 12h4l2-4 3.5 8 2-4H21"/>',
-  bandage:'<rect x="3" y="8.5" width="18" height="7" rx="3.5" transform="rotate(-45 12 12)"/><rect x="9.6" y="9.6" width="4.8" height="4.8" rx="1" transform="rotate(-45 12 12)"/>',
+  bandage:'<g transform="rotate(-45 12 12)"><rect x="2.2" y="7.6" width="19.6" height="8.8" rx="4.4"/><rect x="8.6" y="7.6" width="6.8" height="8.8" fill="currentColor" stroke="none"/><circle cx="5.4" cy="10.4" r=".75" fill="currentColor" stroke="none"/><circle cx="5.4" cy="13.6" r=".75" fill="currentColor" stroke="none"/><circle cx="18.6" cy="10.4" r=".75" fill="currentColor" stroke="none"/><circle cx="18.6" cy="13.6" r=".75" fill="currentColor" stroke="none"/></g>',
   pause:'<path d="M8 5.5v13M16 5.5v13"/>',
   reset:'<path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v4h4"/>',
   vibrate:'<rect x="7.5" y="4" width="9" height="16" rx="2"/><path d="M4 9v6M20 9v6"/>',
@@ -1320,7 +1337,7 @@ function normalizeProfile(p){
 
 /* ---------- storage ---------- */
 const Store = {
-  mode:'connecting', note:'', col:null, db:null, uid:null, acct:null, profiles:{}, all:[], profile:null, workouts:[], t:null, writing:false, dirty:false,
+  trash:[], mode:'connecting', note:'', col:null, db:null, uid:null, acct:null, profiles:{}, all:[], profile:null, workouts:[], t:null, writing:false, dirty:false,
   docId(a=this.acct){ return a==='main'?'profile':'profile_'+a; },
   cache(){ lsSet('boats.v5',{profiles:this.profiles,all:this.all}); },
   loadCache(){
@@ -1342,7 +1359,7 @@ const Store = {
       const profiles={}, all=[];
       snap.docs.forEach(d=>{ const raw=d.data(); if(!raw) return; const x=clone(raw);   // stored data comes back read-only
         if(d.id==='profile') profiles.main=x; else if(d.id.startsWith('profile_')) profiles[d.id.slice(8)]=x;
-        else if(x.kind==='workout') all.push({...x,acct:x.acct||'main'}); });
+        else if(x.kind==='workout') all.push({...x,acct:x.acct||'main'}); else if(x.kind==='trash'){ if(Date.now()-(x.at||0)<30*864e5) this.trash.push({...x,doc:d.id}); else { try{ col.doc(d.id).delete(); }catch(e){} } } });
       this.col=col; this.mode='cloud';
       // push up anything only saved on this device
       for(const a in this.profiles) if(!profiles[a]){ try{ await col.doc(this.docId(a)).set(clone(this.profiles[a])); profiles[a]=this.profiles[a]; }catch(e){} }
@@ -1352,7 +1369,7 @@ const Store = {
       this.profiles=profiles; this.all=all; this.cache();
       // keep this device in sync with your other devices (newest save wins)
       try{ col.onSnapshot(sn=>{ sn.docs.forEach(d=>{ const x=d.data(); if(!x) return; const a=d.id==='profile'?'main':d.id.startsWith('profile_')?d.id.slice(8):null;
-        if(a){ if(a!==this.acct||!this.profile) return; if((x.updatedAt||0)>(this.profile.updatedAt||0)+500&&!S.draft){ const keep=this.profile.active; const nx=clone(x); if(keep&&(!nx.active||(keep.lastAct||keep.startedAt||0)>(nx.active.lastAct||nx.active.startedAt||0))) nx.active=keep; Object.keys(this.profile).forEach(k=>{ if(!(k in nx)) delete this.profile[k]; }); Object.assign(this.profile,nx); this.profiles[a]=this.profile; this.cache(); try{ rebuildEx(); render(); }catch(e){} } }
+        if(a){ if(a!==this.acct||!this.profile) return; if((x.updatedAt||0)>(this.profile.updatedAt||0)+500&&!S.draft){ const keep=this.profile.active; const nx=clone(x); const ended=id=>!!id&&((nx.endedIds||[]).includes(id)||(this.profile.endedIds||[]).includes(id)||this.all.some(w=>w.id==='w_'+id)); if(keep&&!ended(keep.id)&&(!nx.active||(keep.lastAct||keep.startedAt||0)>(nx.active.lastAct||nx.active.startedAt||0))) nx.active=keep; if(nx.active&&ended(nx.active.id)) nx.active=null; nx.endedIds=[...new Set([...(nx.endedIds||[]),...(this.profile.endedIds||[])])].slice(-40); Object.keys(this.profile).forEach(k=>{ if(!(k in nx)) delete this.profile[k]; }); Object.assign(this.profile,nx); this.profiles[a]=this.profile; this.cache(); try{ rebuildEx(); render(); }catch(e){} } }
         else if(x.kind==='workout'&&!this.all.some(w=>w.id===x.id)){ const w={...clone(x),acct:x.acct||'main'}; this.all.unshift(w); if(w.acct===this.acct){ this.workouts.unshift(w); this.workouts.sort((p,q)=>q.startedAt-p.startedAt); } this.cache(); } }); },()=>{}); }catch(e){}
     }catch(e){ this.mode='local'; this.col=null; this.note=e&&e.message==='timeout'?'Claude storage did not answer':'Could not reach Claude storage'; }
   },
@@ -1360,7 +1377,9 @@ const Store = {
   use(a){
     this.acct=a; if(!this.profiles[a]) this.profiles[a]=defaultProfile();
     this.profile=this.profiles[a]=normalizeProfile(this.profiles[a]);
+    { const seen=new Set(); this.all=this.all.filter(w=>{ const k=w.acct+'|'+w.id; if(seen.has(k)) return false; seen.add(k); return true; }); }
     this.workouts=this.all.filter(w=>w.acct===a).sort((x,y)=>y.startedAt-x.startedAt);
+    { const p=this.profile, ac=p.active; if(ac&&(((p.endedIds||[]).includes(ac.id))||this.workouts.some(w=>w.id==='w_'+ac.id))){ p.active=null; p.updatedAt=Date.now(); setTimeout(()=>this.save(true),0); } }
     for(const w of this.workouts) for(const it of w.items){ for(const s of it.sets) if(!s.st) s.st='ok'; it.repMin=it.repMin||7; it.repMax=it.repMax||10; }
     lsSet('boats.acct',a); Pf=this.profile; rebuildEx(); applyTheme();
   },
@@ -1380,14 +1399,18 @@ const Store = {
     if(this.dirty){ this.dirty=false; this.flush(); }
   },
   async addWorkout(w){
-    w.acct=this.acct; this.all.unshift(w); this.workouts.unshift(w); this.cache();
+    w.acct=this.acct; this.all=this.all.filter(x=>!(x.id===w.id&&x.acct===w.acct)); this.workouts=this.workouts.filter(x=>x.id!==w.id); this.all.unshift(w); this.workouts.unshift(w); this.cache();
     if(this.col){ try{ await retry(()=>this.col.doc(w.id).set(w)); }catch(e){ toast(`Workout kept on this device. Couldn't save to your account (${errText(e)}).`); } }
   },
   async updateWorkout(w,patch){
     Object.assign(w,patch); const i=this.all.findIndex(x=>x.id===w.id); if(i>=0) this.all[i]=w; this.cache();
     if(this.col){ try{ await retry(()=>this.col.doc(w.id).set(clone(w))); }catch(e){ toast(`Kept on this device. Couldn't save to your account (${errText(e)}).`); } }
   },
+  async toTrash(type,item){ if(!item) return; const t={kind:'trash',type,id:item.id,at:Date.now(),acct:this.acct,item:clone(item)}; const docId='trash_'+type+'_'+String(item.id).replace(/[^A-Za-z0-9_-]/g,''); t.doc=docId;
+    this.trash=[t,...this.trash.filter(x=>x.doc!==docId)].slice(0,40); if(this.col){ try{ await this.col.doc(docId).set({kind:'trash',type,id:item.id,at:t.at,acct:t.acct,item:t.item}); }catch(e){ try{ const lite=clone(item); delete lite.pump; delete lite.photo; await this.col.doc(docId).set({kind:'trash',type,id:item.id,at:t.at,acct:t.acct,item:lite}); }catch(_){} } } },
+  async fromTrash(doc){ this.trash=this.trash.filter(x=>x.doc!==doc); if(this.col){ try{ await this.col.doc(doc).delete(); }catch(e){} } },
   async removeWorkout(id){
+    { const w=this.all.find(x=>x.id===id); if(w) await this.toTrash('workout',w); }
     this.all=this.all.filter(w=>w.id!==id); this.workouts=this.workouts.filter(w=>w.id!==id); this.cache();
     if(this.col){ try{ await this.col.doc(id).delete(); }catch(e){} }
     Social.publish();
@@ -1437,8 +1460,8 @@ const Social = {
   postedToday(){ return this.postsToday()>=3; },
   async savePosts(items){ const doc={items:clone(items)}; this.posts={...this.posts,[this.me()]:doc}; refreshSocial();
     if(this.ok&&Store.db){ try{ await retry(()=>Store.db.collection('posts').doc(Store.uid).set(doc)); }catch(e){ toast(`Couldn't share your post (${errText(e)}).`); } } },
-  async addPost(p){ Pf.postLog=[...(Pf.postLog||[]).filter(x=>Date.now()-x.at<3*864e5),{id:p.id,at:Date.now()}]; Store.save(); const items=[p,...this.myPosts()].slice(0,12); let size=0; items.forEach(x=>{ size+=(x.photo||'').length; if(size>650000) delete x.photo; }); await this.savePosts(items); },
-  async delPost(id){ const old=this.myPosts().find(p=>p.id===id); if(old&&old.more&&Store.db&&Store.uid) for(let k=1;k<=old.more;k++) try{ Store.db.collection('photos').doc(`${Store.uid}_${id}_${k}`).delete(); }catch(e){} const e=(Pf.postLog||[]).find(x=>x.id===id); if(e&&Date.now()-e.at<5*60000){ Pf.postLog=Pf.postLog.filter(x=>x!==e); Store.save(); } await this.savePosts(this.myPosts().filter(p=>p.id!==id)); if(Store.db&&Store.uid) try{ await Store.db.collection('photos').doc(Store.uid+'_'+id).delete(); }catch(e){} },
+  async addPost(p){ Pf.postLog=[...(Pf.postLog||[]).filter(x=>Date.now()-x.at<3*864e5),{id:p.id,at:Date.now()}]; Store.save(); const items=[p,...this.myPosts().filter(x=>x.id!==p.id)].slice(0,12); let size=0; items.forEach(x=>{ size+=(x.photo||'').length; if(size>650000) delete x.photo; }); await this.savePosts(items); },
+  async delPost(id,keep){ const old=this.myPosts().find(p=>p.id===id); if(old&&!keep) Store.toTrash('post',old); if(old&&old.more&&Store.db&&Store.uid) for(let k=1;k<=old.more;k++) try{ Store.db.collection('photos').doc(`${Store.uid}_${id}_${k}`).delete(); }catch(e){} const e=(Pf.postLog||[]).find(x=>x.id===id); if(e&&Date.now()-e.at<5*60000){ Pf.postLog=Pf.postLog.filter(x=>x!==e); Store.save(); } await this.savePosts(this.myPosts().filter(p=>p.id!==id)); if(Store.db&&Store.uid) try{ await Store.db.collection('photos').doc(Store.uid+'_'+id).delete(); }catch(e){} },
   myDms(){ const d=this.dms[this.me()]||{}; return {out:clone(d.out||{})}; },
   saveDms(d){ this.dms={...this.dms,[this.me()]:d}; if(!this.ok||!Store.db) return; this.rq=this.rq.then(()=>retry(()=>Store.db.collection('dms').doc(Store.uid).set(clone(d)))).catch(e=>toast(`Couldn't send that (${errText(e)}).`)); },
   myReacts(){ const r=this.reacts[this.me()]||{}; return {likes:{...(r.likes||{})},comments:clone(r.comments||{})}; },
@@ -1729,7 +1752,7 @@ const SPLITS={
 function recSplit(){ return ({beginner:'full',intermediate:'ul',advanced:'ppl'})[Pf.level||'beginner']||'full'; }
 function curSplit(){ return Object.keys(SPLITS).find(k=>SPLITS[k].days.every((t,i)=>Pf.split[DAYS[i][0]]===t)&&(S.route!=='onboard'||(S.obSet&&S.obSet.size===7))); }
 function popularSplits(){ const r=recSplit(), cur=curSplit(), order=[r,...['ppl','ul','bro','full'].filter(k=>k!==r)];
-  return `<div class="stack" style="gap:8px"><span class="flabel">Popular splits</span><div class="splitchips">${order.map(k=>{ const sp=SPLITS[k]; return `<button class="splitchip ${k===cur?'on':''}" data-a="split-use" data-v="${k}" aria-pressed="${k===cur}"><b>${esc(sp.n)}</b>${k===r?`<span class="rtag" aria-label="Recommended">${ic('star','xs')}</span>`:''}<small>${esc(sp.d)}</small></button>`; }).join('')}</div><span class="muted small rowx" style="gap:5px"><span class="rtag inl">${ic('star','xs')}</span>Recommended for your goal</span></div>`; }
+  return `<div class="stack" style="gap:8px"><span class="flabel">Popular splits</span><div class="splitchips">${order.map(k=>{ const sp=SPLITS[k]; return `<button class="splitchip ${k===cur?'on':''}" data-a="split-use" data-v="${k}" aria-pressed="${k===cur}"><span class="spname"><b>${esc(sp.n)}</b>${k===r?`<span class="rtxt">Recommended</span>`:''}</span><small>${esc(sp.d)}</small></button>`; }).join('')}</div></div>`; }
 function splitShareRow(){ return `<button class="li card" style="padding:12px 16px" data-a="share-split"><span class="grow"><span class="t">Make my split public</span><br><span class="s">Others can view and copy it from your profile</span></span><span class="toggle ${Pf.shareSplit?'on':''}"></span></button>`; }
 
 /* ---------- views ---------- */
@@ -1789,7 +1812,8 @@ function weekStrip(){
 }
 function planLine(p){
   const e=exOf(p.exId); if(!e) return '';
-  return e.c==='cardio' ? `${p.min} min` : `${p.equip==='Plate'?'Plate loaded':p.equip}${p.attach?' · '+esc(p.attach):''}${p.setting?' '+esc(p.setting):''} · ${p.sets} × ${p.repMin||Pf.repMin}–${p.repMax||Pf.repMax}${num(p.weight)?` · ${fmtN(num(p.weight))} ${Pf.unit}`:''}${p.note?' · '+esc(p.note):''}`;
+  const iconSays=!!P[String(p.equip||'').toLowerCase()], eq=iconSays?'':(p.equip==='Plate'?'Plate loaded':esc(p.equip||'')), lead=[eq,p.attach?esc(p.attach):'',p.setting?esc(p.setting):''].filter(Boolean).join(' · ');
+  return e.c==='cardio' ? `${p.min} min` : `${lead?lead+' · ':''}${p.sets} × ${p.repMin||Pf.repMin}–${p.repMax||Pf.repMax}${num(p.weight)?` · ${fmtN(num(p.weight))} ${Pf.unit}`:''}${p.note?' · '+esc(p.note):''}`;
 }
 
 const BLOCKS={
@@ -1841,7 +1865,7 @@ function vChecklist(){
 // V1/V2 when the same day type appears more than once in the week (rest days never numbered)
 function variantOf(k){ const t=Pf.split[k]; if(!t||t==='rest') return ''; const same=DAYS.map(d=>d[0]).filter(d=>Pf.split[d]===t); return same.length>1?'V'+(same.indexOf(k)+1):''; }
 function workoutLabel(k){ const t=Pf.split[k]; return t==='rest'?'Rest day':TYPES[t]+(variantOf(k)?' · '+variantOf(k):''); }
-function exNames(k,max=4){ const pl=Pf.plans[k]||[]; const n=pl.map(p=>exOf(p.exId).n); return n.length?esc(n.slice(0,max).join(', '))+(n.length>max?` <span class="muted">+${n.length-max} more</span>`:''):''; }
+function exNames(k){ const n=(Pf.plans[k]||[]).length; return n?`${n} exercise${n===1?'':'s'}`:''; }
 function vToday(){
   const now=new Date(), tk=dayKey(now), dk=S.pick||tk, type=Pf.split[dk], plan=Pf.plans[dk]||[];
   const a=Pf.active, st=streak(), trainedToday=Store.workouts.some(w=>sameDay(w.startedAt,now));
@@ -1865,7 +1889,7 @@ function vToday(){
     ${vProgramCard()}
     ${vChecklist()}
     ${weighCard()}
-    ${a?'':`<div class="beginbar"><button class="btn primary" data-a="start-at" data-v="0">${ic('play','sm')}${plan.length?'Begin workout':'Begin empty workout'}</button></div>`}
+    ${a?'':`<div class="beginbar"><button class="btn primary" data-a="start-at" data-v="0">${ic('play','sm')}Start workout</button></div>`}
   </div>${tabbar()}`;
 }
 
@@ -1983,7 +2007,7 @@ function chartHover(e){
   let best=m.pts[0]; for(const p of m.pts) if(Math.abs(p.x-x)<Math.abs(best.x-x)) best=p;
   const g=c.querySelector('.hov'); g.setAttribute('visibility','visible'); const ln=g.querySelector('line'), ci=g.querySelector('circle'); ln.setAttribute('x1',best.x); ln.setAttribute('x2',best.x); ci.setAttribute('cx',best.x); ci.setAttribute('cy',best.y);
   const tip=c.querySelector('.tip'); tip.hidden=false; tip.innerHTML=`<b class="num">${fmtN(best.v)} ${esc(m.unit)}</b> · ${esc(best.label)}`;
-  tip.style.left=Math.min(82,Math.max(18,best.x/m.W*100))+'%'; tip.style.top=(best.y/m.W*r.width*1)+'px';
+  { const px=best.x/m.W*r.width, tw=tip.offsetWidth||120; tip.style.left=Math.min(r.width-tw/2-4,Math.max(tw/2+4,px))+'px'; } tip.style.top=(best.y/m.W*r.width*1)+'px';
 }
 document.addEventListener('pointermove',chartHover); document.addEventListener('pointerdown',chartHover);
 
@@ -2085,12 +2109,14 @@ function heatCard(k){ const today=new Date(); today.setHours(0,0,0,0); const day
 function cardOf(uid){ return uid===Social.me()?Social.card():(Social.people||{})[uid]; }
 function streakOf(c){ return (c&&c.status&&c.status.streak)||0; }
 const cityOf = t => String(t||'').split(',')[0].trim();
+const stateOf = t => { const p=String(t||'').split(','); return p.length>1?p[p.length-1].trim().toUpperCase():''; };
+function stateCount(st){ if(!st) return 0; const me=Social.me(); return Object.entries({...(Social.people||{}),[me]:Social.card()}).filter(([,x])=>x&&x.username&&x.town&&stateOf(x.town)===st).length; }
 // Competition ranking (ties share a rank) on the same data the Streak Captains boards use.
 function streakRank(uid){ const c=cardOf(uid), sN=streakOf(c); if(!sN) return {s:0}; const me=Social.me();
   const all=Object.entries({...(Social.people||{}),[me]:Social.card()}).filter(([,x])=>x&&x.username&&streakOf(x)>0);
   const g=1+all.filter(([,x])=>streakOf(x)>sN).length;
-  const town=c.town&&placeValid(c.town)?c.town:'', ct=town?1+all.filter(([,x])=>x.town===town&&streakOf(x)>sN).length:0;
-  return {s:sN,g,c:ct,city:cityOf(town)}; }
+  const st=c.town&&placeValid(c.town)?stateOf(c.town):'', ok=st&&stateCount(st)>=2, ct=ok?1+all.filter(([,x])=>x.town&&stateOf(x.town)===st&&streakOf(x)>sN).length:0;
+  return {s:sN,g,c:ct,city:ok?st:''}; }
 function avgTime(){ const ws=Store.workouts.slice(0,20).map(durOf).filter(d=>d>5*60000&&d<5*3600000); return ws.length?fmtDur(ws.reduce((a,b)=>a+b,0)/ws.length):'–'; }
 function vProgress(){
 
@@ -2160,7 +2186,7 @@ function closeness(id){ const me=Social.me(), mine=Social.reacts[me]||{}, theirs
   n+=chatWith(id).length*1.5; return n; }
 function gymBubbles(){ const me=Social.me(); const ppl=Object.entries(Social.people||{}).filter(([id,c])=>id!==me&&isShipmate(id)&&statusOf(c.status).cls==='gym').sort((a,b)=>closeness(b[0])-closeness(a[0]));
   if(!ppl.length) return '';
-  return `<div class="gymrow">${ppl.map(([id,c])=>`<button class="gymb" data-a="person" data-v="${esc(id)}"><span class="ring">${avatar(c.username,c.photo,null)}</span><span class="gn">${esc(c.username)}</span></button>`).join('')}</div>`; }
+  return `<span class="gymlbl"><i></i>Working out now</span><div class="gymrow">${ppl.map(([id,c])=>`<button class="gymb" data-a="gym-info" data-v="${esc(id)}" aria-label="${esc(c.username)} is working out right now"><span class="ring">${avatar(c.username,c.photo,null)}</span><span class="gn">${esc(c.username)}</span></button>`).join('')}</div>`; }
 function myActivity(){ const me=Social.me(), out=[];
   for(const [id,c] of Object.entries(Social.people||{})) if(id!==me&&c&&Array.isArray(c.following)&&c.following.includes(me)) out.push({kind:'follow',uid:id,at:c.followedAt&&c.followedAt[me]||0});
   for(const p of Social.myPosts()){ const key=me+':'+p.id;
@@ -2184,7 +2210,7 @@ const ckOf = (key,c) => `c|${key}|${c.uid}|${c.at}`;
 function cmPinOf(key){ const [owner,pid]=key.split(':'); return owner===Social.me()?(Pf.cmPins||{})[pid]:(((Social.people[owner]||{}).cpins)||{})[pid]; }
 function feedComments(key,owner){ const all=Social.comments(key), top=all.filter(c=>!c.re), kids=c=>all.filter(x=>x.re===c.at).sort((a,b)=>a.at-b.at);
   const sc=c=>Social.likes(ckOf(key,c)); const own=top.filter(c=>c.uid===owner).sort((a,b)=>b.at-a.at), oth=top.filter(c=>c.uid!==owner).sort((a,b)=>sc(b)-sc(a)||a.at-b.at);
-  const pin=cmPinOf(key), pc=pin&&top.find(c=>ckOf(key,c)===pin); const extra=(S.cmShow||{})[key]||0; let shown=[...own.slice(0,1+(extra?own.length:0)), ...oth.slice(0,1+extra)]; if(pc){ shown=[pc,...shown.filter(c=>c!==pc)].slice(0,Math.max(2,shown.length)); } const more=top.length-shown.length;
+  const pin=cmPinOf(key), pc=pin&&top.find(c=>ckOf(key,c)===pin); const extra=(S.cmShow||{})[key]||0; let shown=[...own.slice(0,1+(extra?own.length:0)), ...oth.slice(0,1+extra)]; if(pc){ shown=extra?[pc,...shown.filter(c=>c!==pc)]:[pc]; } const more=top.length-shown.length;
   const row=(c,sub,parent)=>{ const ck=ckOf(key,c), n=Social.likes(ck), on=Social.liked(ck);
     return `<div class="cmt ${sub?'sub':''}"><div class="cmrow"><span class="cmtx"><button class="link" data-a="${c.uid===Social.me()?'tab':'person'}" data-v="${c.uid===Social.me()?'me':esc(c.uid)}"><b>${esc(Social.nameOf(c.uid))}</b></button> ${mentionHtml(c.text)}</span><button class="cmheart ${on?'on':''}" data-a="cm-like" data-v="${esc(ck)}" aria-label="${on?'Unlike':'Like'} comment">${ic('heart','xs')}</button></div>
       <div class="cmmeta">${ago(c.at)}${n?` · ${fmtK(n)} like${n===1?'':'s'}`:''} · <button class="link" data-a="fcm-reply" data-v="${esc(ckOf(key,parent||c))}">Reply</button>${c.uid===Social.me()||owner===Social.me()?` · <button class="link" data-a="cm-del" data-v="${esc(ck)}">Delete</button>`:''}</div></div>`; };
@@ -2213,7 +2239,7 @@ function postCard(uid,p,mine,suggest){
     <div class="who">${(()=>{ const rl=rankLabel(streakRank(uid),5); return `<button class="whobtn" ${go} aria-label="Open ${esc(Social.nameOf(uid))}'s profile${rl?', '+esc(rl)+' streak':''}"><span class="${rl?'hotring':''}">${avatar(Social.nameOf(uid),Social.photoOf(uid),null)}</span><span style="flex:1;min-width:0;text-align:left;display:flex;align-items:center;gap:4px"><b>${esc(Social.nameOf(uid))}</b>${fbadge(uid)}</span></button>${rl?`<button class="rankpill" data-a="ranks" data-v="${esc(uid)}" data-top="5" aria-label="${esc(rl)} streak, see leaderboards">${ic('flame','xs')}${esc(rl)}</button>`:''}`; })()}</div>
     ${p.photo?`<div class="phwrap"><div class="ovwrap" data-pk="${esc(key)}">${slides(uid,p)}<div class="holdstats">${p.kind==='photo'?`<div><b class="num">${fmtK(likes)}</b><span>like${likes===1?'':'s'}</span></div><div><b class="num">${fmtK(cm.length)}</b><span>comment${cm.length===1?'':'s'}</span></div>`:`<div><b class="num">${fmtN(p.vol||0)}</b><span>${Pf.unit} lifted</span></div><div><b class="num">${esc(p.time||'')}</b><span>time</span></div><div><b class="num">${esc(String(p.sets??''))}</b><span>sets</span></div>${p.kcal?`<div><b class="num">~${p.kcal}</b><span>kcal</span></div>`:''}`}</div><i class="burst">${ic('heart')}</i></div>`:''}
     <div class="stats" ${p.photo?'hidden':''}><div class="stat"><div class="k">Time</div><div class="v num">${esc(p.time||'')}</div></div><div class="stat"><div class="k">Sets</div><div class="v num">${esc(String(p.sets??''))}</div></div><div class="stat"><div class="k">${p.kcal?'Calories':'Volume'}</div><div class="v num">${p.kcal?'~'+p.kcal:fmtN(p.vol||0)}</div></div></div>
-    ${`<div class="pacts"><button class="pact ${liked?'liked':''}" data-a="post-like" data-v="${esc(key)}" aria-pressed="${liked}" aria-label="${liked?'Unlike':'Like'}">${ic('heart')}</button>${likes?`<button class="pact pcount" data-a="likers-open" data-v="${esc(key)}" aria-label="See who liked this"><span class="num">${fmtK(likes)}</span></button>`:''}<button class="pact" data-a="cm-open" data-v="${esc(key)}" aria-label="Comment">${ic('chat')}${cm.length?`<span class="num">${fmtK(cm.length)}</span>`:''}</button><span class="spacer"></span><span class="pright">${suggest&&!Pf.friends.includes(uid)?`<button class="pfollow" data-a="follow-sug" data-v="${esc(uid)}">Follow</button>`:''}${mine?`<button class="iconbtn" data-a="post-edit" data-v="${esc(p.id)}" aria-label="Edit caption">${ic('edit','sm')}</button><button class="iconbtn" data-a="post-del" data-v="${esc(p.id)}" aria-label="Delete post">${ic('trash','sm')}</button>`:`<button class="iconbtn" data-a="post-more" data-v="${esc(key)}" aria-label="More options">${ic('more','sm')}</button>`}</span></div>`}
+    ${`<div class="pacts"><button class="pact ${liked?'liked':''}" data-a="post-like" data-v="${esc(key)}" aria-pressed="${liked}" aria-label="${liked?'Unlike':'Like'}">${ic('heart')}</button>${likes?`<button class="pact pcount" data-a="likers-open" data-v="${esc(key)}" aria-label="See who liked this"><span class="num">${fmtK(likes)}</span></button>`:''}<button class="pact" data-a="cm-open" data-v="${esc(key)}" aria-label="Comment">${ic('chat')}${cm.length?`<span class="num">${fmtK(cm.length)}</span>`:''}</button><span class="spacer"></span><span class="pright">${suggest&&!Pf.friends.includes(uid)?`<button class="pfollow" data-a="follow-sug" data-v="${esc(uid)}">Follow</button>`:''}${mine?`${Store.workouts.some(w=>w.id===p.id&&w.pump)?`<button class="iconbtn" data-a="export" data-v="${esc(p.id)}" aria-label="Change the overlay">${ic('camera','sm')}</button>`:''}<button class="iconbtn" data-a="post-edit" data-v="${esc(p.id)}" aria-label="Edit caption">${ic('edit','sm')}</button><button class="iconbtn" data-a="post-del" data-v="${esc(p.id)}" aria-label="Delete post">${ic('trash','sm')}</button>`:`<button class="iconbtn" data-a="post-more" data-v="${esc(key)}" aria-label="More options">${ic('more','sm')}</button>`}</span></div>`}
     ${likedLine(key)}
     ${p.caption?`<p class="cap"><button class="link" ${go}><b>${esc(Social.nameOf(uid))}</b></button> ${mentionHtml(p.caption)}</p>`:''}
     ${(()=>{ const top=topComment(key); return top?`<p class="cap"><button class="link" data-a="${top.uid===Social.me()?'tab':'person'}" data-v="${top.uid===Social.me()?'me':esc(top.uid)}"><b>${esc(Social.nameOf(top.uid))}</b></button> ${mentionHtml(top.text)}</p>`:''; })()}
@@ -2526,7 +2552,7 @@ function profileBlock(uid,c,me){
 }
 function splitPayload(){ const types={}; for(const [k] of DAYS){ const t=Pf.split[k]; if(String(t).startsWith('x_')) types[t]=TYPES[t]; }
   return {split:{...Pf.split},types,plans:Object.fromEntries(DAYS.map(([k])=>[k,(Pf.plans[k]||[]).slice(0,14).map(p=>{ const e=exOf(p.exId); return {exId:p.exId,n:e.n,c:e.c,equip:p.equip||'',sets:p.sets||3,repMin:p.repMin||0,repMax:p.repMax||0,min:p.min||0}; })]))}; }
-function vPosts(){ const uid=S.postsOf, all=(((Social.posts[uid]||{}).items)||[]).filter(p=>p.photo).sort((a,b)=>b.at-a.at), from=S.postsKey?all.findIndex(p=>uid+':'+p.id===S.postsKey):-1, ps=from>0?all.slice(from):all;
+function vPosts(){ const uid=S.postsOf, all=(((Social.posts[uid]||{}).items)||[]).filter(p=>p.photo).sort((a,b)=>b.at-a.at), from=S.postsKey?all.findIndex(p=>uid+':'+p.id===S.postsKey):-1, ps=from>0?[all[from],...all.filter((_,k)=>k!==from)]:all;
   return `<div class="screen">
     <div class="rowx" style="gap:6px;margin:-4px 0 -6px -8px"><button class="iconbtn" data-a="posts-back" aria-label="Back">${ic('back')}</button><span class="h2" style="flex:1">Posts</span></div>
     <div class="stack" id="feed" style="gap:26px">${ps.length?ps.map(p=>postCard(uid,p,uid===Social.me())).join(''):'<div class="card muted">No posts yet.</div>'}</div>
@@ -2706,6 +2732,7 @@ function vSettings(){
       <button class="li" data-a="sound"><span class="ico">${ic('sound')}</span><span class="grow"><span class="t">Sounds</span><br><span class="s">Workout and app sounds</span></span><span class="toggle ${Pf.sound?'on':''}"></span></button>
       <button class="li" data-a="flash"><span class="ico">${ic('bolt')}</span><span class="grow"><span class="t">Flash screen when rest ends</span><br><span class="s">A quick screen flash you can see without sound</span></span><span class="toggle ${Pf.flash?'on':''}"></span></button>
       <button class="li" data-a="vib"><span class="ico">${ic('vibrate')}</span><span class="grow"><span class="t">Vibrate when rest ends</span><br><span class="s">${false?'':'Buzzes your phone when the timer runs out'}</span></span><span class="toggle ${Pf.vibrate?'on':''}"></span></button>
+      <button class="li" data-a="trash-open"><span class="ico">${ic('trash')}</span><span class="grow"><span class="t">Recently deleted</span><br><span class="s">Workouts and posts you deleted in the last 30 days. Only you see this</span></span>${ic('right','sm')}</button>
       <button class="li" data-a="mkt-tog"><span class="ico">${ic('send')}</span><span class="grow"><span class="t">Emails from BOATS</span><br><span class="s">News, tips and offers. Off unless you turn it on</span></span><span class="toggle ${Pf.mktEmail?'on':''}"></span></button>
       <button class="li" data-a="remind-open"><span class="ico">${ic('alarm')}</span><span class="grow"><span class="t">Workout reminders</span><br><span class="s">${Pf.remind&&Pf.remind.time?`Your training days at ${fmtTime12(Pf.remind.time)}`:'Add a reminder to your phone calendar'}</span></span>${ic('right','sm')}</button>
       <button class="li" data-a="pdf-export"><span class="ico">${ic('cloud')}</span><span class="grow"><span class="t">${Store.mode==='cloud'?'Synced to your Claude account':'Saved on this device only'}</span><br><span class="s">${Store.workouts.length} workout${Store.workouts.length===1?'':'s'} logged · app ${BUILD}</span></span><span class="tag">${ic('down','xs')}PDF</span></button>
@@ -2775,7 +2802,7 @@ function vSession(){
     </div>
     ${a.pausedAt?`<div class="pausebar"><div style="flex:1;min-width:0"><b>Workout paused</b><div class="small">No activity for a while, so the clock stopped at ${fmtUp(elapsed(a))}.</div></div><button class="btn sm primary" style="width:auto;flex:none" data-a="w-resume">${ic('play','sm')}Resume</button></div>`:''}
     ${r?`<div class="restctl"><div class="bar"><i id="restfill" style="width:${Math.max(0,100*(r.until-Date.now())/(r.total*1000))}%"></i></div><button class="btn sm" data-a="rest-add">+15s</button><button class="btn sm" data-a="rest-skip">Skip</button></div>`:''}
-    <div class="carousel" id="car">${cards}<section class="ex-card add"><div class="ico" style="width:56px;height:56px;border-radius:16px">${ic('plus')}</div><div class="h2">Add an exercise</div><p class="muted small" style="margin:0;max-width:26ch">Machine taken? Swipe to any exercise and come back to it later.</p><button class="btn sm primary" data-a="s-add">Browse library</button></section></div>
+    <div class="carousel" id="car">${cards}<section class="ex-card add"><button class="ico addplus" data-a="s-add" aria-label="Add an exercise" style="width:64px;height:64px;border-radius:18px;border:0;cursor:pointer">${ic('plus')}</button><button class="h2 addplus" data-a="s-add" style="border:0;background:none;color:inherit;font:inherit;padding:0;cursor:pointer">Add an exercise</button><p class="muted small" style="margin:0;max-width:26ch">Machine taken? Swipe to any exercise and come back to it later.</p><button class="btn sm primary" data-a="s-add">Browse library</button></section></div>
     <div class="dots" id="dots">${a.items.map((_,i)=>`<button class="${i===a.idx?'on':''} ${grade(i)}" data-a="s-go" data-v="${i}" aria-label="Exercise ${i+1}${({'g-all':': every set hit','g-some':': some sets hit','g-none':': no sets hit'})[grade(i)]||''}"></button>`).join('')}<button class="dplus ${a.idx>=a.items.length?'on':''}" data-a="s-add" aria-label="Add an exercise">${ic('plus','xs')}</button></div>
     <div class="s-foot floatboat ${a.pausedAt?'still':''}" aria-hidden="true"><span class="pboat">${ic('boat')}</span>${waveSvg()}</div>
   </div>${tabbar()}`;
@@ -2884,8 +2911,8 @@ function vSheet(){
   if(sh.kind==='picker' && sh.step==='config'){
     const d=sh.draft, e=exOf(d.exId), cardio=e.c==='cardio';
     const where = sh.ctx.mode==='plan' ? DAYN[sh.ctx.day] : 'this workout';
-    return wrap(`<div class="rowx">${sh.ctx.index==null?`<button class="iconbtn" data-a="cfg-back" aria-label="Back">${ic('back')}</button>`:''}<span class="spacer"></span><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>`,
-      `<div class="stack" style="gap:4px"><span class="eyebrow">${esc(e.m)}</span><h2 class="h1" style="font-size:26px">${esc(e.n)}</h2></div>
+    return wrap(`<div class="rowx cfghead">${sh.ctx.index==null?`<button class="iconbtn" data-a="cfg-back" aria-label="Back">${ic('back')}</button>`:''}<div class="cfgt"><b>${esc(e.n)}</b>${e.m&&e.m!=='Custom'?`<span>${esc(e.m)}</span>`:''}</div><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>`,
+      `
         ${cardio?`<div class="field"><span class="flabel">Minutes</span>${stepper('min',d.min)}</div>`
         :`<div class="field"><span class="flabel">Equipment</span><div class="equip" style="grid-template-columns:repeat(${Math.min(4,equipFor(d.exId).length)},minmax(0,1fr))">${equipFor(d.exId).map(q=>`<button class="${d.equip===q?'on':''}" data-a="equip" data-v="${q}">${eqIcon(q)}${q}</button>`).join('')}</div></div>
         <div class="field" ${d.equip==='Bodyweight'?'hidden':''}><span class="flabel">Weight${d.equip==='Dumbbell'?' (per dumbbell)':''}</span><div class="stepper"><button data-a="dstep" data-f="weight" data-d="-1">−</button><div class="inwrap"><input class="input num" id="d-weight" inputmode="decimal" value="${esc(d.weight)}" placeholder="0" data-d="weight"><span class="suf">${Pf.unit}</span></div><button data-a="dstep" data-f="weight" data-d="1">+</button></div></div>
@@ -2957,7 +2984,7 @@ function vSheet(){
        <div class="field"><span class="flabel">Style</span>${chipRow('ov-style',String(sh.style),{0:'Weight',1:'Time',2:'Carried',3:'Rowboats'})}</div>
        <div class="field"><span class="flabel">Text</span>${seg('ov-tone',sh.tone,w.pump?{light:'White',dark:'Black',none:'None'}:{light:'White',dark:'Black'})}</div>
        ${w.pump?`<div class="field"><span class="flabel">Background</span>${seg('ov-bg',sh.bg,{clear:'Clear',photo:'Pump pic'})}</div>`:''}
-       ${isShared(w.id)?`<div class="card rowx" style="gap:10px;padding:12px 14px"><span style="color:var(--good);display:inline-flex">${ic('check','sm')}</span><span style="flex:1">Posted to your feed</span></div>`
+       ${isShared(w.id)?`<div class="rowx" style="gap:8px;color:var(--muted);font-size:13px"><span style="color:var(--good);display:inline-flex">${ic('check','sm')}</span>Public on your feed. Change the look and update it.</div>${w.pump?`<button class="btn primary" data-a="ex-update" data-v="${esc(w.id)}">${ic('reset','sm')}Update post</button>`:''}`
          :w.pump?`<button class="btn primary" data-a="ex-post" data-v="${esc(w.id)}" ${Social.postedToday()?'disabled':''}>${ic('send','sm')}Post to feed</button>${Social.postedToday()?'<div class="muted small">You’ve shared 3 posts today. Post this one tomorrow.</div>':''}`
          :`<button class="btn primary" data-a="pump-add" data-v="${esc(w.id)}">${ic('camera','sm')}Add a photo to post it</button>`}
        <div class="grid2"><button class="btn" data-a="ov-share">${ic('share','sm')}Share to story</button><button class="btn" data-a="ov-save">${ic('dl','sm')}Download</button></div>`); }
@@ -2968,6 +2995,11 @@ function vSheet(){
        <div class="field"><span class="flabel">Training days</span><div class="rowx" style="gap:6px;flex-wrap:wrap">${days.length?days.map(([d,l])=>`<span class="tag">${l.slice(0,3)} · ${esc(workoutLabel(d))}</span>`).join(''):'<span class="muted small">No training days yet. Set your weekly split first.</span>'}</div></div>
        <button class="btn primary" data-a="remind-ics" ${days.length?'':'disabled'}>${ic('alarm','sm')}Add to my calendar</button>
        <span class="muted small">Change your split later? Add the reminders again and delete the old ones in your calendar.</span>`); }
+  if(sh.kind==='trash'){ const list=Store.trash.filter(t=>t.acct===Store.acct||!t.acct).sort((a,b)=>b.at-a.at);
+    return wrap(`<div class="rowx"><span class="h2" style="flex:1">Recently deleted</span><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>`,
+      list.length?`<p class="muted small" style="margin:0">Kept for 30 days, then removed for good. Only you can see this.</p><div class="list">${list.map(t=>{ const it=t.item||{}, left=Math.max(1,30-Math.floor((Date.now()-t.at)/864e5)), title=t.type==='workout'?esc(it.title||dayWord(it.type)):esc(it.caption||it.title||'Post'), img=t.type==='workout'?it.pump:it.photo;
+        return `<div class="li" style="gap:12px">${img?`<img src="${esc(img)}" alt="" style="width:44px;height:56px;border-radius:8px;object-fit:cover;flex:none">`:`<span class="ico">${ic(t.type==='workout'?'dumbbell':'grid')}</span>`}<span class="grow" style="min-width:0"><span class="t" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${title}</span><span class="s">${t.type==='workout'?'Workout':'Post'} · ${it.startedAt||it.at?shortDate(it.startedAt||it.at)+' · ':''}${left} day${left===1?'':'s'} left</span></span><button class="btn sm" style="width:auto;flex:none" data-a="trash-restore" data-v="${esc(t.doc)}">Restore</button></div>`; }).join('')}</div>`
+      :`<div class="muted" style="text-align:center;padding:24px 0">Nothing deleted in the last 30 days.</div>`); }
   if(sh.kind==='wk'){ const w=Store.workouts.find(x=>x.id===sh.id); if(!w) return '';
     return wrap(`<div class="rowx"><span class="h2">${esc(dayWord(w.type))}</span><span class="spacer"></span><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>`,
       `${vHistory([w])}`); }
@@ -3014,13 +3046,13 @@ function vSheet(){
        ${Pf.program?`<button class="btn ghost danger" data-a="block-end">End this block</button>`:''}`); }
   if(sh.kind==='ranks'){ const me=Social.me(), all=Object.entries({...Social.people,[me]:Social.card()}).filter(([,c])=>c&&c.username);
     const sk=c=>(c.status&&c.status.streak)||0, sorted=list=>list.sort((a,b)=>sk(b[1])-sk(a[1]));
-    const town=placeValid(Pf.town)?Pf.town.trim():'';
+    const town=placeValid(Pf.town)?Pf.town.trim():'', st=stateOf(town), stN=stateCount(st);
     const board=(id,title,desc,list,full,empty)=>{ const open=sh.open===id, shown=list.slice(0,open?full:5), pos=list.findIndex(([u])=>u===me);
       return `<div class="stack" style="gap:8px"><button class="rankhead" data-a="rank-open" data-v="${id}" aria-expanded="${open}"><span style="flex:1;min-width:0;text-align:left"><b>${title}</b><br><span class="muted small">${desc}</span></span>${pos>=0?`<span class="tag">You’re #${pos+1}</span>`:''}${ic(open?'down':'right','sm')}</button>
         ${shown.length?`<div class="list">${shown.map(([u,c],i)=>`<button class="li ${u===me?'sel':''}" data-a="${u===me?'close-sheet':'person'}" data-v="${esc(u)}"><span class="rank num">${i+1}</span>${avatar(c.username,c.photo,null)}<span class="grow"><span class="t">${esc(c.username)}</span></span><span class="streakpill sm">${ic('flame','xs')}${sk(c)}</span></button>`).join('')}</div>`:`<div class="card muted small">${empty}</div>`}</div>`; };
     return wrap(`<div class="rowx"><span class="h2">${ic('trophy','sm')} Streak Captains</span><span class="spacer"></span><button class="iconbtn" data-a="close-sheet" aria-label="Close">${ic('x')}</button></div>`,
       board('crew','Crewmate Captains','Top 5 streaks among your crew',sorted(all.filter(([u])=>u===me||Pf.friends.includes(u))),10,'Follow people to compare streaks.')
-      +board('region','Regional Captains',town?'Top 5 streaks in '+esc(town):'Top 5 streaks in your town',town?sorted(all.filter(([,c])=>c.town===town)):[],15,town?'No one else in your town yet.':'Add your town in Settings to see your region.')
+      +(st&&stN>=2?board('region','State Captains','Top 5 streaks in '+esc(st),sorted(all.filter(([,c])=>c.town&&stateOf(c.town)===st)),15,'No streaks in '+esc(st)+' yet.'):'')
       +board('global','Global Captains','Top 5 streaks on Boats',sorted(all),100,'No one yet.')
       +`<p class="muted small" style="margin:0">Each workout that meets your level’s minimum adds a day. Rest days pause your streak. Take up to 6 in a row, then work out on the 7th day or it resets. Tap a board to see more.</p>`); }
   if(sh.kind==='activity'){ const list=myActivity(), seen=sh.seen||0;
@@ -3158,7 +3190,7 @@ const NAVH=[]; const NAVF=['route','tab','fview','meView','personId','plist','po
 function navPush(){ const o={y:window.scrollY}; NAVF.forEach(k=>o[k]=S[k]&&typeof S[k]==='object'?{...S[k]}:S[k]); const same=t=>t&&NAVF.every(k=>JSON.stringify(t[k])===JSON.stringify(o[k])); const j=NAVH.findIndex(same); if(j>=0){ NAVH.length=j; } NAVH.push(o); if(NAVH.length>30) NAVH.shift(); }
 function navBack(){ const o=NAVH.pop(); if(!o) return false; NAVF.forEach(k=>S[k]=o[k]); S.sheet=null; renderSheet(); render(); window.scrollTo(0,o.y||0); return true; }
 const viewKey=()=>JSON.stringify([S.route,S.tab,S.fview,S.meView,S.personId,S.postsOf,S.plist&&S.plist.uid+S.plist.tab,S.chatWith&&S.fview==='chat'?S.chatWith:'',S.planDay]);
-function render(){ if(document.body.classList.contains('swipeback')){ render._pend=true; return; } render._pend=false; const oldHTML=app.innerHTML, oldY=window.scrollY, k=viewKey();
+function render(){ if(document.body.classList.contains('swipeback')){ render._pend=true; return; } render._pend=false; const _ae=document.activeElement, _keep=_ae&&app.contains(_ae)&&(_ae.id||(_ae.dataset&&_ae.dataset.set))?{id:_ae.id,set:_ae.dataset&&_ae.dataset.set,val:_ae.value,ss:_ae.selectionStart,se:_ae.selectionEnd}:null; const oldHTML=app.innerHTML, oldY=window.scrollY, k=viewKey();
   if(k!==VK){ if(VSTACK.length&&VSTACK[VSTACK.length-1].k===k) VSTACK.pop(); else if(VK){ VSTACK.push({k:VK,html:oldHTML,y:oldY}); if(VSTACK.length>8) VSTACK.shift(); } VK=k; }
   document.body.classList.toggle('chatopen',S.route==='app'&&S.tab==='friends'&&S.fview==='chat');
   syncTypes();
@@ -3178,10 +3210,11 @@ function render(){ if(document.body.classList.contains('swipeback')){ render._pe
   if(window.PTRHOLD){ const s2=app.querySelector('.screen'); if(s2){ s2.style.transition='none'; s2.style.transform='translateY(84px)'; } }
   if(S.route!=='splash') app.insertAdjacentHTML('beforeend',`<button class="fbk ${S.route==='app'||S.route==='session'?'intab':''} ${S.route==='session'?'insess':''} ${S.fview==='chat'&&S.tab==='friends'?'inchat':''}" data-a="feedback" aria-label="Send beta feedback">${ic('chat','sm')}<span>Feedback</span></button>`);
   if(PREVIEW) app.insertAdjacentHTML('beforeend',devPanel());
-  renderSheet();
+  if(!S.keepSheet) renderSheet();
+  if(_keep){ const n=_keep.id?document.getElementById(_keep.id):app.querySelector(`[data-set="${_keep.set}"]`); if(n&&n.tagName&&/INPUT|TEXTAREA/.test(n.tagName)){ if(n.value!==_keep.val) n.value=_keep.val; try{ n.focus({preventScroll:true}); if(_keep.ss!=null) n.setSelectionRange(_keep.ss,_keep.se); }catch(e){} } }
   { const lb=document.querySelector('.livebar'); document.documentElement.style.setProperty('--live-h',(lb?lb.offsetHeight+14:0)+'px'); }
   const vk=S.route+'|'+S.tab+'|'+(S.meView||'')+'|'+(S.pview||'');
-  app.querySelectorAll('.screen .tabbar, .screen .fabpost, .screen .invitebar, .session .tabbar').forEach(n=>app.appendChild(n));
+  app.querySelectorAll('.screen .tabbar, .screen .fabpost, .screen .invitebar, .session .tabbar, .screen .beginbar').forEach(n=>app.appendChild(n));
   if(vk!==render._vk){ render._vk=vk; revealCards(); }
   hqScan(); watchSeen(); dmImgScan(); setTimeout(fabCheck,50); colw(); if(S.route==='app'&&S.tab==='friends') repaint();
   if(S.route==='app'&&!S.wnTried&&!PREVIEW){ S.wnTried=true; setTimeout(()=>whatsNew(),1400); }
@@ -3196,6 +3229,10 @@ document.addEventListener('contextmenu',e=>{ if(e.target.tagName==='IMG') e.prev
 if(window.visualViewport){ const kb=()=>{ const v=visualViewport, r=document.documentElement.style; { const gap=Math.round(document.documentElement.clientHeight-(v.offsetTop+v.height)); r.setProperty('--vvb',(document.body.classList.contains('kbopen')||gap<2||v.scale>1.01?0:-gap)+'px'); } r.setProperty('--vvh',Math.round(v.height)+'px'); r.setProperty('--vvt',Math.round(v.offsetTop)+'px'); document.body.classList.toggle('kbopen',innerHeight-v.height>150); const c=document.getElementById('chat'); if(c&&S.fview==='chat'&&c.dataset.end!=='0') c.scrollTop=c.scrollHeight; }; visualViewport.addEventListener('resize',kb); visualViewport.addEventListener('scroll',kb); window.addEventListener('scroll',()=>requestAnimationFrame(kb),{passive:true}); window.addEventListener('resize',kb); document.addEventListener('touchend',()=>setTimeout(kb,350),{passive:true}); kb(); }
 // In a chat the page itself never moves: only a message list that's long enough to scroll can be dragged.
 document.addEventListener('touchmove',e=>{ if(e.target.closest&&e.target.closest('.photoview')){ if(e.cancelable) e.preventDefault(); return; } if(!document.body.classList.contains('chatopen')) return; const c=e.target.closest&&e.target.closest('#chat'); if(!c||c.scrollHeight<=c.clientHeight+1){ if(e.cancelable) e.preventDefault(); } },{passive:false});
+// Typing in a workout: stop iPhone from shoving the page up; only scroll as much as the field needs
+document.addEventListener('focusin',e=>{ const t=e.target; if(S.route!=='session'||!t.matches||!t.matches('input,textarea')) return; const y=window.scrollY;
+  const fix=()=>{ if(document.activeElement!==t) return; window.scrollTo(0,y); const vv=window.visualViewport, r=t.getBoundingClientRect(), h=vv?vv.height+vv.offsetTop:innerHeight; if(r.bottom>h-12) window.scrollBy(0,r.bottom-h+24); };
+  setTimeout(fix,60); setTimeout(fix,320); setTimeout(fix,650); });
 // Swipe left or right on a main page to move between Feed, Plan, Lift, Progress and Profile
 const TABS=['friends','plan','today','progress','me']; let TSWP=null;
 function tabRoot(){ return S.route==='app'&&!S.sheet&&!askEl.innerHTML&&!S.personId&&!S.postsOf&&!S.plist&&!S.fview&&!S.meView&&!S.planDay&&TABS.includes(S.tab); }
@@ -3349,7 +3386,7 @@ function revealCards(){ return; if(!('IntersectionObserver' in window)) return; 
   document.querySelectorAll('#feed > *, .pgrid3 > button, .prof .post').forEach((n,i)=>{ n.classList.add('rv'); n.style.transitionDelay=Math.min(i,6)*40+'ms'; RIO.observe(n); }); }
 function scrollLock(on){ const b=document.body; if(on&&!b.classList.contains('locked')){ b.dataset.ly=window.scrollY; b.style.top=-window.scrollY+'px'; b.classList.add('locked'); } else if(!on&&b.classList.contains('locked')){ const y=+b.dataset.ly||0; b.classList.remove('locked'); b.style.top=''; window.scrollTo(0,y); } }
 new MutationObserver(()=>scrollLock(!!(S.sheet||askEl.innerHTML))).observe(document.getElementById('ask'),{childList:true});
-function renderSheet(){ setTimeout(()=>scrollLock(!!(S.sheet||askEl.innerHTML)),0); const b=document.getElementById('sbody'), st=b?b.scrollTop:0, same=S.sheet&&renderSheet._k===S.sheet.kind; renderSheet._k=S.sheet&&S.sheet.kind; sheetEl.innerHTML=vSheet()+(PREVIEW&&S.sheet&&S.sheet.kind!=='dev'?devPanel():''); const nb=document.getElementById('sbody'); if(nb) nb.scrollTop=st; if(same){ sheetEl.querySelectorAll('.scrim,.sheet').forEach(n=>n.style.animation='none'); } if(S.sheet&&(S.sheet.kind==='export'||(S.sheet.kind==='finish'&&S.sheet.pump))) drawOverlayInto(document.getElementById('ovc')); if(S.sheet&&S.sheet.kind==='avcrop') avDraw(); }
+function renderSheet(){ setTimeout(()=>scrollLock(!!(S.sheet||askEl.innerHTML)),0); const b=document.getElementById('sbody'), st=b?b.scrollTop:0, same=S.sheet&&renderSheet._k===S.sheet.kind; const _typed=same?['fb-in','rep-in','sus-in'].map(id=>{ const n=document.getElementById(id); return n&&n.value?[id,n.value]:null; }).filter(Boolean):[]; renderSheet._k=S.sheet&&S.sheet.kind; setTimeout(()=>{ for(const [id,v] of _typed){ const n=document.getElementById(id); if(n&&!n.value) n.value=v; } },0); sheetEl.innerHTML=vSheet()+(PREVIEW&&S.sheet&&S.sheet.kind!=='dev'?devPanel():''); const nb=document.getElementById('sbody'); if(nb) nb.scrollTop=st; if(same){ sheetEl.querySelectorAll('.scrim,.sheet').forEach(n=>n.style.animation='none'); } if(S.sheet&&(S.sheet.kind==='export'||(S.sheet.kind==='finish'&&S.sheet.pump))) drawOverlayInto(document.getElementById('ovc')); if(S.sheet&&S.sheet.kind==='avcrop') avDraw(); }
 function go(route,opts={}){ document.body.classList.remove('barmini'); Object.assign(S,opts); S.route=route; if(route==='session'&&Pf.active){ try{ reconcileWorkout(); Store.save(); }catch(e){} } window.scrollTo(0,0); render(); }
 function cardW(){ const c=document.getElementById('car'); return c?c.querySelector('.ex-card').offsetWidth+10:1; }
 function onCarScroll(e){
@@ -3438,7 +3475,7 @@ async function saveWorkoutNow(){
     try{
     let postPhoto=null; try{ postPhoto=share&&pump&&tone!=='none'?await portraitWithOverlay(pump):null; }catch(e){ postPhoto=null; }
     for(const it of w.items){ if(it.cardio) continue; const used=num(it.sets[0].w); if(used) for(const [d] of DAYS) for(const p of Pf.plans[d]) if(p.exId===it.exId&&p.equip===it.equip) p.weight=String(used); }
-    Pf.active=null; S.rest=null; S.sheet=null; S.sheetFull=false; Store.save(); try{ await Store.addWorkout(w); }catch(e){} try{ Social.publish(); }catch(e){}
+    Pf.endedIds=[...(Pf.endedIds||[]),a.id].slice(-40); Pf.active=null; S.rest=null; S.sheet=null; S.sheetFull=false; Store.save(true); try{ await Store.addWorkout(w); }catch(e){} try{ Social.publish(); }catch(e){}
     posted=share; if(share){ try{ await shareWorkout(w,postPhoto); }catch(e){ posted=false; toast('Saved, but the post didn’t go through. Try posting it again from your profile.'); } }
     } finally{ boatLoading(false); }
     const sug=suggestionsFor(w);
@@ -3484,7 +3521,7 @@ const A = {
   sex(v){ Pf.sex=v; document.getElementById('f-sex')?.classList.remove('bad'); Store.save(); render(); },
   goal(v){ Pf.goal=v; applyRecDefaults(); Store.save(); render(); },
   theme(v){ Pf.theme=v; applyTheme(); Store.save(); render(); },
-  sound(){ Pf.sound=!Pf.sound; Store.save(); render(); if(Pf.sound) ding(); },
+  sound(){ Pf.sound=!Pf.sound; Store.save(); render(); if(Pf.sound){ try{ ac(); }catch(e){} setTimeout(()=>{ try{ ding(); }catch(e){} },40); } },
   show(v){ Pf.show[v]=!Pf.show[v]; Store.save(); render(); },
   photo(){ S.photoFor='avatar'; document.getElementById('photo-in').click(); },
   'pump-finish'(){ readTitle(); S.photoFor='finish'; document.getElementById('cam-in').click(); },
@@ -3586,6 +3623,13 @@ const A = {
     const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//BOATS//Workout reminders//EN','CALSCALE:GREGORIAN',...ev,'END:VCALENDAR'].join('\r\n');
     const blob=new Blob([ics],{type:'text/calendar'}), u=URL.createObjectURL(blob), a=document.createElement('a'); a.href=u; a.download='boats-workout-reminders.ics'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),8000);
     S.sheet=null; renderSheet(); render(); savedNote('Open the file to add it to your calendar'); },
+  'gym-info'(v){ const c=Social.people[v]; if(!c) return; const st=c.status||{}, mins=st.activeSince?Math.max(1,Math.round((Date.now()-st.activeSince)/60000)):0;
+    ASKFN=()=>A.person(v);
+    askEl.innerHTML=`<div class="scrim askscrim" data-a="ask-no"><div class="askbox gymcard" data-stop role="dialog" aria-label="${esc(c.username)} is working out"><span class="gymava"><span class="ring">${avatar(c.username,c.photo,null)}</span><i class="livedot"></i></span><span class="gymlive">${ic('dumbbell','xs')}Working out now</span><b class="wnt" style="text-align:center">${esc(c.username)}</b><span class="wnx" style="text-align:center">${mins?`Started ${mins<60?mins+' min':Math.floor(mins/60)+'h '+(mins%60)+'m'} ago.`:'Training right now.'} Green rings on the feed mean someone in your crew is mid-workout.</span>${st.streak?`<span class="tag" style="align-self:center">${ic('flame','xs')} ${st.streak} day streak</span>`:''}<div class="askbtns"><button class="btn" data-a="ask-no">Close</button><button class="btn primary" data-a="ask-yes">View profile</button></div></div></div>`; },
+  'trash-open'(){ S.sheet={kind:'trash'}; renderSheet(); },
+  async 'trash-restore'(v){ const t=Store.trash.find(x=>x.doc===v); if(!t) return; const it=clone(t.item);
+    if(t.type==='workout'){ await Store.addWorkout(it); await Store.fromTrash(v); renderSheet(); render(); savedNote('Workout restored'); }
+    else { if(Social.postedToday()){ toast('You’ve shared 3 posts today. Restore this one tomorrow.'); return; } await Social.addPost(it); await Store.fromTrash(v); renderSheet(); render(); savedNote('Post restored to your feed'); } },
   'mkt-tog'(){ Pf.mktEmail=!Pf.mktEmail; Pf.mktAt=Date.now(); Store.save(); render(); try{ window.boatsSetMarketing&&window.boatsSetMarketing(Pf.mktEmail); }catch(e){} savedNote(Pf.mktEmail?'You’ll get emails from BOATS':'No marketing emails'); },
   flash(){ Pf.flash=!Pf.flash; Store.save(); render(); if(Pf.flash) flashScreen(); },
   's-equip'(v){ S.sheet={kind:'equip',idx:+v,plan:false}; renderSheet(); },
@@ -3644,9 +3688,12 @@ const A = {
     g.done=`Next time: ${fmtN(nw)} ${Pf.unit}${c?'':' (not in your plan; your next session starts from this)'}`; Pf.nextW[keyOf(g.exId,g.equip)]=nw; Store.save(); renderSheet(); },
   'adj-apply'(v){ const g=S.sheet.items[+v], amt=g.amt??recAdj(g); A.adj(v+'.'+amt); },
   'adj-skip'(v){ const g=S.sheet.items[+v]; g.done=`Keeping ${fmtN(g.top)} ${Pf.unit}`; Pf.adjusted[keyOf(g.exId,g.equip)]=Date.now(); Store.save(); renderSheet(); },
-  discard(){ Pf.active=null; S.rest=null; S.sheet=null; S.sheetFull=false; Store.save(); go('app',{tab:homeTab()}); toast('Workout discarded'); },
+  discard(){ if(Pf.active) Pf.endedIds=[...(Pf.endedIds||[]),Pf.active.id].slice(-40); Pf.active=null; S.rest=null; S.sheet=null; S.sheetFull=false; Store.save(true); go('app',{tab:homeTab()}); toast('Workout discarded'); },
   pstep(_,el){ if(/rep(Min|Max)/.test(el.dataset.f)){ Pf.defaultsTouched=true; S.obDefTouched=true; } setTimeout(()=>{ if(/rep(Min|Max)/.test(el.dataset.f)) render(); },0); const f=el.dataset.f; let v=(+Pf[f]||0)+(+el.dataset.d); if(f==='repMin') v=Math.max(1,Math.min(Pf.repMax,v)); if(f==='repMax') v=Math.max(Pf.repMin,Math.min(50,v)); Pf[f]=v; document.getElementById('f-'+f).value=v; Store.save(); },
   export(v){ S.menu=null; const w=Store.workouts.find(x=>x.id===v); S.sheet={kind:'export',id:v,style:0,tone:'light',bg:w&&w.pump?'photo':'clear'}; renderSheet(); },
+  async 'ex-update'(v){ const sh=S.sheet, w=Store.workouts.find(x=>x.id===v); if(!sh||!w||!w.pump||S.saving) return;
+    S.saving=true; boatLoading(true,'Updating your post…'); try{ const photo=sh.tone==='none'?w.pump:(await portraitWithOverlay(w.pump))||w.pump; const small=await shrinkData(photo,480,.72); const hq=await savePhotoHq(w.id,photo);
+      await Social.savePosts(Social.myPosts().map(p=>p.id===w.id?{...p,photo:small,hq,caption:w.caption||p.caption||'',edited:Date.now()}:p)); S.sheet=null; renderSheet(); render(); savedNote('Post updated'); }catch(e){ toast('That didn’t update. Try again.'); } finally{ S.saving=false; boatLoading(false); } },
   async 'ex-post'(v){ const sh=S.sheet, w=Store.workouts.find(x=>x.id===v); if(!sh||!w||!w.pump||S.saving) return; if(Social.postedToday()){ toast('You’ve shared 3 posts today, the daily limit.'); return; }
     S.saving=true; boatLoading(true,'Posting your workout…'); try{ const photo=sh.tone==='none'?null:await portraitWithOverlay(w.pump); S.sheet=null; renderSheet(); await shareWorkout(w,photo); render(); savedNote('Posted to your feed'); popCue(); }catch(e){ toast('That didn’t post. Try again.'); } finally{ S.saving=false; boatLoading(false); } },
   'ov-style'(v){ if(!S.sheet) return; readTitle(); S.sheet.style=+v; renderSheet(); },
@@ -3715,7 +3762,7 @@ const A = {
   'pr-more'(){ S.prMore=true; render(); },
   'cal-day'(v){ const ws=Store.workouts.filter(w=>dateKey(new Date(w.startedAt))===v); if(ws.length===1) return A['wk-open'](ws[0].id); S.sheet={kind:'calday',day:v}; renderSheet(); },
   async 'wk-share'(v){ if(Social.postedToday()){ toast('You’ve shared 3 workouts today, the daily limit.'); return; } const w=Store.workouts.find(x=>x.id===v); if(!w) return; if(!w.pump){ toast('Add a pump picture first. The feed is photos only.'); return; } S.menu=null; S.sheet=null; await shareWorkout(w); render(); renderSheet(); toast('Shared to your feed'); },
-  async 'wk-unshare'(v){ S.menu=null; S.sheet=null; await Social.delPost(v); render(); renderSheet(); toast('Now private: only you can see it'); },
+  async 'wk-unshare'(v){ S.menu=null; S.sheet=null; await Social.delPost(v,true); render(); renderSheet(); toast('Now private: only you can see it'); },
   'pick-day'(){ S.sheet={kind:'pickday'}; renderSheet(); },
   'town-pick'(v){ if(S.draft&&S.meView==='edit'){ S.draft.town=v; const sb=document.getElementById('idsave'); if(sb) sb.disabled=!draftDirty(); } else { Pf.town=v; Store.save(); } const i=document.getElementById('f-town'); if(i) i.value=v; const b=document.getElementById('town-sug'); if(b){ b.hidden=true; b.innerHTML=''; } const m=document.getElementById('t-msg'); if(m) m.innerHTML=townMsg(); },
   'rep-preset'(v){ const p=REP_PRESETS[+v]; Pf.repMin=p.min; Pf.repMax=p.max; Pf.defaultsTouched=true; S.obDefTouched=true; Store.save(); render(); },
@@ -3977,6 +4024,8 @@ function onInput(e){
   if(t.dataset.set){ const [i,j,k]=t.dataset.set.split('.'), it=Pf.active.items[+i], s0=it.sets[+j]; s0[k]=t.value;
     if(k==='w'&&!it.cardio){ s0.wEdited=true;
       it.sets.forEach((s,n)=>{ if(n>+j&&!s.st&&!s.wEdited){ s.w=t.value; const f=document.querySelector(`[data-set="${i}.${n}.w"]`); if(f) f.value=t.value; } }); }
+    if(k==='r'&&!it.cardio&&num(t.value)){ s0.rEdited=true;
+      it.sets.forEach((s,n)=>{ if(n>+j&&!s.st&&!s.rEdited){ s.r=t.value; const f=document.querySelector(`[data-set="${i}.${n}.r"]`); if(f) f.value=t.value; } }); }
     Store.save(); return; }
   if(t.id==='f-user'&&!window.boatsAdmin&&/[A-Z]/.test(t.value)){ const p=t.selectionStart; t.value=t.value.toLowerCase(); t.setSelectionRange(p,p); }
   if(t.id==='f-bio'){ let n=0; const v=t.value.replace(/\n/g,()=>++n<=2?'\n':' '); if(v!==t.value) t.value=v; let ln=bioLines(t.value); const prev=t.dataset.prev!=null?t.dataset.prev:(dv('bio')||'');
@@ -4086,7 +4135,7 @@ async function shareOrSave(blob,preferShare){
 function autoFinishCardio(it){ const m=num(it.min)||20; it.tEl=m*60000; it.tRun=0; it.tAlert=true; it.sets[0].w=String(m); it.sets[0].st='ok'; it.kcal=cardioKcal(it,m);
   restDone(); if(Pf.vibrate) buzz(); if(Pf.flash) flashScreen(); Store.save(); if(S.route==='session') render(); toast(`${exOf(it.exId).n} done · ${m} min logged · about ${it.kcal} kcal`); maybeCelebrate(); }
 function tick(){
-  if(Pf&&Pf.active&&checkIdle()){ render(); }
+  if(Pf&&Pf.active&&checkIdle()){ S.keepSheet=true; try{ render(); }finally{ S.keepSheet=false; } }
   if(Pf && Pf.active && Pf.active.startedAt && !Pf.active.pausedAt){ const s=fmtUp(elapsed(Pf.active)); document.querySelectorAll('[data-timer]').forEach(n=>n.textContent=s); }
   if(Pf&&Pf.active) Pf.active.items.forEach((it,i)=>{ if(!it.cardio||!it.tRun) return; const target=(num(it.min)||20)*60000, el=cardioEl(it);
     if(el>=target){ autoFinishCardio(it); return; }
@@ -4096,7 +4145,7 @@ function tick(){
     const lg=document.querySelector(`[data-clog="${i}"]`); if(lg) lg.textContent=cardioLogMin(it); });
   if(S.rest){
     const left=S.rest.until-Date.now();
-    if(left<=0){ S.rest=null; restDone(); if(Pf.vibrate) buzz(); if(Pf.flash) flashScreen(); if(S.route==='session'||S.route==='app') render(); toast('Rest over. Next set.'); return; }
+    if(left<=0){ S.rest=null; restDone(); if(Pf.vibrate) buzz(); if(Pf.flash) flashScreen(); if(S.route==='session'||S.route==='app'){ S.keepSheet=true; try{ render(); }finally{ S.keepSheet=false; } } if(!(S.sheet||askEl.innerHTML)) toast('Rest over. Next set.'); return; }
     const r=document.querySelector('[data-rest]'); if(r) r.textContent=fmtClock(left);
     const sec=Math.ceil(left/1000); if(sec<=3&&sec>=1&&S.rest.tick!==sec){ S.rest.tick=sec; tickCue(); }
     const f=document.getElementById('restfill'); if(f) f.style.width=Math.max(0,100*left/(S.rest.total*1000))+'%';

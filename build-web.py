@@ -33,7 +33,7 @@ head='''<!doctype html>
 <meta name="theme-color" content="#151514">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BOATS Beta">
 <meta name="description" content="Because who else is going to carry them. A simple lifting tracker with friends.">
 <meta property="og:type" content="website">
